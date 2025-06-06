@@ -44,7 +44,7 @@ jobs:
           context: ./anki-desktop-docker
           file: ./anki-desktop-docker/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.actor }}/anki-desktop-docker:${{ matrix.anki_version }}-${{ steps.short-sha.outputs.sha }} , ${{ github.actor }}/anki-desktop-docker:${{ matrix.anki_version }}-latest
+          tags: ghcr.io/${{ github.actor }}/anki-desktop-docker:${{ matrix.anki_version }}-${{ steps.short-sha.outputs.sha }} , ghcr.io/${{ github.actor }}/anki-desktop-docker:${{ matrix.anki_version }}-latest
           build-args: |
             ANKI_VERSION=${{ matrix.anki_version }}
 
