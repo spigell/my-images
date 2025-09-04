@@ -7,8 +7,12 @@ on:
       - '.github/workflows/anki-docker-publish.yaml'
   workflow_call:
 
+
 jobs:
   build:
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         anki_version: [25.02.5]
