@@ -5,7 +5,7 @@ on:
     paths:
       - 'pulumi-workbench-docker/**'
       - 'pulumi-talos-cluster-workbench-docker/**'
-      - '.github/workflows/pulumi-images-publish.yaml'
+      - '.github/workflows/pulumi-workbench-publish.yaml'
   workflow_call:
 
 permissions:
