@@ -21,7 +21,6 @@ jobs:
     with:
       image-name: anki-desktop-docker
       context: ./anki-desktop-docker
-      dockerfile: ./anki-desktop-docker/Dockerfile
       version: ${{ matrix.anki_version }}
       build-args: |
         ANKI_VERSION=${{ matrix.anki_version }}
