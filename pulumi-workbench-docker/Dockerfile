@@ -9,15 +9,14 @@ ARG DELVE_VERSION=v1.24.2
 ARG GOLANGCI_LINT_VERSION=2.1.6
 ARG KUBECTL_VERSION=1.34.0
 
-# Docker sets these.
+# Docker should sets these, but it would not do it in some situations.
 ARG TARGETOS=linux
-ARG TARGETARCH
+ARG TARGETARCH=amd64
 
 ############################
 # Stage 1: build dlv
 ############################
 FROM golang:1.22-bookworm AS dlv-builder
-ARG DELVE_VERSION
 ENV GOBIN=/out PATH=/go/bin:/usr/local/go/bin:$PATH
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
@@ -28,10 +27,6 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 ############################
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-ARG PULUMICTL_VERSION
-ARG GOLANGCI_LINT_VERSION
-ARG TARGETOS
-ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl tar xz-utils \
@@ -51,14 +46,9 @@ RUN curl -fsSL -o golangci-lint.deb \
 ############################
 # Stage 3: final image
 ############################
-ARG PULUMI_TAG
 FROM pulumi/pulumi:${PULUMI_TAG}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-ARG DEBIAN_FRONTEND=noninteractive
-ARG KUBECTL_VERSION
-ARG TARGETOS
-ARG TARGETARCH
 
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
