@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         anki_version: [25.02.5]
-    uses: spigell/my-shared-workflows/.github/workflows/docker-build.yaml
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build.yaml@main
     secrets: inherit
     with:
       image-name: anki-desktop-docker
