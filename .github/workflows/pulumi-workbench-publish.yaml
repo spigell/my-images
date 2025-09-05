@@ -14,13 +14,14 @@ permissions:
   packages: write
 
 jobs:
+
   build-pulumi-workbench:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
       image-name: pulumi-workbench
       context: ./pulumi-workbench-docker
-      version: ${{ env.PULUMI_TAG }}
+      version: v3.192.0
       build-args: |
         PULUMI_TAG=v3.192.0
         PULUMICTL_VERSION=0.0.46
