@@ -36,10 +36,8 @@ jobs:
     with:
       image-name: pulumi-talos-cluster-workbench
       context: ./pulumi-talos-cluster-workbench-docker
-      dockerfile: ./pulumi-talos-cluster-workbench-docker/Dockerfile
       version: ${{ needs.build-pulumi-workbench.outputs.version }}
       build-args: |
         PULUMI_WORKBENCH_TAG=${{ needs.build-pulumi-workbench.outputs.sha-tag }}
         K9S_VERSION=0.32.5
         TALOSCTL_VERSION=1.10.6
-
