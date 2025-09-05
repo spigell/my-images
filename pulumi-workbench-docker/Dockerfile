@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.18
 
 ############################
 # Global, configurable args
@@ -9,7 +9,7 @@ ARG DELVE_VERSION=v1.24.2
 ARG GOLANGCI_LINT_VERSION=2.1.6
 ARG KUBECTL_VERSION=1.34.0
 
-# Docker should sets these, but it would not do it in some situations.
+# Docker/buildx usually set these; provide safe defaults
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
@@ -17,6 +17,10 @@ ARG TARGETARCH=amd64
 # Stage 1: build dlv
 ############################
 FROM golang:1.22-bookworm AS dlv-builder
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+ARG DELVE_VERSION
+
 ENV GOBIN=/out PATH=/go/bin:/usr/local/go/bin:$PATH
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
@@ -27,6 +31,12 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 ############################
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+# ✨ Re-declare ARGs used in this stage
+ARG PULUMICTL_VERSION
+ARG GOLANGCI_LINT_VERSION
+ARG TARGETOS
+ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl tar xz-utils \
@@ -47,14 +57,19 @@ RUN curl -fsSL -o golangci-lint.deb \
 # Stage 3: final image
 ############################
 FROM pulumi/pulumi:${PULUMI_TAG}
-
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+# ✨ Re-declare ARGs used in this stage
+ARG KUBECTL_VERSION
+ARG TARGETOS
+ARG TARGETARCH
 
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
       vim curl tar sudo bash-completion make iproute2 rsync \
     && rm -rf /var/lib/apt/lists/*
 
+# kubectl (prebuilt, pinned)
 RUN curl -fsSL -o /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
  && chmod +x /usr/local/bin/kubectl
@@ -63,7 +78,7 @@ RUN curl -fsSL -o /usr/local/bin/kubectl \
 #  && echo "$(cat /tmp/k.sha256)  /usr/local/bin/kubectl" | sha256sum -c -
 
 # dlv from builder
-COPY --from=dlv-builder /out/dlv /usr/local/bin/dlv
+COPY --from=dlv-builder /go/bin/dlv /usr/local/bin/dlv
 
 # pulumictl + golangci-lint from fetcher
 COPY --from=fetch /tmp/fetch/pulumictl /usr/local/bin/pulumictl

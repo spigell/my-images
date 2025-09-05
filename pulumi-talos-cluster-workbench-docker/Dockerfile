@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.18
 ############################
 # Configurable args
 ############################
@@ -6,7 +6,7 @@ ARG PULUMI_WORKBENCH_TAG=3.192.0
 ARG K9S_VERSION=0.32.5
 ARG TALOSCTL_VERSION=1.8.2
 
-# Set by buildx/BuildKit
+# Set by buildx/BuildKit (defaults for classic docker build)
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
@@ -15,6 +15,11 @@ ARG TARGETARCH=amd64
 ############################
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+ARG K9S_VERSION
+ARG TALOSCTL_VERSION
+ARG TARGETOS
+ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl xz-utils tar \
@@ -52,8 +57,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
  && rm -rf /var/lib/apt/lists/*
 
 # QoL (optional)
-RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc \
- || true
+RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc || true
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["k9s version --short || true && talosctl version --short || true && pulumi version || true"]
