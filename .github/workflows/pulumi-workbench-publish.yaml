@@ -8,8 +8,6 @@ on:
       - '.github/workflows/pulumi-workbench-publish.yaml'
   workflow_call:
 
-env:
-  PULUMI_TAG: 3.192.0
 
 permissions:
   contents: read
@@ -24,7 +22,7 @@ jobs:
       context: ./pulumi-workbench-docker
       version: ${{ env.PULUMI_TAG }}
       build-args: |
-        PULUMI_TAG=${{ env.PULUMI_TAG }}
+        PULUMI_TAG=v3.192.0
         PULUMICTL_VERSION=0.0.46
         DELVE_VERSION=v1.24.2
         GOLANGCI_LINT_VERSION=2.1.6
@@ -32,15 +30,14 @@ jobs:
 
   build-pulumi-talos-cluster-workbench:
     needs: build-pulumi-workbench
-    permissions:
-      contents: read
-      packages: write
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
       image-name: pulumi-talos-cluster-workbench
-      context: ./pulumi-talos-cluster-workbench
-      version: ${{ env.PULUMI_TAG }}
+      context: ./pulumi-talos-cluster-workbench-docker
+      dockerfile: ./pulumi-talos-cluster-workbench-docker/Dockerfile
+      version: ${{ needs.build-pulumi-workbench.outputs.version }}
       build-args: |
-        PULUMI_WORKBENCH_TAG=${{ env.PULUMI_TAG }}-latest
-        TALOSCTL_VERSION=v1.10.6
+        PULUMI_WORKBENCH_TAG=${{ needs.build-pulumi-workbench.outputs.sha-tag }}
+        K9S_VERSION=0.32.5
+        TALOSCTL_VERSION=1.10.6
