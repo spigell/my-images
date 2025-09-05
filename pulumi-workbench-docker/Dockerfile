@@ -73,12 +73,9 @@ RUN --mount=type=cache,target=/var/cache/apt \
 RUN curl -fsSL -o /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
  && chmod +x /usr/local/bin/kubectl
-# (Optional) Verify checksum:
-# RUN curl -fsSL -o /tmp/k.sha256 "https://dl.k8s.io/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl.sha256" \
-#  && echo "$(cat /tmp/k.sha256)  /usr/local/bin/kubectl" | sha256sum -c -
 
 # dlv from builder
-COPY --from=dlv-builder /go/bin/dlv /usr/local/bin/dlv
+COPY --from=dlv-builder /out/dlv /usr/local/bin/dlv
 
 # pulumictl + golangci-lint from fetcher
 COPY --from=fetch /tmp/fetch/pulumictl /usr/local/bin/pulumictl
