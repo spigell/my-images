@@ -24,7 +24,7 @@ ARG DELVE_VERSION
 ENV GOBIN=/out PATH=/go/bin:/usr/local/go/bin:$PATH
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go install github.com/go-delve/delve/cmd/dlv@${DELVE_VERSION}
+    go install github.com/go-delve/delve/cmd/dlv@v${DELVE_VERSION}
 
 ############################
 # Stage 2: fetch artifacts
