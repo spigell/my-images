@@ -21,9 +21,9 @@ jobs:
     with:
       image-name: pulumi-workbench
       context: ./pulumi-workbench-docker
-      version: 3.192.0
+      version: 3.193.0
       build-args: |
-        PULUMI_TAG=3.192.0
+        PULUMI_TAG=3.193.0
         PULUMICTL_VERSION=0.0.46
         DELVE_VERSION=1.24.2
         GOLANGCI_LINT_VERSION=2.1.6
@@ -39,5 +39,5 @@ jobs:
       version: ${{ needs.build-pulumi-workbench.outputs.version }}
       build-args: |
         PULUMI_WORKBENCH_TAG=${{ needs.build-pulumi-workbench.outputs.sha-tag }}
-        K9S_VERSION=0.32.5
-        TALOSCTL_VERSION=1.10.6
+        K9S_VERSION=0.50.9
+        TALOSCTL_VERSION=1.11.0
