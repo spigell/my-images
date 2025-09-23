@@ -1,21 +1,15 @@
-# ---- Builder stage ----
-FROM ubuntu:24.04 AS builder
+# syntax=docker/dockerfile:1.4
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+ARG CODEX_VERSION=rust-v0.39.0
+ARG CODEX_BINARY_IMAGE=codex-binary
+ARG CODEX_BINARY_REF=rust-v0.39.0
 
-ENV CODEX_VERSION=rust-v0.39.0
-ENV CODEX_TARBALL=codex-x86_64-unknown-linux-gnu.tar.gz
-ENV CODEX_URL=https://github.com/openai/codex/releases/download/${CODEX_VERSION}/${CODEX_TARBALL}
+FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_REF} AS codex
 
-RUN wget -q ${CODEX_URL} && \
-    tar -xzf ${CODEX_TARBALL} && \
-    chmod +x codex-x86_64-unknown-linux-gnu
-
-# ---- Final runtime stage ----
 FROM ubuntu:24.04
+
+ARG CODEX_VERSION=rust-v0.39.0
+ARG CODEX_BINARY_REF
 
 # Install basic development tools, ca-certificates, and iptables/ipset, then clean up apt cache to reduce image size
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -40,6 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+ENV CODEX_VERSION=${CODEX_VERSION}
+LABEL codex.binary.ref="${CODEX_BINARY_REF}"
 
 # Set up project directory
 ENV CODEX_HOME=/workspace/codex
@@ -47,7 +43,6 @@ WORKDIR $CODEX_HOME
 
 # Create directory (for clarity) and copy binary
 RUN mkdir -p $CODEX_HOME
-COPY --from=builder /codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
+COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
 
 ENTRYPOINT ["codex"]
-
