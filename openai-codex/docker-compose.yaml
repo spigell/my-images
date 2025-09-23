@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  codex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CODEX_VERSION: rust-v0.39.0
+        CODEX_BINARY_IMAGE: codex-binary
+        CODEX_BINARY_REF: rust-v0.39.0
+    image: codex:test
+    container_name: codex-mini
+    command: ["sleep infinity"]
+    entrypoint: ["/bin/bash", "-c"]
+    stdin_open: true      # For interactive use
+    tty: true             # Allocate a TTY
+    volumes:
+      - './test-proj:/workspace/codex/test'
+      - './config.toml:/workspace/codex/config.toml'
