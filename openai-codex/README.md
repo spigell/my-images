@@ -2,14 +2,14 @@
 
 This directory provides two Dockerfiles:
 
-- `Dockerfile.codex-binary` builds a minimal image that only contains the Codex binary.  The image is intended for reuse in other multi-stage builds.
+- `codex-binary/Dockerfile` builds a minimal image that only contains the Codex binary. A compatibility symlink named `Dockerfile.codex-binary` is kept at the repository root for existing tooling.
 - `Dockerfile` consumes the binary image and installs additional tooling for interactive Codex work.
 
 ## Building the Codex binary image
 
 ```bash
 docker build \
-  -f Dockerfile.codex-binary \
+  -f codex-binary/Dockerfile \
   --build-arg CODEX_VERSION=rust-v0.39.0 \
   -t ghcr.io/example/codex-binary:rust-v0.39.0 \
   .
@@ -39,4 +39,4 @@ The included `docker-compose.yaml` builds the primary Codex image.  Ensure the `
 
 ## Continuous integration
 
-`.github/workflows/build.yml` builds both the binary image and the main Codex image.  Override the `CODEX_VERSION`, `CODEX_BINARY_IMAGE`, or `CODEX_BINARY_REF` repository variables to customize the build inputs.
+`.github/workflows/openai-codex-publish.yaml` builds the binary image first and then the main Codex image using the published binary tag. Override the `CODEX_VERSION`, `CODEX_REGISTRY`, `CODEX_BINARY_IMAGE_NAME`, or `CODEX_IMAGE_NAME` repository variables to customize the build inputs and image naming.
