@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  codex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: codex:test
+    container_name: codex-mini
+    command: ["sleep infinity"]
+    entrypoint: ["/bin/bash", "-c"]
+    stdin_open: true      # For interactive use
+    tty: true             # Allocate a TTY
+    volumes:
+      - './test-proj:/workspace/codex/test'
+      - './config.toml:/workspace/codex/config.toml'
+
