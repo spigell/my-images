@@ -36,7 +36,3 @@ The combined tag and digest reference ensures your build uses the exact binary y
 ## Docker Compose
 
 The included `docker-compose.yaml` builds the primary Codex image.  Ensure the `CODEX_BINARY_IMAGE` and `CODEX_BINARY_REF` build arguments point to the binary image you built or published.
-
-## Continuous integration
-
-`.github/workflows/openai-codex-publish.yaml` builds the binary image first and then the main Codex image using the published binary tag. Override the `CODEX_VERSION`, `CODEX_REGISTRY`, `CODEX_BINARY_IMAGE_NAME`, or `CODEX_IMAGE_NAME` repository variables to customize the build inputs and image naming.
