@@ -11,22 +11,16 @@ permissions:
   contents: read
   packages: write
 
-env:
-  CODEX_VERSION: ${{ vars.CODEX_VERSION || 'rust-v0.39.0' }}
-  CODEX_REGISTRY: ${{ vars.CODEX_REGISTRY || format('ghcr.io/{0}', github.actor) }}
-  CODEX_BINARY_IMAGE_NAME: ${{ vars.CODEX_BINARY_IMAGE_NAME || 'codex-binary' }}
-  CODEX_IMAGE_NAME: ${{ vars.CODEX_IMAGE_NAME || 'codex' }}
-
 jobs:
   build-codex-binary:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
-      image-name: ${{ env.CODEX_BINARY_IMAGE_NAME }}
+      image-name: codex-binary
       context: ./openai-codex/codex-binary
-      version: ${{ env.CODEX_VERSION }}
+      version: v0.39.0
       build-args: |
-        CODEX_VERSION=${{ env.CODEX_VERSION }}
+        CODEX_VERSION=rust-v0.39.0
 
   build-codex:
     needs: build-codex-binary
@@ -35,8 +29,6 @@ jobs:
     with:
       image-name: ${{ env.CODEX_IMAGE_NAME }}
       context: ./openai-codex
-      version: ${{ env.CODEX_VERSION }}
+      version: ${{ needs.build-codex-binary.outputs.version }}
       build-args: |
-        CODEX_VERSION=${{ env.CODEX_VERSION }}
-        CODEX_BINARY_IMAGE=${{ env.CODEX_REGISTRY }}/${{ env.CODEX_BINARY_IMAGE_NAME }}
-        CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}
+        CODEX_VERSION=${{ needs.build-codex-binary.outputs.sha-tag }}

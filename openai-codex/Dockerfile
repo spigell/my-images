@@ -4,7 +4,7 @@ ARG CODEX_VERSION=rust-v0.39.0
 ARG CODEX_BINARY_IMAGE=codex-binary
 ARG CODEX_BINARY_REF=rust-v0.39.0
 
-FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_REF} AS codex
+FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
 
 FROM ubuntu:24.04
 
@@ -13,7 +13,6 @@ ARG CODEX_BINARY_REF
 
 # Install basic development tools, ca-certificates, and iptables/ipset, then clean up apt cache to reduce image size
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  aggregate \
   ca-certificates \
   curl \
   dnsutils \
