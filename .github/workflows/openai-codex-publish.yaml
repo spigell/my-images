@@ -31,4 +31,4 @@ jobs:
       context: ./openai-codex
       version: ${{ needs.build-codex-binary.outputs.version }}
       build-args: |
-        CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.metadata["containerimage.digest"] }}
+        CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
