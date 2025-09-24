@@ -5,6 +5,10 @@ ARG CODEX_BINARY_REF=rust-v0.39.0
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
 FROM ubuntu:24.04
 
+ENV LANG="C.UTF-8"
+ENV HOME=/root
+ENV DEBIAN_FRONTEND=noninteractive
+
 ARG CODEX_BINARY_REF
 
 # Taken from universal image
@@ -93,6 +97,68 @@ RUN set -eux; \
 
 ENV GOPATH=/go
 ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
+
+### PYTHON ###
+
+ARG PYENV_VERSION=v2.5.5
+ARG PYTHON_VERSIONS="3.12.6"
+
+ENV PYENV_ROOT=/root/.pyenv
+ENV PATH="${PYENV_ROOT}/bin:${PYENV_ROOT}/shims:${PATH}"
+
+RUN git -c advice.detachedHead=0 clone --branch "$PYENV_VERSION" --depth 1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT" \
+    && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> /etc/profile \
+    && echo 'export PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"' >> /etc/profile \
+    && echo 'eval "$(pyenv init - bash)"' >> /etc/profile \
+    && cd "$PYENV_ROOT" \
+    && src/configure \
+    && make -C src \
+    && for version in $PYTHON_VERSIONS; do pyenv install "$version"; done \
+    && pyenv global "${PYTHON_VERSIONS%% *}" \
+    && rm -rf "$PYENV_ROOT/cache"
+
+ENV PIPX_BIN_DIR=/root/.local/bin
+ENV PATH="${PIPX_BIN_DIR}:${PATH}"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends pipx=1.4.* \
+    && rm -rf /var/lib/apt/lists/* \
+    && pipx install --pip-args="--no-cache-dir --no-compile" poetry==2.1.* uv==0.7.* \
+    && for pyv in "${PYENV_ROOT}/versions/"*; do \
+         "$pyv/bin/python" -m pip install --no-cache-dir --no-compile --upgrade pip && \
+         "$pyv/bin/pip" install --no-cache-dir --no-compile ruff black mypy pyright isort pytest; \
+       done \
+    && rm -rf /root/.cache/pip ~/.cache/pip ~/.cache/pipx
+
+ENV UV_NO_PROGRESS=1
+
+### NODE & TYPESCRIPT ###
+
+ARG NVM_VERSION=v0.40.2
+ARG NODE_VERSION=22
+
+ENV NVM_DIR=/root/.nvm
+
+RUN git -c advice.detachedHead=0 clone --branch "$NVM_VERSION" --depth 1 https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
+    && echo 'source $NVM_DIR/nvm.sh' >> /etc/profile \
+    && . "$NVM_DIR/nvm.sh" \
+    && nvm install "$NODE_VERSION" \
+    && nvm alias default "$NODE_VERSION" \
+    && nvm use default \
+    && npm install -g yarn \
+    && yarn global add prettier eslint typescript \
+    && YARN_GLOBAL_BIN="$(yarn global bin)" \
+    && for bin in node yarn; do \
+         ln -sf "$(command -v "$bin")" "/usr/local/bin/$bin"; \
+       done \
+    && for tsbin in prettier eslint tsc tsserver; do \
+         ln -sf "${YARN_GLOBAL_BIN}/$tsbin" "/usr/local/bin/$tsbin"; \
+       done \
+    && yarn cache clean || true \
+    && rm -rf ~/.cache/yarn \
+    && nvm cache clear \
+    && npm cache clean --force || true
+
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
 LABEL codex.binary.ref="${CODEX_BINARY_REF}"
 
