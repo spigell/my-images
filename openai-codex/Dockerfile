@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-ARG CODEX_BINARY_REF=rust-v0.39.0
+ARG CODEX_BINARY_REF=rust-v0.40.0
 
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
 FROM ubuntu:24.04
