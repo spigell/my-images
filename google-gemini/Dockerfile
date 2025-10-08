@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
-ARG GEMINI_CLI_TAG=latest
-FROM ghcr.io/spigell/gemini-cli:${GEMINI_CLI_TAG}
+ARG GEMINI_BASIC_TAG=change-me
+FROM ghcr.io/spigell/gemini-cli:${GEMINI_BASIC_TAG}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -24,5 +24,3 @@ RUN --mount=type=cache,target=/var/cache/apt \
 USER node
 WORKDIR /workspace
 
-ENTRYPOINT ["bash", "-lc"]
-CMD ["gemini --help"]

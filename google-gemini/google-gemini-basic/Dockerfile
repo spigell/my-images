@@ -21,7 +21,6 @@ rm -rf /home/${USERNAME}/.npm/_cacache /home/${USERNAME}/.npm/_logs || true
 SCRIPT
 
 USER ${USERNAME}
-WORKDIR /workspace
 
-ENTRYPOINT ["gemini"]
-CMD ["--help"]
+ENTRYPOINT []
+CMD ["bash"]
