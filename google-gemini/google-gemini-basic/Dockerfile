@@ -13,6 +13,7 @@ RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
         bash-completion \
+        build-essential \
         ca-certificates \
         curl \
         git \
@@ -21,6 +22,18 @@ RUN \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Python
+# Install Pyenv and preinstall supported Python versions
+RUN git clone --depth=1 https://github.com/pyenv/pyenv.git /usr/local/share/pyenv
+ENV PYENV_ROOT /usr/local/share/pyenv
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
+RUN pyenv install 3.12 && pyenv global 3.12
+# Poetry
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/share/pypoetry python3 -
+RUN ln -s /usr/local/share/pypoetry/bin/poetry /usr/local/bin/
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path
+RUN ln -s /usr/local/share/uv/uv /usr/local/bin/ && ln -s /usr/local/share/uv/uvx /usr/local/bin/
 
 # Install default nodejs versions and associated tools
 RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "/usr/local/share/fnm" --skip-shell && \
@@ -33,29 +46,6 @@ RUN fnm install ${NODE_VERSION} && \
 ENV PATH=/usr/local/share/fnm/aliases/default/bin:$PATH
 RUN npm install -g corepack && \
     corepack install -g pnpm yarn@1
-
-# Nodejs
-# ENV NVM_DIR=/usr/local/nvm
-# ENV YARN_GLOBAL_FOLDER=/usr/local/share/yarn
-
-# RUN git -c advice.detachedHead=0 clone --branch "$NVM_VERSION" --depth 1 https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
-#    && install -d -m 0755 "$YARN_GLOBAL_FOLDER" \
-#    && echo 'source $NVM_DIR/nvm.sh' >> /etc/profile \
-#    && . "$NVM_DIR/nvm.sh" \
-#    && nvm install "$NODE_VERSION" \
-#    && nvm alias default "$NODE_VERSION" \
-#    && nvm use default \
-#    && npm install -g yarn \
-#    && yarn global add gemini-cli \
-#    && YARN_GLOBAL_BIN="$(yarn global bin)" \
-#    && for bin in node yarn; do \
-#         ln -sf "$(command -v "$bin")" "/usr/local/bin/$bin"; \
-#       done \
-#    && chmod -R a+rX "$NVM_DIR" "$YARN_GLOBAL_FOLDER" \
-#    && yarn cache clean || true \
-#    && rm -rf ~/.cache/yarn \
-#    && nvm cache clear \
-#    && npm cache clean --force || true
 
 ENTRYPOINT []
 CMD ["bash"]
