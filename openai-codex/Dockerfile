@@ -137,9 +137,12 @@ ENV UV_NO_PROGRESS=1
 ARG NVM_VERSION=v0.40.2
 ARG NODE_VERSION=22
 
-ENV NVM_DIR=/root/.nvm
+ENV NVM_DIR=/usr/local/nvm
+# Ensure Node and Yarn tooling remain readable and executable by non-root users
+ENV YARN_GLOBAL_FOLDER=/usr/local/share/yarn
 
 RUN git -c advice.detachedHead=0 clone --branch "$NVM_VERSION" --depth 1 https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
+    && install -d -m 0755 "$YARN_GLOBAL_FOLDER" \
     && echo 'source $NVM_DIR/nvm.sh' >> /etc/profile \
     && . "$NVM_DIR/nvm.sh" \
     && nvm install "$NODE_VERSION" \
@@ -154,6 +157,7 @@ RUN git -c advice.detachedHead=0 clone --branch "$NVM_VERSION" --depth 1 https:/
     && for tsbin in prettier eslint tsc tsserver; do \
          ln -sf "${YARN_GLOBAL_BIN}/$tsbin" "/usr/local/bin/$tsbin"; \
        done \
+    && chmod -R a+rX "$NVM_DIR" "$YARN_GLOBAL_FOLDER" \
     && yarn cache clean || true \
     && rm -rf ~/.cache/yarn \
     && nvm cache clear \
