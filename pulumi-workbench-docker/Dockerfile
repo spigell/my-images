@@ -16,7 +16,7 @@ ARG TARGETARCH=amd64
 ############################
 # Stage 1: build dlv
 ############################
-FROM golang:1.22-bookworm AS dlv-builder
+FROM golang:1.25.1-bookworm AS dlv-builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG DELVE_VERSION
