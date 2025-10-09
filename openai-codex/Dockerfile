@@ -9,7 +9,7 @@ SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
 ARG PYTHON_VERSION=3.12
 ARG NODE_VERSION=24
-ARG GOLANG_VERSION=1.24.5
+ARG GOLANG_VERSION=1.25.1
 
 ENV LANG="C.UTF-8"
 ENV HOME=/root
