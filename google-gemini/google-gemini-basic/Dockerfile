@@ -3,7 +3,7 @@
 FROM debian:12-slim
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
-ARG NVM_VERSION=v0.40.2
+ARG GEMINI_CLI_VERSION=0.8.1
 ARG NODE_VERSION=24
 
 USER root
@@ -19,6 +19,19 @@ RUN \
         git \
         unzip \
         less \
+  libbz2-dev \
+  libffi-dev \
+  liblzma-dev \
+  libncurses5-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  libssl-dev \
+  libxml2-dev \
+  libxmlsec1-dev \
+  lsb-release \
+  software-properties-common \
+  zlib1g-dev \
+  xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -45,7 +58,8 @@ RUN fnm install ${NODE_VERSION} && \
   fnm alias ${NODE_VERSION} default
 ENV PATH=/usr/local/share/fnm/aliases/default/bin:$PATH
 RUN npm install -g corepack && \
-    corepack install -g pnpm yarn@1
+    corepack install -g pnpm yarn@1 && \
+    yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}
 
 ENTRYPOINT []
 CMD ["bash"]
