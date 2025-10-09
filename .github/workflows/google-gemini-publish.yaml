@@ -1,0 +1,34 @@
+name: Build and Publish Gemini CLI images
+
+on:
+  push:
+    paths:
+      - 'google-gemini/**'
+      - '.github/workflows/google-gemini-publish.yaml'
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-gemini-basic:
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: google-gemini-basic
+      context: ./google-gemini-docker/google-gemini-basic
+      version: 0.8.1
+      build-args: |
+        GEMINI_CLI_VERSION=0.8.1
+
+  build-gemini-workbench:
+    needs: build-gemini-basic
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: google-gemini-workbench
+      context: ./google-gemini-docker
+      version: ${{ needs.build-gemini-basic.outputs.version }}
+      build-args: |
+        GEMINI_BASIC_TAG=${{ needs.build-gemini-basic.outputs.sha-tag }}

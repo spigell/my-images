@@ -1,0 +1,10 @@
+services:
+  gemini:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        image: test-gemini:latest
+    container_name: gemihi-basic
+    command: ["sleep infinity"]
+    entrypoint: ["/bin/bash", "-c"]
