@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1.4
 
 ARG CODEX_BINARY_REF=rust-v0.44.0
-LABEL codex.binary.ref="${CODEX_BINARY_REF}"
 
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
 FROM ubuntu:24.04
+LABEL codex.binary.ref="${CODEX_BINARY_REF}"
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
 ARG PYTHON_VERSION=3.12
