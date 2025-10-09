@@ -31,4 +31,4 @@ jobs:
       context: ./google-gemini-docker
       version: ${{ needs.build-gemini-basic.outputs.version }}
       build-args: |
-        GEMINI_CLI_TAG=${{ needs.build-gemini-basic.outputs.sha-tag }}
+        GEMINI_BASIC_TAG=${{ needs.build-gemini-basic.outputs.sha-tag }}
