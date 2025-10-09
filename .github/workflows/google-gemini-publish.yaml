@@ -17,7 +17,7 @@ jobs:
     secrets: inherit
     with:
       image-name: google-gemini-basic
-      context: ./google-gemini/google-gemini-basic
+      context: ./google-gemini-docker/google-gemini-basic
       version: 0.8.1
       build-args: |
         GEMINI_CLI_VERSION=0.8.1
@@ -28,7 +28,7 @@ jobs:
     secrets: inherit
     with:
       image-name: google-gemini-workbench
-      context: ./google-gemini
+      context: ./google-gemini-docker
       version: ${{ needs.build-gemini-basic.outputs.version }}
       build-args: |
         GEMINI_CLI_TAG=${{ needs.build-gemini-basic.outputs.sha-tag }}
