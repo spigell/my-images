@@ -85,11 +85,6 @@ RUN set -eux; \
         zlib1g-dev=1:1.3.*; \
     rm -rf /var/lib/apt/lists/*; \
     arch="${TARGETARCH:-amd64}"; \
-    case "$arch" in \
-      arm64) go_sha256="$GOLANG_ARM64_SHA256";; \
-      amd64) go_sha256="$GOLANG_AMD64_SHA256";; \
-      *) echo "unsupported TARGETARCH: $arch" >&2; exit 1;; \
-    esac; \
     curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \
     tar -C /usr/local -xzf /tmp/go.tgz; \
     rm /tmp/go.tgz; \
