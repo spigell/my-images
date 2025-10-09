@@ -16,6 +16,7 @@ RUN \
         build-essential \
         ca-certificates \
         curl \
+        procps \
         git \
         unzip \
         less \
