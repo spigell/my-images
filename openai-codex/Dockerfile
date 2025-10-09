@@ -11,9 +11,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ARG CODEX_BINARY_REF
 
-# Taken from universal image
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+# Taken from universal image and aligned with the Gemini tool installations
+ENV GOLANG_VERSION=1.24.5
+ENV GOLANG_AMD64_SHA256=10ad9e86233e74c0f6590fe5426895de6bf388964210eac34a6d83f38918ecdc
+ENV GOLANG_ARM64_SHA256=0df02e6aeb3d3c06c95ff201d575907c736d6c62cfa4b6934c11203f1d600ffa
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
         binutils=2.42-* \
         sudo=1.9.* \
         build-essential=12.10* \
@@ -74,94 +79,63 @@ RUN apt-get update \
         xz-utils=5.6.* \
         zip=3.0-* \
         zlib1g=1:1.3.* \
-        zlib1g-dev=1:1.3.* \
-    && rm -rf /var/lib/apt/lists/*
-
-
-ENV GOLANG_VERSION=1.24.5
-ENV GOLANG_AMD64_SHA256=10ad9e86233e74c0f6590fe5426895de6bf388964210eac34a6d83f38918ecdc
-ENV GOLANG_ARM64_SHA256=0df02e6aeb3d3c06c95ff201d575907c736d6c62cfa4b6934c11203f1d600ffa
-
-RUN set -eux; \
-  arch="${TARGETARCH:-amd64}"; \
-  case "$arch" in \
-    arm64) go_sha256="$GOLANG_ARM64_SHA256";; \
-    amd64) go_sha256="$GOLANG_AMD64_SHA256";; \
-    *) echo "unsupported TARGETARCH: $arch" >&2; exit 1;; \
-  esac; \
-  curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \
-  echo "${go_sha256} /tmp/go.tgz" | sha256sum -c -; \
-  tar -C /usr/local -xzf /tmp/go.tgz; \
-  rm /tmp/go.tgz; \
-  /usr/local/go/bin/go version
+        zlib1g-dev=1:1.3.*; \
+    rm -rf /var/lib/apt/lists/*; \
+    arch="${TARGETARCH:-amd64}"; \
+    case "$arch" in \
+      arm64) go_sha256="$GOLANG_ARM64_SHA256";; \
+      amd64) go_sha256="$GOLANG_AMD64_SHA256";; \
+      *) echo "unsupported TARGETARCH: $arch" >&2; exit 1;; \
+    esac; \
+    curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \
+    echo "${go_sha256} /tmp/go.tgz" | sha256sum -c -; \
+    tar -C /usr/local -xzf /tmp/go.tgz; \
+    rm /tmp/go.tgz; \
+    /usr/local/go/bin/go version
 
 ENV GOPATH=/go
 ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
 
 ### PYTHON ###
 
-ARG PYENV_VERSION=v2.5.5
-ARG PYTHON_VERSIONS="3.12.6"
+ARG PYTHON_VERSION=3.12
 
-ENV PYENV_ROOT=/root/.pyenv
-ENV PATH="${PYENV_ROOT}/bin:${PYENV_ROOT}/shims:${PATH}"
+ENV PYENV_ROOT=/usr/local/share/pyenv
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 
-RUN git -c advice.detachedHead=0 clone --branch "$PYENV_VERSION" --depth 1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT" \
-    && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> /etc/profile \
-    && echo 'export PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"' >> /etc/profile \
-    && echo 'eval "$(pyenv init - bash)"' >> /etc/profile \
-    && cd "$PYENV_ROOT" \
-    && src/configure \
-    && make -C src \
-    && for version in $PYTHON_VERSIONS; do pyenv install "$version"; done \
-    && pyenv global "${PYTHON_VERSIONS%% *}" \
-    && rm -rf "$PYENV_ROOT/cache"
-
-ENV PIPX_BIN_DIR=/root/.local/bin
-ENV PATH="${PIPX_BIN_DIR}:${PATH}"
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends pipx=1.4.* \
-    && rm -rf /var/lib/apt/lists/* \
-    && pipx install --pip-args="--no-cache-dir --no-compile" poetry==2.1.* uv==0.7.* \
-    && for pyv in "${PYENV_ROOT}/versions/"*; do \
-         "$pyv/bin/python" -m pip install --no-cache-dir --no-compile --upgrade pip && \
-         "$pyv/bin/pip" install --no-cache-dir --no-compile ruff black mypy pyright isort pytest; \
-       done \
-    && rm -rf /root/.cache/pip ~/.cache/pip ~/.cache/pipx
+RUN set -eux; \
+    git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
+    pyenv install "${PYTHON_VERSION}"; \
+    pyenv global "${PYTHON_VERSION}"; \
+    pyenv rehash; \
+    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/share/pypoetry python3 -; \
+    ln -s /usr/local/share/pypoetry/bin/poetry /usr/local/bin/; \
+    curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path; \
+    ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
+    ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
+    python3 -m pip install --no-cache-dir --upgrade pip; \
+    pip install --no-cache-dir ruff black mypy pyright isort pytest; \
+    rm -rf /root/.cache/pip
 
 ENV UV_NO_PROGRESS=1
 
 ### NODE & TYPESCRIPT ###
 
-ARG NVM_VERSION=v0.40.2
-ARG NODE_VERSION=22
+ARG NODE_VERSION=24
 
-ENV NVM_DIR=/usr/local/nvm
-# Ensure Node and Yarn tooling remain readable and executable by non-root users
-ENV YARN_GLOBAL_FOLDER=/usr/local/share/yarn
+ENV FNM_COREPACK_ENABLED="true"
+ENV FNM_VERSION_FILE_STRATEGY="recursive"
+ENV FNM_DIR=/usr/local/share/fnm
+ENV PATH="/usr/local/share/fnm/aliases/default/bin:${PATH}"
 
-RUN git -c advice.detachedHead=0 clone --branch "$NVM_VERSION" --depth 1 https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
-    && install -d -m 0755 "$YARN_GLOBAL_FOLDER" \
-    && echo 'source $NVM_DIR/nvm.sh' >> /etc/profile \
-    && . "$NVM_DIR/nvm.sh" \
-    && nvm install "$NODE_VERSION" \
-    && nvm alias default "$NODE_VERSION" \
-    && nvm use default \
-    && npm install -g yarn \
-    && yarn global add prettier eslint typescript \
-    && YARN_GLOBAL_BIN="$(yarn global bin)" \
-    && for bin in node yarn; do \
-         ln -sf "$(command -v "$bin")" "/usr/local/bin/$bin"; \
-       done \
-    && for tsbin in prettier eslint tsc tsserver; do \
-         ln -sf "${YARN_GLOBAL_BIN}/$tsbin" "/usr/local/bin/$tsbin"; \
-       done \
-    && chmod -R a+rX "$NVM_DIR" "$YARN_GLOBAL_FOLDER" \
-    && yarn cache clean || true \
-    && rm -rf ~/.cache/yarn \
-    && nvm cache clear \
-    && npm cache clean --force || true
+RUN set -eux; \
+    curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_DIR" --skip-shell; \
+    ln -sf "$FNM_DIR/fnm" /usr/local/bin/fnm; \
+    fnm install "${NODE_VERSION}"; \
+    fnm alias "${NODE_VERSION}" default; \
+    npm install -g corepack yarn prettier eslint typescript; \
+    corepack enable; \
+    npm cache clean --force || true
 
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
 LABEL codex.binary.ref="${CODEX_BINARY_REF}"
