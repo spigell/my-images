@@ -62,6 +62,8 @@ RUN npm install -g corepack && \
     corepack install -g pnpm yarn@1 && \
     yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}
 
+COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
+
 ENTRYPOINT []
 CMD ["bash"]
 
