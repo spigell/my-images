@@ -5,7 +5,7 @@ SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
 ARG GEMINI_CLI_VERSION=0.8.2
 ARG NODE_VERSION=24
-
+ARG PYTHON_VERSION=3.12
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN \
