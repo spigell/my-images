@@ -3,7 +3,7 @@
 FROM debian:12-slim
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
-ARG GEMINI_CLI_VERSION=0.8.2
+ARG GEMINI_CLI_VERSION=0.8.1
 ARG NODE_VERSION=24
 ARG PYTHON_VERSION=3.12
 
@@ -54,6 +54,8 @@ RUN set -eux; \
     pip install --no-cache-dir ruff black mypy pyright isort pytest; \
     rm -rf /root/.cache/pip
 
+### NODEJS ###
+
 ENV FNM_COREPACK_ENABLED="true"
 ENV FNM_VERSION_FILE_STRATEGY="recursive"
 ENV FNM_DIR=/usr/local/share/fnm
@@ -66,6 +68,10 @@ RUN set -eux; \
     npm install -g corepack yarn; \
     corepack enable; \
     npm cache clean --force || true
+
+### GEMINI-CLI ###
+RUN set -eux; \
+    yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}
 
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
 
