@@ -17,7 +17,7 @@ jobs:
     secrets: inherit
     with:
       image-name: codex-binary
-      context: ./openai-codex/codex-binary
+      context: ./openai-codex-docker/codex-binary
       version: v0.46.0
       build-args: |
         CODEX_VERSION=rust-v0.46.0
@@ -28,7 +28,7 @@ jobs:
     secrets: inherit
     with:
       image-name: codex-workbench
-      context: ./openai-codex
+      context: ./openai-codex-docker
       version: ${{ needs.build-codex-binary.outputs.version }}
       build-args: |
         CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}

@@ -13,12 +13,11 @@ ARG GOLANG_VERSION=1.25.1
 
 ENV LANG="C.UTF-8"
 ENV HOME=/root
-ENV DEBIAN_FRONTEND=noninteractive
 
 # Packages are taken from universal codex image
 ENV GOPATH=/go
 ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
-
+ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
@@ -96,7 +95,6 @@ RUN set -eux; \
 ENV PYENV_ROOT=/usr/local/share/pyenv
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 ENV UV_NO_PROGRESS=1
-
 RUN set -eux; \
     git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     pyenv install "${PYTHON_VERSION}"; \
@@ -117,7 +115,6 @@ ENV FNM_COREPACK_ENABLED="true"
 ENV FNM_VERSION_FILE_STRATEGY="recursive"
 ENV FNM_DIR=/usr/local/share/fnm
 ENV PATH="/usr/local/share/fnm/aliases/default/bin:${PATH}"
-
 RUN set -eux; \
     curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_DIR" --skip-shell; \
     ln -sf "$FNM_DIR/fnm" /usr/local/bin/fnm; \
@@ -130,8 +127,6 @@ RUN set -eux; \
 ### CODEX
 
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
-
-# Set up project directory
 ENV CODEX_HOME=/workspace/codex
 WORKDIR $CODEX_HOME
 
