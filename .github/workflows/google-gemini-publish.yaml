@@ -3,7 +3,7 @@ name: Build and Publish Gemini CLI images
 on:
   push:
     paths:
-      - 'google-gemini/**'
+      - 'google-gemini-docker/**'
       - '.github/workflows/google-gemini-publish.yaml'
   workflow_call:
 

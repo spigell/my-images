@@ -3,7 +3,7 @@ name: Build and Publish Codex images
 on:
   push:
     paths:
-      - 'openai-codex/**'
+      - 'openai-codex-docker/**'
       - '.github/workflows/openai-codex-publish.yaml'
   workflow_call:
 
