@@ -31,7 +31,7 @@ RUN \
       lsb-release \
       software-properties-common \
       zlib1g-dev \
-      xz-utils;
+      xz-utils; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
