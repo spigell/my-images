@@ -14,3 +14,6 @@ RUN set -eux; \
   tar -C /usr/local -xzf /tmp/go.tgz; \
   rm /tmp/go.tgz; \
   /usr/local/go/bin/go version
+
+COPY setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+RUN chmod +x /usr/local/bin/setup-git-workbench

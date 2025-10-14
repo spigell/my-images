@@ -134,4 +134,7 @@ WORKDIR $CODEX_HOME
 RUN mkdir -p $CODEX_HOME
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
 
+COPY setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+RUN chmod +x /usr/local/bin/setup-git-workbench
+
 ENTRYPOINT ["codex"]
