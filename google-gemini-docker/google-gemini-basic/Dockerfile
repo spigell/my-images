@@ -74,6 +74,7 @@ RUN set -eux; \
     yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}
 
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
+COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
 
 ENTRYPOINT []
 CMD ["bash"]

@@ -1,5 +1,22 @@
 {
   "general": {
-    "disableAutoUpdate": true
+    "disableAutoUpdate": true,
+    "vimMode": true,
+    "preferredEditor": "code",
+    "checkpointing": {
+      "enabled": true
+    }
+  },
+  "ui": {
+    "theme": "Dracula",
+    "hideBanner": true,
+    "hideTips": false
+  },
+  "tools": {
+    "sandbox": false,
+    "autoAccept": true
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
   }
 }
