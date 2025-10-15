@@ -7,14 +7,15 @@
 
 ## Git setup helper
 
-Every workbench image includes the `setup-git-workbench` helper under `/usr/local/bin`. Run it once inside a container to
-configure your preferred Git identity and editor:
+Every workbench image includes the `setup-git-workbench` helper under `/usr/local/bin` and preinstalls `vim`. Run the helper
+once inside a container to configure your preferred Git identity and editor:
 
 ```bash
-setup-git-workbench --name "Ada Lovelace" --email ada@example.com --editor "code --wait"
+setup-git-workbench --name "Ada Lovelace" --email ada@example.com
 ```
 
-Omit any flags to be prompted interactively for missing values.
+Omit any flags to be prompted interactively for missing values. The script defaults to `vim` when no editor is supplied,
+matching the editor bundled with each image.
 
 The canonical script source lives at `shared/setup-git-workbench.sh` and is copied into each workbench image during the build.
 
