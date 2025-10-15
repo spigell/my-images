@@ -25,9 +25,9 @@ so the Dockerfile can copy the shared helper script:
 
 ```bash
 docker buildx build \
-  --build-context setup-git-helper=./shared \
+  --build-context shared=./shared \
   -f google-gemini-docker/Dockerfile \
   google-gemini-docker
 ```
 
-Use the same `--build-context setup-git-helper=./shared` flag for the other workbench Dockerfiles.
+Use the same `--build-context shared=./shared` flag for the other workbench Dockerfiles.

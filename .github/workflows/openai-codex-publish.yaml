@@ -33,4 +33,4 @@ jobs:
       build-args: |
         CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
       build-contexts: |
-        setup-git-helper=./shared
+        shared=./shared

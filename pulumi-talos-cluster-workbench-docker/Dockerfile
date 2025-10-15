@@ -59,8 +59,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
 # QoL (optional)
 RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc || true
 
-# Provided by --build-context setup-git-helper=path/to/repo-root/shared
-COPY --from=setup-git-helper --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+# Provided by --build-context shared=path/to/repo-root/shared
+COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["k9s version --short || true && talosctl version --short || true && pulumi version || true"]
