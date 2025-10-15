@@ -85,7 +85,7 @@ RUN dpkg -i /tmp/golangci-lint.deb || apt-get -y -f install && rm /tmp/golangci-
 # QoL
 RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
 
-# Provided by --build-context setup-git-helper=path/to/repo-root
+# Provided by --build-context setup-git-helper=path/to/repo-root/shared
 COPY --from=setup-git-helper --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
 
 ENTRYPOINT ["/bin/bash","-lc"]

@@ -28,6 +28,8 @@ jobs:
         DELVE_VERSION=1.24.2
         GOLANGCI_LINT_VERSION=2.1.6
         KUBECTL_VERSION=1.34.0
+      build-contexts: |
+        setup-git-helper=./shared
 
   build-pulumi-talos-cluster-workbench:
     needs: build-pulumi-workbench
@@ -41,3 +43,5 @@ jobs:
         PULUMI_WORKBENCH_TAG=${{ needs.build-pulumi-workbench.outputs.sha-tag }}
         K9S_VERSION=0.50.9
         TALOSCTL_VERSION=1.11.0
+      build-contexts: |
+        setup-git-helper=./shared
