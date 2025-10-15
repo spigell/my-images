@@ -77,6 +77,7 @@ RUN set -eux; \
         unixodbc-dev=2.3.* \
         unzip=6.0-* \
         uuid-dev=2.39.* \
+        vim=2:9.* \
         wget=1.21.* \
         xz-utils=5.6.* \
         zip=3.0-* \

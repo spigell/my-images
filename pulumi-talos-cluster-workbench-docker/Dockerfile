@@ -51,7 +51,7 @@ COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 # Install runtime deps, install k9s, cleanup
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl dpkg \
+      ca-certificates curl dpkg vim \
  && dpkg -i /tmp/k9s.deb || apt-get -y -f install \
  && rm -f /tmp/k9s.deb \
  && rm -rf /var/lib/apt/lists/*

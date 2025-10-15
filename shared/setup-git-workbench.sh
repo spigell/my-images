@@ -49,7 +49,7 @@ if [[ -z "$email" ]]; then
 fi
 
 if [[ -z "$editor" ]]; then
-  default_editor="${VISUAL:-${EDITOR:-code --wait}}"
+  default_editor="${VISUAL:-${EDITOR:-vim}}"
   read -rp "Preferred editor for git commit messages [$default_editor]: " editor
   editor="${editor:-$default_editor}"
 fi
