@@ -32,3 +32,5 @@ jobs:
       version: ${{ needs.build-gemini-basic.outputs.version }}
       build-args: |
         GEMINI_BASIC_TAG=${{ needs.build-gemini-basic.outputs.sha-tag }}
+      build-contexts: |
+        shared=./shared

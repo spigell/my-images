@@ -85,5 +85,8 @@ RUN dpkg -i /tmp/golangci-lint.deb || apt-get -y -f install && rm /tmp/golangci-
 # QoL
 RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
 
+# Provided by --build-context shared=path/to/repo-root/shared
+COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["pulumi version && pulumictl version && golangci-lint version && dlv version && kubectl version --client=true --output=yaml || true"]
