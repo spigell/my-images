@@ -3,7 +3,7 @@
 FROM debian:12-slim
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
-ARG GEMINI_CLI_VERSION=0.8.1
+ARG GEMINI_CLI_VERSION=0.9.0
 ARG NODE_VERSION=24
 ARG PYTHON_VERSION=3.12
 
@@ -74,6 +74,7 @@ RUN set -eux; \
     yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}
 
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
+COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
 
 ENTRYPOINT []
 CMD ["bash"]
