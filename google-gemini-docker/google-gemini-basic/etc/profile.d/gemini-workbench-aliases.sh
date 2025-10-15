@@ -8,13 +8,13 @@ case "$-" in
 esac
 
 # Always-approve helper for fast prototyping sessions.
-alias gemin='gemini --yolo'
+alias gemin='gemini --approval-mode auto_edit -d'
 
 # Approve edit operations automatically while still prompting for other tools.
-alias gemin_edit='gemini --approval-mode auto_edit'
+alias gemin_edit='gemini --approval-mode auto_edit -d'
 
 # Emit machine-readable output for scripting scenarios.
-alias gemin_json='gemini --output-format json'
+alias gemin_json='gemini --output-format json -d'
 
 # Quickly enable the sandbox with permissive defaults.
-alias gemin_sandbox='gemini --sandbox'
+alias gemin_sandbox='gemini --sandbox -d'
