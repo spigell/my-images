@@ -15,5 +15,5 @@ RUN set -eux; \
   rm /tmp/go.tgz; \
   /usr/local/go/bin/go version
 
-COPY setup-git-workbench.sh /usr/local/bin/setup-git-workbench
-RUN chmod +x /usr/local/bin/setup-git-workbench
+# Provided by --build-context setup-git-helper=path/to/repo-root
+COPY --from=setup-git-helper --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench

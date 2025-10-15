@@ -4,6 +4,7 @@
   `.github/workflows/openai-codex-publish.yaml` workflow are kept in sync.
 - Document any version bumps or related workflow updates in the PR summary.
 - Keep `setup-git-workbench.sh` in sync across all workbench Dockerfiles that copy it into the image and update the usage docs when the script changes.
+- Workbench Dockerfiles expect the helper script to be supplied through the `setup-git-helper` build context when building with buildx.
 
 | Area | Go usage details | Python usage details | Node.js usage details |
 | --- | --- | --- | --- |
