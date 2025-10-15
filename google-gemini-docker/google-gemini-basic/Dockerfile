@@ -3,7 +3,7 @@
 FROM debian:12-slim
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 
-ARG GEMINI_CLI_VERSION=0.8.1
+ARG GEMINI_CLI_VERSION=0.9.0
 ARG NODE_VERSION=24
 ARG PYTHON_VERSION=3.12
 

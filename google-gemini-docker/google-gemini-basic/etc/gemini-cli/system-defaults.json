@@ -10,7 +10,8 @@
   "ui": {
     "theme": "Dracula",
     "hideBanner": true,
-    "hideTips": false
+    "hideTips": false,
+    "showMemoryUsage": true
   },
   "tools": {
     "sandbox": false,

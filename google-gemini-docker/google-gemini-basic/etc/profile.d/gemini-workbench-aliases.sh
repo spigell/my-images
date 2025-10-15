@@ -8,7 +8,7 @@ case "$-" in
 esac
 
 # Always-approve helper for fast prototyping sessions.
-alias gemin='gemini --approval-mode auto_edit -d'
+alias gemin='gemini --approval-mode yolo -d'
 
 # Approve edit operations automatically while still prompting for other tools.
 alias gemin_edit='gemini --approval-mode auto_edit -d'
