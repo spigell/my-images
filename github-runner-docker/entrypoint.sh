@@ -76,7 +76,7 @@ cleanup() {
   fi
 }
 
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
 
 mkdir -p "${RUNNER_WORKDIR}"
 
@@ -113,4 +113,14 @@ fi
 
 ./config.sh "${config_args[@]}"
 
-exec ./run.sh
+# start runner as a child and remember its PID
+./run.sh &
+child_pid=$!
+
+# forward signals to the child so it can shut down cleanly. Is it safe?
+trap 'kill -TERM "$child_pid" 2>/dev/null || true' TERM
+
+# will wait for now
+wait "$child_pid"
+trap 'kill -INT  "$child_pid" 2>/dev/null || true' INT
+
