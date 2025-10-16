@@ -44,5 +44,7 @@ jobs:
       context: ./github-runner-docker
       version: ${{ needs.build-codex.outputs.version }}
       build-args: |
+        RUNNER_VERSION=2.329.0
+        BASE_IMAGE_NAME=codex-workbench
         BASE_IMAGE_TAG=${{ needs.build-codex.outputs.sha-tag }}@${{ needs.build-codex.outputs.digest }}
 

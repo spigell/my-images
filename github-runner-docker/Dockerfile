@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1.4
 
+ARG BASE_IMAGE_NAME=change_me
 ARG BASE_IMAGE_TAG=change_me
 ARG RUNNER_VERSION=2.328.0
 
-FROM ghcr.io/spigell/${BASE_IMAGE_TAG}
+FROM ghcr.io/spigell/${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
 
 ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_USER=runner \
