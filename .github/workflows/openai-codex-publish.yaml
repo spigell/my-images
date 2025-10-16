@@ -34,3 +34,15 @@ jobs:
         CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
       build-contexts: |
         shared=./shared
+
+  build-github-runner:
+    needs: build-codex
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: codex-github-runner
+      context: ./github-runner-docker
+      version: ${{ needs.build-codex.outputs.version }}
+      build-args: |
+        BASE_IMAGE_TAG=${{ needs.build-codex.outputs.sha-tag }}@${{ needs.build-codex.outputs.digest }}
+
