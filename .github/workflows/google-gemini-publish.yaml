@@ -47,5 +47,5 @@ jobs:
       build-args: |
         RUNNER_VERSION=2.329.0
         BASE_IMAGE_NAME=google-gemini-workbench
-        BASE_IMAGE_TAG=${{ needs.build-codex.outputs.sha-tag }}@${{ needs.build-codex.outputs.digest }}
+        BASE_IMAGE_TAG=${{ needs.build-gemini-workbench.outputs.sha-tag }}@${{ needs.build-gemini-workbench.outputs.digest }}
 
