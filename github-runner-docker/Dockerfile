@@ -2,8 +2,6 @@
 
 ARG BASE_IMAGE_NAME=change_me
 ARG BASE_IMAGE_TAG=change_me
-ARG RUNNER_VERSION=2.328.0
-
 FROM ghcr.io/spigell/${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -41,6 +39,7 @@ RUN groupadd --gid 1001 "${RUNNER_USER}" \
 
 WORKDIR ${ACTIONS_RUNNER_DIR}
 
+ARG RUNNER_VERSION=2.328.0
 RUN curl -fsSL "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" -o runner.tar.gz \
     && tar --extract --file runner.tar.gz \
     && rm runner.tar.gz \
