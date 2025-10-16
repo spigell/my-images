@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'openai-codex-docker/**'
+      - 'github-runner-docker/**'
       - '.github/workflows/openai-codex-publish.yaml'
   workflow_call:
 
@@ -42,7 +43,7 @@ jobs:
     with:
       image-name: codex-github-runner
       context: ./github-runner-docker
-      version: ${{ needs.build-codex.outputs.version }}
+      version: 2.329.0
       build-args: |
         RUNNER_VERSION=2.329.0
         BASE_IMAGE_NAME=codex-workbench

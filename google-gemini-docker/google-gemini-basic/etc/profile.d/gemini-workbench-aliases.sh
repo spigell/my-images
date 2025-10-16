@@ -9,6 +9,9 @@ esac
 
 # Always-approve helper for fast prototyping sessions.
 alias gemin='gemini --approval-mode yolo -d'
+#
+# Always-approve helper for fast prototyping sessions.
+alias gemin-flash='gemini --approval-mode yolo -d -m gemini-2.5-flash'
 
 # Approve edit operations automatically while still prompting for other tools.
 alias gemin_edit='gemini --approval-mode auto_edit -d'
