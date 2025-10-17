@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'openai-codex-docker/**'
+      - 'github-runner-docker/**'
       - '.github/workflows/openai-codex-publish.yaml'
   workflow_call:
 
@@ -34,3 +35,17 @@ jobs:
         CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
       build-contexts: |
         shared=./shared
+
+  build-github-runner:
+    needs: build-codex
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: codex-github-runner
+      context: ./github-runner-docker
+      version: 2.329.0
+      build-args: |
+        RUNNER_VERSION=2.329.0
+        BASE_IMAGE_NAME=codex-workbench
+        BASE_IMAGE_TAG=${{ needs.build-codex.outputs.sha-tag }}@${{ needs.build-codex.outputs.digest }}
+
