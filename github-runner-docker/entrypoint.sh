@@ -123,4 +123,5 @@ trap 'kill -TERM "$child_pid" 2>/dev/null || true' TERM
 # will wait for now
 wait "$child_pid"
 trap 'kill -INT  "$child_pid" 2>/dev/null || true' INT
+exit $?
 
