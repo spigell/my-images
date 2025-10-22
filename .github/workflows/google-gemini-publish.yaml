@@ -19,9 +19,9 @@ jobs:
     with:
       image-name: google-gemini-basic
       context: ./google-gemini-docker/google-gemini-basic
-      version: 0.9.0
+      version: 0.10.0-preview.4
       build-args: |
-        GEMINI_CLI_VERSION=0.9.0
+        GEMINI_CLI_VERSION=0.10.0-preview.4
 
   build-gemini-workbench:
     needs: build-gemini-basic
