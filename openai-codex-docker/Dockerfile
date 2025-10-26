@@ -128,8 +128,6 @@ RUN set -eux; \
 ### CODEX
 
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
-ENV CODEX_HOME=/workspace/codex
-WORKDIR $CODEX_HOME
 
 # Create directory (for clarity) and copy binary
 RUN mkdir -p $CODEX_HOME
