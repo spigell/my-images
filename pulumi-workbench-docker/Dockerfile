@@ -3,11 +3,12 @@
 ############################
 # Global, configurable args
 ############################
-ARG PULUMI_TAG=3.192.0
+ARG PULUMI_TAG=3.199.0
 ARG PULUMICTL_VERSION=0.0.46
 ARG DELVE_VERSION=1.24.2
 ARG GOLANGCI_LINT_VERSION=2.1.6
 ARG KUBECTL_VERSION=1.34.0
+ARG NODE_VERSION=22
 
 # Docker/buildx usually set these; provide safe defaults
 ARG TARGETOS=linux
@@ -63,11 +64,26 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG KUBECTL_VERSION
 ARG TARGETOS
 ARG TARGETARCH
+ARG NODE_VERSION
 
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
       vim curl tar sudo bash-completion make iproute2 rsync \
     && rm -rf /var/lib/apt/lists/*
+
+ENV FNM_DIR=/usr/local/share/fnm
+ENV PATH=/usr/local/share/fnm/aliases/default/bin:${PATH}
+
+RUN set -euxo pipefail; \
+    curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "${FNM_DIR}" --skip-shell; \
+    ln -sf "${FNM_DIR}/fnm" /usr/local/bin/fnm; \
+    fnm install "${NODE_VERSION}"; \
+    fnm alias "${NODE_VERSION}" default; \
+    npm install -g yarn@1; \
+    yarn config set prefix /usr/local; \
+    yarn global add @pulumi/mcp-server; \
+    npm cache clean --force || true; \
+    yarn cache clean || true
 
 # kubectl (prebuilt, pinned)
 RUN curl -fsSL -o /usr/local/bin/kubectl \
