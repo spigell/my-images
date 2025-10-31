@@ -79,7 +79,6 @@ RUN set -euxo pipefail; \
     ln -sf "${FNM_DIR}/fnm" /usr/local/bin/fnm; \
     fnm install "${NODE_VERSION}"; \
     fnm alias "${NODE_VERSION}" default; \
-    npm install -g yarn@1; \
     yarn config set prefix /usr/local; \
     yarn global add @pulumi/mcp-server; \
     npm cache clean --force || true; \
