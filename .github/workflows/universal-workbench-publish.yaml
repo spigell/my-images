@@ -5,7 +5,7 @@ on:
     paths:
       - 'universal-workbench-docker/**'
       - '.github/workflows/universal-workbench-publish.yaml'
-  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: write
