@@ -95,6 +95,15 @@ RUN arch="${TARGETARCH:-amd64}"; \
     rm /tmp/golangci-lint.deb; \
     rm -rf /var/lib/apt/lists/*
 
+# Common runtime utilities required by downstream workbenches
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+      bash-completion tar iproute2 \
+    && rm -rf /var/lib/apt/lists/*
+
+# QoL defaults shared by all workbenches
+RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
+
 # Install Go toolchain
 RUN arch="${TARGETARCH:-amd64}"; \
     curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \

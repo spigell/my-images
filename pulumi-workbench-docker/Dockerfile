@@ -50,18 +50,14 @@ RUN curl -fsSL -o pulumictl.tar.gz \
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+USER root
+
 ARG TARGETOS
 ARG TARGETARCH
 ARG KUBECTL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 ARG PULUMI_VERSION
 ARG PULUMI_MCP_VERSION
-
-# Ensure runtime utilities specific to Pulumi workflow
-RUN --mount=type=cache,target=/var/cache/apt \
-    apt-get update && apt-get install -y --no-install-recommends \
-      bash-completion tar iproute2 \
-    && rm -rf /var/lib/apt/lists/*
 
 # Install Pulumi CLI
 RUN install -d -m 0755 /usr/local/pulumi
@@ -88,17 +84,14 @@ RUN yarn config set prefix /usr/local \
  && npm cache clean --force || true \
  && yarn cache clean || true
 
+USER ubuntu
+
 LABEL org.opencontainers.image.title="Pulumi Workbench" \
       org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \
       org.opencontainers.image.version="${PULUMI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-workbench-docker" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
       com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}"
-
-# QoL
-RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
-
-USER ubuntu
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["pulumi version && pulumictl version && golangci-lint version && kubectl version --client=true --output=yaml || true"]

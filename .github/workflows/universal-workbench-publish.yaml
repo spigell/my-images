@@ -47,15 +47,9 @@ jobs:
           tmp=$(mktemp)
           jq --arg tag "$SHORT_SHA" '.universal_workbench_tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
           mv "$tmp" universal-workbench-docker/base-version.json
-      - name: Commit manifest bump
+      - name: Commit manifest update
         if: github.event_name == 'push'
-        run: |
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git add universal-workbench-docker/base-version.json
-          if git diff --cached --quiet; then
-            echo "Manifest already up to date; skipping commit"
-            exit 0
-          fi
-          git commit -m "chore: update universal workbench tag to ${{ needs.compute-version.outputs.short_sha }}"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(versions): update universal workbench tag to ${{ needs.compute-version.outputs.short_sha }}"
+          file_pattern: universal-workbench-docker/base-version.json
