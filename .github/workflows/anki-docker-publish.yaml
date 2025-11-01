@@ -5,7 +5,7 @@ on:
     paths:
       - 'anki-desktop-docker/**'
       - '.github/workflows/anki-docker-publish.yaml'
-  workflow_call:
+  workflow_dispatch:
 
 
 jobs:

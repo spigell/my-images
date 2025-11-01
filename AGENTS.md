@@ -1,14 +1,20 @@
 # Repository Guidelines
 
-- When updating the Codex version, ensure that every reference in `openai-codex/` (Dockerfiles, README, docker-compose) and the
-  `.github/workflows/openai-codex-publish.yaml` workflow are kept in sync.
+- Maintain the **universal workbench** (`universal-workbench-docker/`) as the single source for shared runtimes and tooling
+  (Go 1.25.1, delve, golangci-lint, Python 3.12 via pyenv, Node.js 24 via fnm, and common CLI utilities).
+- The universal base already includes the Ubuntu `ubuntu` user. Do **not** add another `useradd ubuntu` step in downstream Dockerfiles.
+- Update `universal-workbench-docker/base-version.json` (usually to the publishing short commit SHA, e.g., `abcdef0`) whenever the universal image changes so
+  dependent workflows pull the fresh tag.
 - Document any version bumps or related workflow updates in the PR summary.
-- Keep `setup-git-workbench.sh` in sync across all workbench Dockerfiles that copy it into the image and update the usage docs when the script changes. The canonical copy lives in `shared/setup-git-workbench.sh` and defaults to `vim` as the configured editor.
-- Ensure every workbench image installs `vim` to match the helper's default editor.
-- Workbench Dockerfiles expect the helper script to be supplied through the `shared` build context, pointing at the repository's `shared/` directory when building with buildx.
+- Keep `shared/setup-git-workbench.sh` in sync and copied into every workbench image that relies on it, and ensure vim is installed to match the script defaults.
+- When building images locally or in CI, continue providing the `shared/` build context so Dockerfiles can access the helper script.
 
-| Area | Go usage details | Python usage details | Node.js usage details |
-| --- | --- | --- | --- |
-| `google-gemini-docker/` | Installs the Go toolchain for the Gemini workbench image. | Preinstalls Python 3.12 with Pyenv and configures Poetry and uv in the Gemini base image. | Provides fnm-managed Node.js along with Corepack, pnpm, yarn, and the Gemini CLI. |
-| `openai-codex/` | Installs the Go toolchain for the Codex workbench image. | Installs Python 3.12 with Pyenv and sets up Poetry, uv, and common Python tooling. | Installs Node.js via fnm and enables Corepack-managed package managers. |
-| `pulumi-workbench-docker/` | Uses the Golang image to compile Delve for the Pulumi workbench. | – | – |
+## Workbench Overview
+
+| Image directory | Base image | Extends with |
+| --- | --- | --- |
+| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling |
+| `openai-codex-docker/` | Universal workbench | Codex binary and Codex-specific tooling |
+| `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases |
+| `pulumi-workbench-docker/` | Universal workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |
+| `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos-related tooling |

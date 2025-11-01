@@ -1,0 +1,20 @@
+name: Read Universal Workbench Tag
+description: |
+  Reads universal-workbench-docker/base-version.json and exposes the universal tag.
+runs:
+  using: 'composite'
+  steps:
+    - name: Read universal tag
+      shell: bash
+      run: |
+        if [[ ! -f universal-workbench-docker/base-version.json ]]; then
+          echo "base-version.json not found" >&2
+          exit 1
+        fi
+        tag=$(python3 -c 'import json;print(json.load(open("universal-workbench-docker/base-version.json"))["universal_workbench_tag"])')
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      id: read
+outputs:
+  tag:
+    description: 'The universal workbench tag to use'
+    value: ${{ steps.read.outputs.tag }}

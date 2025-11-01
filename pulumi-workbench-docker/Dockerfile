@@ -3,38 +3,24 @@
 ############################
 # Global, configurable args
 ############################
-ARG PULUMI_TAG=3.192.0
+ARG PULUMI_VERSION=3.200.0
 ARG PULUMICTL_VERSION=0.0.46
-ARG DELVE_VERSION=1.24.2
-ARG GOLANGCI_LINT_VERSION=2.1.6
 ARG KUBECTL_VERSION=1.34.0
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG PULUMI_MCP_VERSION=0.2.0
 
 # Docker/buildx usually set these; provide safe defaults
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
 ############################
-# Stage 1: build dlv
-############################
-FROM golang:1.25.1-bookworm AS dlv-builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-
-ARG DELVE_VERSION
-
-ENV GOBIN=/out PATH=/go/bin:/usr/local/go/bin:$PATH
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    go install github.com/go-delve/delve/cmd/dlv@v${DELVE_VERSION}
-
-############################
-# Stage 2: fetch artifacts
+# Stage 1: fetch artifacts
 ############################
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-# ✨ Re-declare ARGs used in this stage
+ARG PULUMI_VERSION
 ARG PULUMICTL_VERSION
-ARG GOLANGCI_LINT_VERSION
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -44,49 +30,71 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /tmp/fetch
 
+# pulumi CLI (tar.gz)
+RUN pulumi_arch="${TARGETARCH}"; \
+    if [ "${TARGETARCH}" = "amd64" ]; then pulumi_arch="x64"; fi; \
+    curl -fsSL -o pulumi.tar.gz \
+      "https://get.pulumi.com/releases/sdk/pulumi-v${PULUMI_VERSION}-linux-${pulumi_arch}.tar.gz" \
+ && tar -xzf pulumi.tar.gz \
+ && rm pulumi.tar.gz
+
 # pulumictl (tar.gz)
 RUN curl -fsSL -o pulumictl.tar.gz \
-      "https://github.com/pulumi/pulumictl/releases/download/v${PULUMICTL_VERSION}/pulumictl-v${PULUMICTL_VERSION}-${TARGETOS}-amd64.tar.gz" \
- && tar -xzf pulumictl.tar.gz
-
-# golangci-lint (.deb) — kept as in your original flow
-RUN curl -fsSL -o golangci-lint.deb \
-      "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64.deb"
+      "https://github.com/pulumi/pulumictl/releases/download/v${PULUMICTL_VERSION}/pulumictl-v${PULUMICTL_VERSION}-${TARGETOS}-${TARGETARCH}.tar.gz" \
+ && tar -xzf pulumictl.tar.gz \
+ && rm pulumictl.tar.gz \
+ && find . -maxdepth 1 -type d -name "pulumictl-*" -exec mv {}/pulumictl /tmp/fetch/pulumictl \; \
+ && find . -maxdepth 1 -type d -name "pulumictl-*" -exec rm -rf {} \;
 
 ############################
-# Stage 3: final image
+# Stage 2: final image
 ############################
-FROM pulumi/pulumi:${PULUMI_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-# ✨ Re-declare ARGs used in this stage
-ARG KUBECTL_VERSION
+USER root
+
 ARG TARGETOS
 ARG TARGETARCH
+ARG KUBECTL_VERSION
+ARG UNIVERSAL_WORKBENCH_TAG
+ARG PULUMI_VERSION
+ARG PULUMI_MCP_VERSION
 
-RUN --mount=type=cache,target=/var/cache/apt \
-    apt-get update && apt-get install -y --no-install-recommends \
-      vim curl tar sudo bash-completion make iproute2 rsync \
-    && rm -rf /var/lib/apt/lists/*
+# Install Pulumi CLI
+RUN install -d -m 0755 /usr/local/pulumi
+COPY --from=fetch /tmp/fetch/pulumi/ /usr/local/pulumi/
+RUN shopt -s nullglob; \
+    for bin in /usr/local/pulumi/pulumi /usr/local/pulumi/bin/*; do \
+      name="$(basename "$bin")"; \
+      ln -sf "$bin" "/usr/local/bin/$name"; \
+    done; \
+    shopt -u nullglob
 
-# kubectl (prebuilt, pinned)
+# pulumictl from fetcher
+COPY --from=fetch /tmp/fetch/pulumictl /usr/local/bin/pulumictl
+RUN chmod +x /usr/local/bin/pulumictl
+
+# Install kubectl (prebuilt, pinned)
 RUN curl -fsSL -o /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
  && chmod +x /usr/local/bin/kubectl
 
-# dlv from builder
-COPY --from=dlv-builder /out/dlv /usr/local/bin/dlv
+# Install @pulumi/mcp-server globally
+RUN yarn config set prefix /usr/local \
+ && yarn global add @pulumi/mcp-server@${PULUMI_MCP_VERSION} \
+ && npm cache clean --force || true \
+ && yarn cache clean || true
 
-# pulumictl + golangci-lint from fetcher
-COPY --from=fetch /tmp/fetch/pulumictl /usr/local/bin/pulumictl
-COPY --from=fetch /tmp/fetch/golangci-lint.deb /tmp/golangci-lint.deb
-RUN dpkg -i /tmp/golangci-lint.deb || apt-get -y -f install && rm /tmp/golangci-lint.deb
+USER ubuntu
 
-# QoL
-RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
-
-# Provided by --build-context shared=path/to/repo-root/shared
-COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+LABEL org.opencontainers.image.title="Pulumi Workbench" \
+      org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \
+      org.opencontainers.image.version="${PULUMI_VERSION}" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-workbench-docker" \
+      com.spigell.workbench.base-image="universal-workbench" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["pulumi version && pulumictl version && golangci-lint version && dlv version && kubectl version --client=true --output=yaml || true"]
+CMD ["pulumi version && pulumictl version && golangci-lint version && kubectl version --client=true --output=yaml || true"]
