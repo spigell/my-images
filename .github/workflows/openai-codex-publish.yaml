@@ -7,7 +7,7 @@ on:
       - 'github-runner-docker/**'
       - '.github/workflows/openai-codex-publish.yaml'
       - 'universal-workbench-docker/base-version.json'
-  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

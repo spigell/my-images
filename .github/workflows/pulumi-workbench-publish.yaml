@@ -7,7 +7,7 @@ on:
       - 'pulumi-talos-cluster-workbench-docker/**'
       - '.github/workflows/pulumi-workbench-publish.yaml'
       - 'universal-workbench-docker/base-version.json'
-  workflow_call:
+  workflow_dispatch:
 
 
 permissions:
