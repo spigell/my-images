@@ -159,14 +159,15 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       org.opencontainers.image.authors="spigell (spigelly@gmail.com)" \
       org.opencontainers.image.vendor="individual" \
       org.opencontainers.image.source="https://github.com/spigell/my-images" \
-      com.spigell.universal.python.version="${PYTHON_VERSION}" \
-      com.spigell.universal.python.manager="pyenv" \
-      com.spigell.universal.node.version="${NODE_VERSION}" \
-      com.spigell.universal.node.manager="fnm" \
-      com.spigell.universal.go.version="${GOLANG_VERSION}" \
-      com.spigell.universal.go.delve-version="${DELVE_VERSION}" \
-      com.spigell.universal.golangci-lint.version="${GOLANGCI_LINT_VERSION}" \
-      com.spigell.universal.package-manager="apt"
+      com.spigell.workbench.base-image="universal-workbench" \
+      com.spigell.workbench.python.version="${PYTHON_VERSION}" \
+      com.spigell.workbench.python.manager="pyenv" \
+      com.spigell.workbench.node.version="${NODE_VERSION}" \
+      com.spigell.workbench.node.manager="fnm" \
+      com.spigell.workbench.go.version="${GOLANG_VERSION}" \
+      com.spigell.workbench.go.delve-version="${DELVE_VERSION}" \
+      com.spigell.workbench.golangci-lint.version="${GOLANGCI_LINT_VERSION}" \
+      com.spigell.workbench.package-manager="apt"
 
 ENTRYPOINT ["/bin/bash", "-lc"]
 CMD ["python --version && node --version && go version && dlv version && yarn --version || true"]

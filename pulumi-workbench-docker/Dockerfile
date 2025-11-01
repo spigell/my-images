@@ -90,8 +90,9 @@ LABEL org.opencontainers.image.title="Pulumi Workbench" \
       org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \
       org.opencontainers.image.version="${PULUMI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-workbench-docker" \
+      com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
-      com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}"
+      com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}" \
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["pulumi version && pulumictl version && golangci-lint version && kubectl version --client=true --output=yaml || true"]
