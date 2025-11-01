@@ -66,7 +66,7 @@ LABEL org.opencontainers.image.title="Pulumi Talos Cluster Workbench" \
       com.spigell.workbench.base-image="pulumi-workbench" \
       com.spigell.workbench.base-image-tag="${PULUMI_WORKBENCH_TAG}" \
       com.spigell.workbench.k9s.version="${K9S_VERSION}" \
-      com.spigell.workbench.talosctl.version="${TALOSCTL_VERSION}" \
+      com.spigell.workbench.talosctl.version="${TALOSCTL_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["k9s version --short || true && talosctl version --short || true && pulumi version || true"]
