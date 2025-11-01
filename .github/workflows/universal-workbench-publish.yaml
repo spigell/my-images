@@ -32,3 +32,30 @@ jobs:
         shared=./shared
       build-args: |
         UNIVERSAL_WORKBENCH_VERSION=${{ needs.compute-version.outputs.short_sha }}
+
+  update-manifest:
+    needs:
+      - compute-version
+      - build-universal-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write manifest tag
+        env:
+          SHORT_SHA: ${{ needs.compute-version.outputs.short_sha }}
+        run: |
+          tmp=$(mktemp)
+          jq --arg tag "$SHORT_SHA" '.universal_workbench_tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
+          mv "$tmp" universal-workbench-docker/base-version.json
+      - name: Commit manifest bump
+        if: github.event_name == 'push'
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add universal-workbench-docker/base-version.json
+          if git diff --cached --quiet; then
+            echo "Manifest already up to date; skipping commit"
+            exit 0
+          fi
+          git commit -m "chore: update universal workbench tag to ${{ needs.compute-version.outputs.short_sha }}"
+          git push

@@ -7,6 +7,7 @@ ARG PULUMI_VERSION=3.200.0
 ARG PULUMICTL_VERSION=0.0.46
 ARG KUBECTL_VERSION=1.34.0
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG PULUMI_MCP_VERSION=0.2.0
 
 # Docker/buildx usually set these; provide safe defaults
 ARG TARGETOS=linux
@@ -54,6 +55,7 @@ ARG TARGETARCH
 ARG KUBECTL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 ARG PULUMI_VERSION
+ARG PULUMI_MCP_VERSION
 
 # Ensure runtime utilities specific to Pulumi workflow
 RUN --mount=type=cache,target=/var/cache/apt \
@@ -82,9 +84,16 @@ RUN curl -fsSL -o /usr/local/bin/kubectl \
 
 # Install @pulumi/mcp-server globally
 RUN yarn config set prefix /usr/local \
- && yarn global add @pulumi/mcp-server \
+ && yarn global add @pulumi/mcp-server@${PULUMI_MCP_VERSION} \
  && npm cache clean --force || true \
  && yarn cache clean || true
+
+LABEL org.opencontainers.image.title="Pulumi Workbench" \
+      org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \
+      org.opencontainers.image.version="${PULUMI_VERSION}" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-workbench-docker" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}"
 
 # QoL
 RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc

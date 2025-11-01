@@ -144,11 +144,11 @@ COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git
 
 USER ubuntu
 
-LABEL org.opencontainers.image.title="Universal Workbench Base" \
+LABEL org.opencontainers.image.title="Universal Workbench" \
       org.opencontainers.image.description="Common Ubuntu 24.04 workbench runtime with Go, Python, Node.js, delve, yarn, and shared tooling for Codex and Gemini" \
       org.opencontainers.image.version="${UNIVERSAL_WORKBENCH_VERSION}" \
-      org.opencontainers.image.authors="Workbench Team" \
-      org.opencontainers.image.vendor="Workbench" \
+      org.opencontainers.image.authors="spigell (spigelly@gmail.com)" \
+      org.opencontainers.image.vendor="individual" \
       org.opencontainers.image.source="https://github.com/spigell/my-images" \
       com.spigell.universal.python.version="${PYTHON_VERSION}" \
       com.spigell.universal.python.manager="pyenv" \
