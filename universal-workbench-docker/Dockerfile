@@ -17,8 +17,6 @@ ENV GOPATH=/home/ubuntu/go
 ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN useradd --create-home --shell /bin/bash ubuntu
-
 # Install apt dependencies shared by Codex and Gemini plus requested GNU utilities
 RUN apt-get update && apt-get install -y --no-install-recommends \
         binutils=2.42-* \
