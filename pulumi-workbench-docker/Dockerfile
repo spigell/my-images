@@ -31,8 +31,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /tmp/fetch
 
 # pulumi CLI (tar.gz)
-RUN curl -fsSL -o pulumi.tar.gz \
-      "https://get.pulumi.com/releases/sdk/pulumi-v${PULUMI_VERSION}-linux-${TARGETARCH}.tar.gz" \
+RUN pulumi_arch="${TARGETARCH}"; \
+    if [ "${TARGETARCH}" = "amd64" ]; then pulumi_arch="x64"; fi; \
+    curl -fsSL -o pulumi.tar.gz \
+      "https://get.pulumi.com/releases/sdk/pulumi-v${PULUMI_VERSION}-linux-${pulumi_arch}.tar.gz" \
  && tar -xzf pulumi.tar.gz \
  && rm pulumi.tar.gz
 
