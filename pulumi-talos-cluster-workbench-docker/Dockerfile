@@ -44,20 +44,20 @@ FROM ghcr.io/spigell/pulumi-workbench:${PULUMI_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
+USER root
+
 # Copy artifacts from fetcher
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 
 # Install runtime deps, install k9s, cleanup
 RUN --mount=type=cache,target=/var/cache/apt \
-    apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl dpkg vim \
- && dpkg -i /tmp/k9s.deb || apt-get -y -f install \
+    apt-get update \
+ && (dpkg -i /tmp/k9s.deb || (apt-get -y -f install && dpkg -i /tmp/k9s.deb)) \
  && rm -f /tmp/k9s.deb \
  && rm -rf /var/lib/apt/lists/*
 
-# Provided by --build-context shared=path/to/repo-root/shared
-COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+USER ubuntu
 
 LABEL org.opencontainers.image.title="Pulumi Talos Cluster Workbench" \
       org.opencontainers.image.description="Pulumi Talos environment built on the universal workbench stack with Talosctl and K9s tooling" \

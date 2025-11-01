@@ -19,6 +19,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install apt dependencies shared by Codex and Gemini plus requested GNU utilities
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
         binutils=2.42-* \
         sudo=1.9.* \
         build-essential=12.10* \
@@ -67,6 +68,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         protobuf-compiler=3.21.* \
         ripgrep=14.1.* \
         rsync=3.2.* \
+        dpkg \
         software-properties-common=0.99.* \
         sqlite3=3.45.* \
         swig3.0=3.0.* \
