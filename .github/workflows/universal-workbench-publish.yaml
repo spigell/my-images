@@ -1,0 +1,25 @@
+name: Build and Publish Universal Workbench
+
+on:
+  push:
+    paths:
+      - 'universal-workbench-docker/**'
+      - '.github/workflows/universal-workbench-publish.yaml'
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-universal-workbench:
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: universal-workbench
+      context: ./universal-workbench-docker
+      version: ${{ github.sha }}
+      build-contexts: |
+        shared=./shared
+      build-args: |
+        UNIVERSAL_WORKBENCH_VERSION=${{ github.sha }}

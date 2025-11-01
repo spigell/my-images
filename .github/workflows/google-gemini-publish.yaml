@@ -6,6 +6,7 @@ on:
       - 'google-gemini-docker/**'
       - 'github-runner-docker/**'
       - '.github/workflows/google-gemini-publish.yaml'
+      - 'universal-workbench-docker/base-version.json'
   workflow_call:
 
 permissions:
@@ -13,6 +14,15 @@ permissions:
   packages: write
 
 jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+
   build-gemini-basic:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
@@ -24,7 +34,9 @@ jobs:
         GEMINI_CLI_VERSION=0.10.0
 
   build-gemini-workbench:
-    needs: build-gemini-basic
+    needs:
+      - resolve-universal-tag
+      - build-gemini-basic
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
@@ -48,4 +60,3 @@ jobs:
         RUNNER_VERSION=2.329.0
         BASE_IMAGE_NAME=google-gemini-workbench
         BASE_IMAGE_TAG=${{ needs.build-gemini-workbench.outputs.sha-tag }}@${{ needs.build-gemini-workbench.outputs.digest }}
-
