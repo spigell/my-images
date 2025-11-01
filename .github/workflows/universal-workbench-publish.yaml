@@ -12,14 +12,23 @@ permissions:
   packages: write
 
 jobs:
+  compute-version:
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.shorten.outputs.short_sha }}
+    steps:
+      - id: shorten
+        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
   build-universal-workbench:
+    needs: compute-version
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
       image-name: universal-workbench
       context: ./universal-workbench-docker
-      version: ${{ github.sha }}
+      version: ${{ needs.compute-version.outputs.short_sha }}
       build-contexts: |
         shared=./shared
       build-args: |
-        UNIVERSAL_WORKBENCH_VERSION=${{ github.sha }}
+        UNIVERSAL_WORKBENCH_VERSION=${{ needs.compute-version.outputs.short_sha }}
