@@ -12,44 +12,32 @@ permissions:
   packages: write
 
 jobs:
-  compute-version:
-    runs-on: ubuntu-latest
-    outputs:
-      short_sha: ${{ steps.shorten.outputs.short_sha }}
-    steps:
-      - id: shorten
-        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-
   build-universal-workbench:
-    needs: compute-version
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
       image-name: universal-workbench
       context: ./universal-workbench-docker
-      version: ${{ needs.compute-version.outputs.short_sha }}
+      version: '1.0.0'
+      build-args: |
+        UNIVERSAL_WORKBENCH_VERSION=1.0.0
       build-contexts: |
         shared=./shared
-      build-args: |
-        UNIVERSAL_WORKBENCH_VERSION=${{ needs.compute-version.outputs.short_sha }}
 
   update-manifest:
     needs:
-      - compute-version
       - build-universal-workbench
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Write manifest tag
-        env:
-          SHORT_SHA: ${{ needs.compute-version.outputs.short_sha }}
         run: |
           tmp=$(mktemp)
-          jq --arg tag "$SHORT_SHA" '.universal_workbench_tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
+          jq --arg tag "${{ needs.build-universal-workbench.outputs.sha-tag }}" '.universal_workbench_tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
           mv "$tmp" universal-workbench-docker/base-version.json
       - name: Commit manifest update
         if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(versions): update universal workbench tag to ${{ needs.compute-version.outputs.short_sha }}"
+          commit_message: "chore(versions): update universal workbench tag to ${{ needs.build-universal-workbench.outputs.sha-tag }}"
           file_pattern: universal-workbench-docker/base-version.json
