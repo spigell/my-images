@@ -33,7 +33,7 @@ jobs:
       - name: Write manifest tag
         run: |
           tmp=$(mktemp)
-          jq --arg tag "${{ needs.build-universal-workbench.outputs.sha-tag }}" '.universal_workbench_tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
+          jq --arg tag "${{ needs.build-universal-workbench.outputs.sha-tag }}" '.tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
           mv "$tmp" universal-workbench-docker/base-version.json
       - name: Commit manifest update
         if: github.event_name == 'push'

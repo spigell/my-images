@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -38,15 +38,49 @@ jobs:
       build-contexts: |
         shared=./shared
 
+  update-gemini-manifest:
+    needs:
+      - build-gemini-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update workbench manifest
+        run: |
+          tmp=$(mktemp)
+          jq \
+            --arg tag "${{ needs.build-gemini-workbench.outputs.sha-tag }}" \
+            '.tag = $tag' \
+            google-gemini-docker/workbench-version.json > "$tmp"
+          mv "$tmp" google-gemini-docker/workbench-version.json
+      - name: Commit manifest update
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(versions): update gemini workbench manifest"
+          file_pattern: google-gemini-docker/workbench-version.json
+
   build-github-runner:
-    needs: build-gemini-workbench
-    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
-    with:
-      image-name: google-gemini-github-runner
-      context: ./github-runner-docker
-      version: 2.329.0
-      build-args: |
-        RUNNER_VERSION=2.329.0
-        BASE_IMAGE_NAME=google-gemini-workbench
-        BASE_IMAGE_TAG=${{ needs.build-gemini-workbench.outputs.sha-tag }}@${{ needs.build-gemini-workbench.outputs.digest }}
+    needs:
+      - build-gemini-workbench
+      - update-gemini-manifest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read-manifest
+        with:
+          path: google-gemini-docker/workbench-version.json
+          key: tag
+      - name: Build and publish runner
+        uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+        secrets: inherit
+        with:
+          image-name: google-gemini-github-runner
+          context: ./github-runner-docker
+          version: 2.329.0
+          build-args: |
+            RUNNER_VERSION=2.329.0
+            BASE_IMAGE_NAME=google-gemini-workbench
+            BASE_IMAGE_TAG=${{ steps.read-manifest.outputs.tag }}
+          build-contexts: |
+            shared=./shared

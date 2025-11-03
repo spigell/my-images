@@ -5,9 +5,9 @@
 All workbench images now build from a shared **Universal Workbench** base (`universal-workbench-docker/`). The base provides:
 
 - Ubuntu 24.04 with the stock `ubuntu` user (no extra creation required).
-- Go 1.25.1 plus delve and golangci-lint.
-- Python 3.12 via pyenv with Poetry, uv, and common lint/test tooling.
-- Node.js 24 managed by fnm with Yarn/Corepack enabled.
+- Go toolchain with delve and golangci-lint.
+- Python via pyenv with Poetry, uv, and common lint/test tooling.
+- Node.js managed by fnm with Yarn/Corepack enabled.
 - Shared terminal utilities (`vim`, `file`, `less`, `tree`, `ripgrep`, etc.).
 
 Downstream workbenches (Codex, Gemini, Pulumi, Talos) only add their unique tooling on top. Version coordination happens through
@@ -16,11 +16,13 @@ that consumes the base watches that JSON file for changes.
 
 ## Available images
 
-- **universal-workbench**: Common base image for every workbench.
-- **openai-codex-workbench**: Extends the universal base with Codex tooling and the Codex binary.
-- **google-gemini-workbench**: Extends the base with the Gemini CLI stack.
-- **pulumi-workbench**: Adds Pulumi CLI, pulumictl, kubectl, and `@pulumi/mcp-server` on top of the base.
-- **pulumi-talos-cluster-workbench**: Builds on the Pulumi workbench with additional Talos/K9s tooling.
+- **universal-workbench** (`universal-workbench-docker/`): Common base layer shared across all workbenches.
+- **openai-codex-workbench** (`openai-codex-docker/`): Codex tooling plus the Codex runtime binary.
+- **google-gemini-workbench** (`google-gemini-docker/`): Gemini CLI environment on top of the universal base.
+- **google-gemini-github-runner** (`github-runner-docker/`): GitHub Actions runner image layered on the Gemini workbench.
+- **pulumi-workbench** (`pulumi-workbench-docker/`): Pulumi CLI stack with pulumictl, kubectl, and `@pulumi/mcp-server`.
+- **pulumi-talos-cluster-workbench** (`pulumi-talos-cluster-workbench-docker/`): Pulumi workbench extended with Talosctl and K9s.
+- **anki-desktop-workbench** (`anki-desktop-docker/`): Workbench for the Anki desktop tooling.
 
 ## Git setup helper
 
@@ -50,14 +52,5 @@ docker buildx build \
 
 Use the same `--build-context shared=./shared` flag for the other workbench Dockerfiles.
 
-When building the universal base itself:
-
-```bash
-docker buildx build \
-  --build-context shared=./shared \
-  -f universal-workbench-docker/Dockerfile \
-  universal-workbench-docker
-```
-
-If you update the base image, bump the `universal_workbench_tag` in `universal-workbench-docker/base-version.json` (typically to
-the new short commit SHA, e.g., `abcdef0`) so dependent workflows pick up the new tag automatically.
+If you update the base image, bump the `tag` in `universal-workbench-docker/base-version.json` so dependent
+workflows pick up the new tag automatically.

@@ -1,20 +1,33 @@
-name: Read Universal Workbench Tag
+name: Read Current Image Tag
 description: |
-  Reads universal-workbench-docker/base-version.json and exposes the universal tag.
+  Reads a JSON manifest file and exposes the selected tag value.
+inputs:
+  path:
+    description: Path to the manifest JSON file.
+    required: false
+    default: universal-workbench-docker/base-version.json
+  key:
+    description: JSON key to read from the manifest file.
+    required: false
+    default: tag
+outputs:
+  tag:
+    description: 'The tag value extracted from the manifest.'
+    value: ${{ steps.read.outputs.tag }}
 runs:
   using: 'composite'
   steps:
-    - name: Read universal tag
+    - name: Read tag
+      id: read
       shell: bash
       run: |
-        if [[ ! -f universal-workbench-docker/base-version.json ]]; then
-          echo "base-version.json not found" >&2
+        if [[ ! -f "${{ inputs.path }}" ]]; then
+          echo "manifest not found: ${{ inputs.path }}" >&2
           exit 1
         fi
-        tag=$(python3 -c 'import json;print(json.load(open("universal-workbench-docker/base-version.json"))["universal_workbench_tag"])')
-        echo "tag=$tag" >> "$GITHUB_OUTPUT"
-      id: read
-outputs:
-  tag:
-    description: 'The universal workbench tag to use'
-    value: ${{ steps.read.outputs.tag }}
+        value=$(jq -r --arg key "${{ inputs.key }}" '.[$key]' "${{ inputs.path }}")
+        if [[ -z "$value" || "$value" == "null" ]]; then
+          echo "key '${{ inputs.key }}' missing in ${{ inputs.path }}" >&2
+          exit 1
+        fi
+        echo "tag=$value" >> "$GITHUB_OUTPUT"
