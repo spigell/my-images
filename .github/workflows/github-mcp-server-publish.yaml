@@ -1,0 +1,21 @@
+name: Build and Publish Github MCP Server image
+
+on:
+  push:
+    paths:
+      - 'github-mcp-server-docker/**'
+      - '.github/workflows/github-mcp-server-publish.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-github-mcp-server:
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: github-mcp-server
+      context: ./github-mcp-server-docker
+      version: 0.18.0
