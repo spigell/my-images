@@ -4,15 +4,24 @@ on:
   push:
     paths:
       - 'openai-codex-docker/**'
-      - 'github-runner-docker/**'
       - '.github/workflows/openai-codex-publish.yaml'
-  workflow_call:
+      - 'universal-workbench-docker/base-version.json'
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+
   build-codex-binary:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
@@ -24,7 +33,9 @@ jobs:
         CODEX_VERSION=rust-v0.50.0
 
   build-codex:
-    needs: build-codex-binary
+    needs:
+      - resolve-universal-tag
+      - build-codex-binary
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
@@ -36,16 +47,14 @@ jobs:
       build-contexts: |
         shared=./shared
 
-  build-github-runner:
-    needs: build-codex
-    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
-    with:
-      image-name: codex-github-runner
-      context: ./github-runner-docker
-      version: 2.329.0
-      build-args: |
-        RUNNER_VERSION=2.329.0
-        BASE_IMAGE_NAME=codex-workbench
-        BASE_IMAGE_TAG=${{ needs.build-codex.outputs.sha-tag }}@${{ needs.build-codex.outputs.digest }}
-
+  update-codex-manifest:
+    needs:
+      - build-codex
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: openai-codex-docker/workbench-version.json
+          tag: ${{ needs.build-codex.outputs.sha-tag }}
+          commit-message: "chore(versions): update codex workbench manifest"
