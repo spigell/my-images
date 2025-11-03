@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - 'openai-codex-docker/**'
-      - 'github-runner-docker/**'
       - '.github/workflows/openai-codex-publish.yaml'
       - 'universal-workbench-docker/base-version.json'
   workflow_dispatch:
@@ -59,29 +58,3 @@ jobs:
           path: openai-codex-docker/workbench-version.json
           tag: ${{ needs.build-codex.outputs.sha-tag }}
           commit-message: "chore(versions): update codex workbench manifest"
-
-  build-github-runner:
-    needs:
-      - build-codex
-      - update-codex-manifest
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read-manifest
-        with:
-          path: openai-codex-docker/workbench-version.json
-          key: tag
-      - name: Build and publish runner
-        uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-        secrets: inherit
-        with:
-          image-name: codex-github-runner
-          context: ./github-runner-docker
-          version: 2.329.0
-          build-args: |
-            RUNNER_VERSION=2.329.0
-            BASE_IMAGE_NAME=codex-workbench
-            BASE_IMAGE_TAG=${{ steps.read-manifest.outputs.tag }}
-          build-contexts: |
-            shared=./shared

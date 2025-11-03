@@ -3,6 +3,8 @@
 ARG BASE_IMAGE_NAME=change_me
 ARG BASE_IMAGE_TAG=change_me
 FROM ghcr.io/spigell/${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
+ARG BASE_IMAGE_NAME
+ARG BASE_IMAGE_TAG
 
 ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_USER=runner \
@@ -10,6 +12,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ACTIONS_RUNNER_DIR=/actions-runner
 
 ENV HOME=${RUNNER_HOME}
+
+USER root
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -39,7 +43,7 @@ RUN groupadd --gid 1001 "${RUNNER_USER}" \
 
 WORKDIR ${ACTIONS_RUNNER_DIR}
 
-ARG RUNNER_VERSION=2.328.0
+ARG RUNNER_VERSION=2.329.0
 RUN curl -fsSL "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" -o runner.tar.gz \
     && tar --extract --file runner.tar.gz \
     && rm runner.tar.gz \
@@ -48,6 +52,13 @@ RUN curl -fsSL "https://github.com/actions/runner/releases/download/v${RUNNER_VE
 
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/fetch-runner-token.sh \
     && chown "${RUNNER_USER}:${RUNNER_USER}" /usr/local/bin/entrypoint.sh /usr/local/bin/fetch-runner-token.sh
+
+LABEL org.opencontainers.image.title="GitHub Actions Runner" \
+      org.opencontainers.image.description="GitHub Actions runner layered on the ${BASE_IMAGE_NAME} workbench image" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/github-runner-docker" \
+      com.spigell.workbench.base-image="${BASE_IMAGE_NAME}" \
+      com.spigell.workbench.base-image-tag="${BASE_IMAGE_TAG}" \
+      com.spigell.github-runner.version="${RUNNER_VERSION}"
 
 USER ${RUNNER_USER}
 

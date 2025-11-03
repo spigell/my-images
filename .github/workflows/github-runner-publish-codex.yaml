@@ -5,7 +5,7 @@ on:
     paths:
       - 'github-runner-docker/**'
       - '.github/workflows/github-runner-publish.yaml'
-      - 'google-gemini-docker/workbench-version.json'
+      - 'openai-codex-docker/workbench-version.json'
   workflow_dispatch:
 
 permissions:
@@ -22,7 +22,7 @@ jobs:
       - uses: ./.github/actions/read-universal-tag
         id: read
         with:
-          path: google-gemini-docker/workbench-version.json
+          path: openai-codex-docker/workbench-version.json
 
   build-github-runner:
     needs:
@@ -35,19 +35,7 @@ jobs:
       version: 2.329.0
       build-args: |
         RUNNER_VERSION=2.329.0
-        BASE_IMAGE_NAME=google-gemini-workbench
+        BASE_IMAGE_NAME=openai-codex-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
-
-  update-runner-manifest:
-    needs:
-      - build-github-runner
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/update-workbench-manifest
-        with:
-          path: github-runner-docker/workbench-version.json
-          tag: ${{ needs.build-github-runner.outputs.sha-tag }}
-          commit-message: "chore(versions): update github runner manifest"

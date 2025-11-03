@@ -18,6 +18,10 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Sync workspace
+      if: ${{ github.event_name == 'push' && inputs.commit-message != '' }}
+      shell: bash
+      run: git pull --rebase
     - name: Update the manifest file
       shell: bash
       run: |
@@ -32,10 +36,6 @@ runs:
         tmp=$(mktemp)
         jq --arg key "${{ inputs.key }}" --arg tag "${{ inputs.tag }}" '.[$key] = $tag' "${{ inputs.path }}" > "$tmp"
         mv "$tmp" "${{ inputs.path }}"
-    - name: Pull latest changes
-      if: ${{ github.event_name == 'push' && inputs.commit-message != '' }}
-      shell: bash
-      run: git pull --rebase
     - name: Commit manifest update
       if: ${{ github.event_name == 'push' && inputs.commit-message != '' }}
       uses: stefanzweifel/git-auto-commit-action@v5
