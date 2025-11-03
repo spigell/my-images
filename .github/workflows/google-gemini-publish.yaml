@@ -23,28 +23,18 @@ jobs:
       - uses: ./.github/actions/read-universal-tag
         id: read
 
-  build-gemini-basic:
-    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
-    with:
-      image-name: google-gemini-basic
-      context: ./google-gemini-docker/google-gemini-basic
-      version: 0.10.0
-      build-args: |
-        GEMINI_CLI_VERSION=0.10.0
-
   build-gemini-workbench:
     needs:
       - resolve-universal-tag
-      - build-gemini-basic
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
       image-name: google-gemini-workbench
       context: ./google-gemini-docker
-      version: ${{ needs.build-gemini-basic.outputs.version }}
+      version: 0.11.3
       build-args: |
-        GEMINI_BASIC_TAG=${{ needs.build-gemini-basic.outputs.sha-tag }}
+        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        GEMINI_CLI_VERSION=0.11.3
       build-contexts: |
         shared=./shared
 

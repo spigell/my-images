@@ -1,25 +1,36 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.18
 
-ARG GEMINI_BASIC_TAG=change-me
-FROM ghcr.io/spigell/google-gemini-basic:${GEMINI_BASIC_TAG}
-SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG GEMINI_CLI_VERSION=0.11.3
+
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+USER root
+
+ARG GEMINI_CLI_VERSION
+ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
-# Editor tooling
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    vim \
-  && rm -rf /var/lib/apt/lists/*
+RUN yarn config set prefix /usr/local \
+ && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && npm cache clean --force || true \
+ && yarn cache clean || true
 
-# Golang
-ARG GOLANG_VERSION=1.25.1
-RUN set -eux; \
-  arch="${TARGETARCH:-amd64}"; \
-  curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \
-  tar -C /usr/local -xzf /tmp/go.tgz; \
-  rm /tmp/go.tgz; \
-  /usr/local/go/bin/go version
+RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
+COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
+COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
 
-# Provided by --build-context shared=path/to/repo-root/shared
-COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+USER ubuntu
+
+LABEL org.opencontainers.image.title="Google Gemini Workbench" \
+      org.opencontainers.image.description="Google Gemini CLI workbench built on the universal base image" \
+      org.opencontainers.image.version="${GEMINI_CLI_VERSION}" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker" \
+      com.spigell.workbench.base-image="universal-workbench" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}"
+
+ENTRYPOINT ["/bin/bash","-lc"]
+CMD ["gemini --help || true"]
