@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'github-runner-docker/**'
-      - '.github/workflows/github-runner-publish.yaml'
+      - '.github/workflows/github-runner-publish-codex.yaml'
       - 'openai-codex-docker/workbench-version.json'
   workflow_dispatch:
 

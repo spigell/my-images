@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'github-runner-docker/**'
-      - '.github/workflows/github-runner-publish.yaml'
+      - '.github/workflows/github-runner-publish-gemini.yaml'
       - 'google-gemini-docker/workbench-version.json'
   workflow_dispatch:
 
