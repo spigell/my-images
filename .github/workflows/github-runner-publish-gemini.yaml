@@ -1,4 +1,4 @@
-name: Build and Publish GitHub Runner image
+name: Build and Publish GitHub Runner image (Gemini AI Agent)
 
 on:
   push:
