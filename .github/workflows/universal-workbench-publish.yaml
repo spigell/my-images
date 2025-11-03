@@ -30,11 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Write manifest tag
-        run: |
-          tmp=$(mktemp)
-          jq --arg tag "${{ needs.build-universal-workbench.outputs.sha-tag }}" '.tag = $tag' universal-workbench-docker/base-version.json > "$tmp"
-          mv "$tmp" universal-workbench-docker/base-version.json
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: universal-workbench-docker/base-version.json
+          tag: ${{ needs.build-universal-workbench.outputs.sha-tag }}
       - name: Commit manifest update
         if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5

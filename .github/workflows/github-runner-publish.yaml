@@ -1,0 +1,58 @@
+name: Build and Publish GitHub Runner image
+
+on:
+  push:
+    paths:
+      - 'github-runner-docker/**'
+      - '.github/workflows/github-runner-publish.yaml'
+      - 'google-gemini-docker/workbench-version.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-base-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+        with:
+          path: google-gemini-docker/workbench-version.json
+
+  build-github-runner:
+    needs:
+      - resolve-base-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets: inherit
+    with:
+      image-name: google-gemini-github-runner
+      context: ./github-runner-docker
+      version: 2.329.0
+      build-args: |
+        RUNNER_VERSION=2.329.0
+        BASE_IMAGE_NAME=google-gemini-workbench
+        BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
+      build-contexts: |
+        shared=./shared
+
+  update-runner-manifest:
+    needs:
+      - build-github-runner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: github-runner-docker/workbench-version.json
+          tag: ${{ needs.build-github-runner.outputs.sha-tag }}
+      - name: Commit manifest update
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(versions): update github runner manifest"
+          file_pattern: github-runner-docker/workbench-version.json

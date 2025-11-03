@@ -54,14 +54,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Update workbench manifest
-        run: |
-          tmp=$(mktemp)
-          jq \
-            --arg tag "${{ needs.build-codex.outputs.sha-tag }}" \
-            '.tag = $tag' \
-            openai-codex-docker/workbench-version.json > "$tmp"
-          mv "$tmp" openai-codex-docker/workbench-version.json
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: openai-codex-docker/workbench-version.json
+          tag: ${{ needs.build-codex.outputs.sha-tag }}
       - name: Commit manifest update
         if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5

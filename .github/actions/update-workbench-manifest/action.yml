@@ -1,0 +1,31 @@
+name: Update Workbench Manifest
+description: |
+  Writes a tag value into a JSON manifest file, preserving the shared schema.
+inputs:
+  path:
+    description: Path to the manifest JSON file to update.
+    required: true
+  tag:
+    description: Tag value to write into the manifest.
+    required: true
+  key:
+    description: JSON key to update with the provided tag.
+    required: false
+    default: tag
+runs:
+  using: composite
+  steps:
+    - name: Update manifest
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.tag }}" ]]; then
+          echo "tag input must be non-empty" >&2
+          exit 1
+        fi
+        if [[ ! -f "${{ inputs.path }}" ]]; then
+          echo "manifest not found: ${{ inputs.path }}" >&2
+          exit 1
+        fi
+        tmp=$(mktemp)
+        jq --arg key "${{ inputs.key }}" --arg tag "${{ inputs.tag }}" '.[$key] = $tag' "${{ inputs.path }}" > "$tmp"
+        mv "$tmp" "${{ inputs.path }}"

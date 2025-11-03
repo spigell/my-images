@@ -11,15 +11,16 @@ All workbench images now build from a shared **Universal Workbench** base (`univ
 - Shared terminal utilities (`vim`, `file`, `less`, `tree`, `ripgrep`, etc.).
 
 Downstream workbenches (Codex, Gemini, Pulumi, Talos) only add their unique tooling on top. Version coordination happens through
-`universal-workbench-docker/base-version.json`, which stores the tag for the latest published universal image. Any workflow
-that consumes the base watches that JSON file for changes.
+small JSON manifests: the universal base publishes `universal-workbench-docker/base-version.json` and every other workbench keeps
+its own `workbench-version.json`. Each file is exactly `{"tag": "<image-tag>"}` so the shared composite action can read tags
+consistently, and the publish workflows watch those manifests for changes.
 
 ## Available images
 
 - **universal-workbench** (`universal-workbench-docker/`): Common base layer shared across all workbenches.
 - **openai-codex-workbench** (`openai-codex-docker/`): Codex tooling plus the Codex runtime binary.
 - **google-gemini-workbench** (`google-gemini-docker/`): Gemini CLI environment on top of the universal base.
-- **google-gemini-github-runner** (`github-runner-docker/`): GitHub Actions runner image layered on the Gemini workbench.
+- **google-gemini-github-runner** (`github-runner-docker/`): GitHub Actions runner image layered on the Gemini workbench; published through its own dedicated workflow so it can track runner-specific updates independently.
 - **pulumi-workbench** (`pulumi-workbench-docker/`): Pulumi CLI stack with pulumictl, kubectl, and `@pulumi/mcp-server`.
 - **pulumi-talos-cluster-workbench** (`pulumi-talos-cluster-workbench-docker/`): Pulumi workbench extended with Talosctl and K9s.
 - **anki-desktop-workbench** (`anki-desktop-docker/`): Workbench for the Anki desktop tooling.
