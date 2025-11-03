@@ -30,12 +30,12 @@ jobs:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets: inherit
     with:
-      image-name: google-gemini-github-runner
+      image-name: codex-github-runner
       context: ./github-runner-docker
       version: 2.329.0
       build-args: |
         RUNNER_VERSION=2.329.0
-        BASE_IMAGE_NAME=openai-codex-workbench
+        BASE_IMAGE_NAME=codex-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
