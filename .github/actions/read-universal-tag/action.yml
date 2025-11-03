@@ -17,7 +17,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Read tag
+    - name: Read the tag
       id: read
       shell: bash
       run: |

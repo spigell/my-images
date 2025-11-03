@@ -47,9 +47,4 @@ jobs:
         with:
           path: google-gemini-docker/workbench-version.json
           tag: ${{ needs.build-gemini-workbench.outputs.sha-tag }}
-      - name: Commit manifest update
-        if: github.event_name == 'push'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(versions): update gemini workbench manifest"
-          file_pattern: google-gemini-docker/workbench-version.json
+          commit-message: "chore(versions): update gemini workbench manifest"

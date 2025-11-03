@@ -12,10 +12,13 @@ inputs:
     description: JSON key to update with the provided tag.
     required: false
     default: tag
+  commit-message:
+    description: Commit message to use when recording the manifest update (push events only).
+    required: false
 runs:
   using: composite
   steps:
-    - name: Update manifest
+    - name: Update the manifest file
       shell: bash
       run: |
         if [[ -z "${{ inputs.tag }}" ]]; then
@@ -29,3 +32,14 @@ runs:
         tmp=$(mktemp)
         jq --arg key "${{ inputs.key }}" --arg tag "${{ inputs.tag }}" '.[$key] = $tag' "${{ inputs.path }}" > "$tmp"
         mv "$tmp" "${{ inputs.path }}"
+    - name: Pull latest changes
+      if: ${{ github.event_name == 'push' && inputs.commit-message != '' }}
+      shell: bash
+      run: git pull --rebase
+    - name: Commit manifest update
+      if: ${{ github.event_name == 'push' && inputs.commit-message != '' }}
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: ${{ inputs.commit-message }}
+        file_pattern: ${{ inputs.path }}
+        disable_globbing: true

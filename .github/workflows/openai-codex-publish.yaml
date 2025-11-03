@@ -58,12 +58,7 @@ jobs:
         with:
           path: openai-codex-docker/workbench-version.json
           tag: ${{ needs.build-codex.outputs.sha-tag }}
-      - name: Commit manifest update
-        if: github.event_name == 'push'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(versions): update codex workbench manifest"
-          file_pattern: openai-codex-docker/workbench-version.json
+          commit-message: "chore(versions): update codex workbench manifest"
 
   build-github-runner:
     needs:
