@@ -2,13 +2,14 @@
   "general": {
     "disableAutoUpdate": true,
     "vimMode": true,
-    "preferredEditor": "code",
+    "preferredEditor": "vim",
     "checkpointing": {
       "enabled": true
     }
   },
   "ui": {
     "theme": "Dracula",
+    "useFullWidth": true,
     "hideBanner": true,
     "hideTips": false,
     "showMemoryUsage": true
@@ -16,6 +17,11 @@
   "tools": {
     "sandbox": false,
     "autoAccept": true
+  },
+  "telemetry": {
+    "enabled": true,
+    "target": "local",
+    "outfile": "/home/ubuntu/.gemini/gemini.log"
   },
   "privacy": {
     "usageStatisticsEnabled": false
