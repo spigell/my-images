@@ -12,7 +12,6 @@ ARG NODE_VERSION=24
 ARG GOLANG_VERSION=1.25.1
 
 ENV LANG="C.UTF-8"
-ENV HOME=/root
 
 # Packages are taken from universal codex image
 ENV GOPATH=/go
