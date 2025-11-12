@@ -3,6 +3,13 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.11.3
 
+FROM golang:1.24-alpine AS builder
+# COPY gemini-telemetry/go.mod gemini-telemetry/go.sum ./
+COPY gemini-telemetry/go.mod ./
+RUN go mod download
+COPY gemini-telemetry ./
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-w -s" -o /gemini-telemetry .
+
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -21,6 +28,7 @@ RUN yarn config set prefix /usr/local \
 RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
 COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
+COPY --from=builder /gemini-telemetry /usr/local/bin/gemini-telemetry
 
 USER ubuntu
 

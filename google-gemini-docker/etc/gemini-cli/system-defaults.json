@@ -19,9 +19,9 @@
     "autoAccept": true
   },
   "telemetry": {
-    "enabled": true,
+    "enabled": false,
     "target": "local",
-    "outfile": "/home/ubuntu/.gemini/gemini.log"
+    "outfile": "/tmp/gemini.log"
   },
   "privacy": {
     "usageStatisticsEnabled": false
