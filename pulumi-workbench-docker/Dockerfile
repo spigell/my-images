@@ -80,11 +80,20 @@ RUN curl -fsSL -o /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
  && chmod +x /usr/local/bin/kubectl
 
-# Install @pulumi/mcp-server globally
-RUN yarn config set prefix /usr/local \
- && yarn global add @pulumi/mcp-server@${PULUMI_MCP_VERSION} \
- && npm cache clean --force || true \
- && yarn cache clean || true
+# Install the MCP server (and all its deps) into /opt/pulumi-mcp
+ENV MCP_HOME=/opt/pulumi-mcp
+
+RUN mkdir -p "${MCP_HOME}" \
+&& cd "${MCP_HOME}" \
+&& yarn init -y >/dev/null \
+&& yarn add --frozen-lockfile "@pulumi/mcp-server@${PULUMI_MCP_VERSION}" \
+&& rm -rf package.json yarn.lock \
+&& chown -R ubuntu:ubuntu "${MCP_HOME}" \
+&& npm cache clean --force || true \
+&& yarn cache clean || true
+
+ENV PATH="${MCP_HOME}/node_modules/.bin:${PATH}"
+
 
 USER ubuntu
 
