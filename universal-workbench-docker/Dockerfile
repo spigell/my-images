@@ -147,8 +147,9 @@ RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_D
     ln -sf "$FNM_DIR/fnm" /usr/local/bin/fnm; \
     fnm install "${NODE_VERSION}"; \
     fnm alias "${NODE_VERSION}" default; \
-    npm install -g corepack "yarn@${YARN_VERSION}"; \
+    npm install -g corepack; \
     corepack enable; \
+    corepack prepare "yarn@${YARN_VERSION}" --activate; \
     npm cache clean --force || true
 
 # Provided by --build-context shared=path/to/repo-root/shared
