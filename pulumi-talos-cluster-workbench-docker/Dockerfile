@@ -4,7 +4,7 @@
 ############################
 ARG PULUMI_WORKBENCH_TAG=3.192.0
 ARG K9S_VERSION=0.32.5
-ARG TALOSCTL_VERSION=1.8.2
+ARG TALOSCTL_VERSION=1.11.2
 
 # Set by buildx/BuildKit (defaults for classic docker build)
 ARG TARGETOS=linux
