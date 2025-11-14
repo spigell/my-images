@@ -1,0 +1,52 @@
+name: Build Talos Extension
+
+on:
+  workflow_dispatch:
+    {}
+
+jobs:
+  build-and-release:
+    name: Build and Release (${{ matrix.platform }})
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - extension_name: cloudflared
+            version: 2025.11.1
+            platform: linux/amd64
+          - extension_name: cloudflared
+            version: 2025.11.1
+            platform: linux/arm64
+    env:
+      EXTENSION_NAME: ${{ matrix.extension_name }}
+      OVERRIDE_VERSION: ${{ matrix.version }}
+
+    steps:
+      # Checkout the repository so the Makefile and extension sources are available.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: siderolabs/extenss
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Ensure the runner has the tooling required by the README-driven build (make + bldr).
+      - name: Install build tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+          go install github.com/siderolabs/bldr/cmd/bldr@latest
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
+      # Authenticate with GHCR so the subsequent make targets can push the built image.
+      - name: Log in to ghcr.io
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Build the requested extension for the current platform, applying VERSION when provided.
+      - name: Build and publish extension
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          VERSION="$OVERRIDE_VERSION" make "$PLATFORM" "$EXTENSION_NAME"
