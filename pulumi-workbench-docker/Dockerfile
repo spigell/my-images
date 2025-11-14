@@ -53,6 +53,7 @@ FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
+ENV HOME=/root
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -80,13 +81,23 @@ RUN curl -fsSL -o /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
  && chmod +x /usr/local/bin/kubectl
 
-# Install @pulumi/mcp-server globally
-RUN yarn config set prefix /usr/local \
- && yarn global add @pulumi/mcp-server@${PULUMI_MCP_VERSION} \
- && npm cache clean --force || true \
- && yarn cache clean || true
+# Install the MCP server (and all its deps) into /opt/pulumi-mcp
+ENV MCP_HOME=/opt/pulumi-mcp
+
+RUN mkdir -p "${MCP_HOME}" \
+&& cd "${MCP_HOME}" \
+&& corepack use yarn@$(yarn --version) \
+&& yarn add "@pulumi/mcp-server@${PULUMI_MCP_VERSION}" \
+&& rm -rf package.json yarn.lock \
+&& chown -R ubuntu:ubuntu "${MCP_HOME}" \
+&& npm cache clean --force || true \
+&& yarn cache clean || true
+
+ENV PATH="${MCP_HOME}/node_modules/.bin:${PATH}"
+
 
 USER ubuntu
+ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Pulumi Workbench" \
       org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \

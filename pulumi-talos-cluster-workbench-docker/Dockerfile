@@ -4,7 +4,7 @@
 ############################
 ARG PULUMI_WORKBENCH_TAG=3.192.0
 ARG K9S_VERSION=0.32.5
-ARG TALOSCTL_VERSION=1.8.2
+ARG TALOSCTL_VERSION=1.11.2
 
 # Set by buildx/BuildKit (defaults for classic docker build)
 ARG TARGETOS=linux
@@ -45,6 +45,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
 USER root
+ENV HOME=/root
 
 # Copy artifacts from fetcher
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
@@ -58,6 +59,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
  && rm -rf /var/lib/apt/lists/*
 
 USER ubuntu
+ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Pulumi Talos Cluster Workbench" \
       org.opencontainers.image.description="Pulumi Talos environment built on the universal workbench stack with Talosctl and K9s tooling" \
