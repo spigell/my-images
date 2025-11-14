@@ -86,7 +86,7 @@ ENV MCP_HOME=/opt/pulumi-mcp
 RUN mkdir -p "${MCP_HOME}" \
 && cd "${MCP_HOME}" \
 && yarn init -y >/dev/null \
-&& yarn add --frozen-lockfile "@pulumi/mcp-server@${PULUMI_MCP_VERSION}" \
+&& yarn add "@pulumi/mcp-server@${PULUMI_MCP_VERSION}" \
 && rm -rf package.json yarn.lock \
 && chown -R ubuntu:ubuntu "${MCP_HOME}" \
 && npm cache clean --force || true \
