@@ -162,7 +162,6 @@ USER ubuntu
 ENV HOME="${UBUNTU_HOME}"
 ENV GOPATH="${UBUNTU_GOPATH}"
 ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
-RUN corepack prepare "yarn@${YARN_VERSION}" --activate
 
 LABEL org.opencontainers.image.title="Universal Workbench" \
       org.opencontainers.image.description="Common Ubuntu 24.04 workbench runtime with Go, Python, Node.js, delve, yarn, and shared tooling for Codex and Gemini" \
