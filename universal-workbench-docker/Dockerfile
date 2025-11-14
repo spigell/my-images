@@ -10,6 +10,7 @@ ARG GOLANG_VERSION=1.25.1
 ARG GOLANGCI_LINT_VERSION=2.1.6
 ARG DELVE_VERSION=1.24.2
 ARG TARGETARCH=amd64
+ARG YARN_VERSION=1.22.22
 
 ENV LANG="C.UTF-8"
 ENV UBUNTU_HOME=/home/ubuntu
@@ -146,7 +147,7 @@ RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_D
     ln -sf "$FNM_DIR/fnm" /usr/local/bin/fnm; \
     fnm install "${NODE_VERSION}"; \
     fnm alias "${NODE_VERSION}" default; \
-    npm install -g corepack yarn; \
+    npm install -g corepack "yarn@${YARN_VERSION}"; \
     corepack enable; \
     npm cache clean --force || true
 
