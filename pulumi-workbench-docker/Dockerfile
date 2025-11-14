@@ -53,6 +53,7 @@ FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
+ENV HOME=/root
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -96,6 +97,7 @@ ENV PATH="${MCP_HOME}/node_modules/.bin:${PATH}"
 
 
 USER ubuntu
+ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Pulumi Workbench" \
       org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \

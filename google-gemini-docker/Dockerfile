@@ -14,6 +14,7 @@ FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
+ENV HOME=/root
 
 ARG GEMINI_CLI_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
@@ -31,6 +32,7 @@ COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-a
 COPY --from=builder /gemini-telemetry /usr/local/bin/gemini-telemetry
 
 USER ubuntu
+ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Google Gemini Workbench" \
       org.opencontainers.image.description="Google Gemini CLI workbench built on the universal base image" \

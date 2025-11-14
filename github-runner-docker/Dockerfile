@@ -11,9 +11,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RUNNER_HOME=/home/runner \
     ACTIONS_RUNNER_DIR=/actions-runner
 
-ENV HOME=${RUNNER_HOME}
-
 USER root
+ENV HOME=/root
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -61,5 +60,6 @@ LABEL org.opencontainers.image.title="GitHub Actions Runner" \
       com.spigell.github-runner.version="${RUNNER_VERSION}"
 
 USER ${RUNNER_USER}
+ENV HOME=${RUNNER_HOME}
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
