@@ -12,9 +12,9 @@ ARG DELVE_VERSION=1.24.2
 ARG TARGETARCH=amd64
 
 ENV LANG="C.UTF-8"
-ENV HOME=/home/ubuntu
-ENV GOPATH=/home/ubuntu/go
-ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
+ENV UBUNTU_HOME=/home/ubuntu
+ENV UBUNTU_GOPATH=/home/ubuntu/go
+ENV PATH="/usr/local/go/bin:${PATH}"
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install apt dependencies shared by Codex and Gemini plus requested GNU utilities
@@ -114,11 +114,11 @@ RUN arch="${TARGETARCH:-amd64}"; \
     /usr/local/go/bin/go version
 
 # Install delve
-RUN install -d -m 0755 "${GOPATH}" "${GOPATH}/pkg" "${GOPATH}/pkg/mod" "${HOME}/.cache/go-build"
+RUN install -d -m 0755 "${UBUNTU_GOPATH}" "${UBUNTU_GOPATH}/pkg" "${UBUNTU_GOPATH}/pkg/mod" "${UBUNTU_HOME}/.cache/go-build"
 RUN --mount=type=cache,target=/home/ubuntu/.cache/go-build \
     --mount=type=cache,target=/home/ubuntu/go/pkg/mod \
     GOBIN=/usr/local/bin /usr/local/go/bin/go install github.com/go-delve/delve/cmd/dlv@v${DELVE_VERSION}
-RUN chown -R ubuntu:ubuntu "${GOPATH}" "${HOME}/.cache"
+RUN chown -R ubuntu:ubuntu "${UBUNTU_GOPATH}" "${UBUNTU_HOME}/.cache"
 
 # Python via pyenv + tooling
 ENV PYENV_ROOT=/usr/local/share/pyenv
@@ -153,7 +153,12 @@ RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_D
 # Provided by --build-context shared=path/to/repo-root/shared
 COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
 
+RUN install -d -m 0755 "${UBUNTU_HOME}" && chown -R ubuntu:ubuntu "${UBUNTU_HOME}"
+
 USER ubuntu
+ENV HOME="${UBUNTU_HOME}"
+ENV GOPATH="${UBUNTU_GOPATH}"
+ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
 
 LABEL org.opencontainers.image.title="Universal Workbench" \
       org.opencontainers.image.description="Common Ubuntu 24.04 workbench runtime with Go, Python, Node.js, delve, yarn, and shared tooling for Codex and Gemini" \
