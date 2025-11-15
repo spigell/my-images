@@ -1,9 +1,9 @@
 # Repository Guidelines
 
 - Maintain the **universal workbench** (`universal-workbench-docker/`) as the single source for shared runtimes and tooling.
-- Every workbench directory ships a `workbench-version.json` manifest that is exactly `{"tag": "<image-tag>"}`; do not introduce other fields because the composite action and workflows rely on this shared schema (the universal base follows the same contract via `base-version.json`).
+- All version manifests live under the repository-level `versions/` directory (one file per image, each exactly `{"tag": "<image-tag>"}`); do not introduce other fields because the composite action and workflows rely on this shared schema.
 - The universal base already includes the Ubuntu `ubuntu` user. Do **not** add another `useradd ubuntu` step in downstream Dockerfiles.
-- Update `universal-workbench-docker/base-version.json` whenever the universal image changes so dependent workflows pull the
+- Update `versions/universal-workbench.json` whenever the universal image changes so dependent workflows pull the
   fresh tag.
 - Document any version bumps or related workflow updates in the PR summary.
 - When building images locally or in CI, continue providing the `shared/` build context so Dockerfiles can access the helper script.

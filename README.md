@@ -11,8 +11,8 @@ All workbench images now build from a shared **Universal Workbench** base (`univ
 - Shared terminal utilities (`vim`, `file`, `less`, `tree`, `ripgrep`, etc.).
 
 Downstream workbenches (Codex, Gemini, Pulumi, Talos) only add their unique tooling on top. Version coordination happens through
-small JSON manifests: the universal base publishes `universal-workbench-docker/base-version.json` and every other workbench keeps
-its own `workbench-version.json`. Each file is exactly `{"tag": "<image-tag>"}` so the shared composite action can read tags
+small JSON manifests collected under `versions/` (for example `versions/universal-workbench.json`, `versions/google-gemini.json`,
+`versions/openai-codex.json`). Each file is exactly `{"tag": "<image-tag>"}` so the shared composite action can read tags
 consistently, and the publish workflows watch those manifests for changes.
 
 ## Available images
@@ -53,5 +53,5 @@ docker buildx build \
 
 Use the same `--build-context shared=./shared` flag for the other workbench Dockerfiles.
 
-If you update the base image, bump the `tag` in `universal-workbench-docker/base-version.json` so dependent
+If you update the base image, bump the `tag` in `versions/universal-workbench.json` so dependent
 workflows pick up the new tag automatically.

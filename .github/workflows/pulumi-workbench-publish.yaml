@@ -6,7 +6,7 @@ on:
       - 'pulumi-workbench-docker/**'
       - 'pulumi-talos-cluster-workbench-docker/**'
       - '.github/workflows/pulumi-workbench-publish.yaml'
-      - 'universal-workbench-docker/base-version.json'
+      - 'versions/universal-workbench.json'
   workflow_dispatch:
 
 
@@ -27,7 +27,8 @@ jobs:
   build-pulumi-workbench:
     needs: resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: pulumi-workbench
       context: ./pulumi-workbench-docker
@@ -44,7 +45,8 @@ jobs:
   build-pulumi-talos-cluster-workbench:
     needs: build-pulumi-workbench
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: pulumi-talos-cluster-workbench
       context: ./pulumi-talos-cluster-workbench-docker

@@ -14,7 +14,8 @@ permissions:
 jobs:
   build-universal-workbench:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: universal-workbench
       context: ./universal-workbench-docker
@@ -30,8 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
       - uses: ./.github/actions/update-workbench-manifest
         with:
-          path: universal-workbench-docker/base-version.json
+          path: versions/universal-workbench.json
           tag: ${{ needs.build-universal-workbench.outputs.sha-tag }}
           commit-message: "chore(versions): update universal workbench tag to ${{ needs.build-universal-workbench.outputs.sha-tag }}"

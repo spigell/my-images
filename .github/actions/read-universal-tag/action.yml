@@ -5,7 +5,7 @@ inputs:
   path:
     description: Path to the manifest JSON file.
     required: false
-    default: universal-workbench-docker/base-version.json
+    default: versions/universal-workbench.json
   key:
     description: JSON key to read from the manifest file.
     required: false

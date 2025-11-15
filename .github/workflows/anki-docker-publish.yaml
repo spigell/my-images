@@ -17,7 +17,8 @@ jobs:
       matrix:
         anki_version: [25.02.5]
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: anki-desktop-docker
       context: ./anki-desktop-docker

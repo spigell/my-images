@@ -5,7 +5,7 @@ on:
     paths:
       - 'google-gemini-docker/**'
       - '.github/workflows/google-gemini-publish.yaml'
-      - 'universal-workbench-docker/base-version.json'
+      - 'versions/universal-workbench.json'
   workflow_dispatch:
 
 permissions:
@@ -26,14 +26,15 @@ jobs:
     needs:
       - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
-    secrets: inherit
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: google-gemini-workbench
       context: ./google-gemini-docker
-      version: v0.15.0
+      version: v0.15.2
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        GEMINI_CLI_VERSION=0.15.0
+        GEMINI_CLI_VERSION=0.15.2
       build-contexts: |
         shared=./shared
 
@@ -43,8 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
       - uses: ./.github/actions/update-workbench-manifest
         with:
-          path: google-gemini-docker/workbench-version.json
+          path: versions/google-gemini.json
           tag: ${{ needs.build-gemini-workbench.outputs.sha-tag }}
           commit-message: "chore(versions): update gemini workbench manifest"
