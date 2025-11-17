@@ -7,7 +7,7 @@
   fresh tag.
 - Document any version bumps or related workflow updates in the PR summary.
 - When building images locally or in CI, continue providing the `shared/` build context so Dockerfiles can access the helper script.
-- Push branches to the `http-spigell-bot` remote (https://github.com/spigell/my-images.git) instead of `origin`—the SSH remote is read-only in this workspace.
+- Push branches to the `http-spigell-bot` remote (https://github.com/spigell/my-images.git) instead of `origin`—the SSH remote is read-only in this workspace. When a change touches workflow files under `.github/workflows/`, the PAT behind `http-spigell-bot` lacks the `workflow` scope, so fall back to pushing via the `origin` SSH remote just for that update.
 
 ## Workbench Overview
 
