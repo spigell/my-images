@@ -1,5 +1,7 @@
 # my-images
 
+> This repository is maintained for personal use. Contributions are welcome, but no official support is provided.
+
 ## Workbench Architecture
 
 All workbench images now build from a shared **Universal Workbench** base (`universal-workbench-docker/`). The base provides:
