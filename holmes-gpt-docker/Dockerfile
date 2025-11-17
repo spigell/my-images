@@ -14,6 +14,51 @@ ARG HELM_VERSION=4.0.0
 
 FROM ${HOLMES_SOURCE_IMAGE} AS holmes-src
 
+FROM debian:bookworm-slim AS fetch-tools
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG TARGETOS
+ARG TARGETARCH
+ARG ARGOCD_VERSION
+ARG ARGOCD_ARM_URL
+ARG ARGOCD_AMD_URL
+ARG HELM_VERSION
+ARG KUBE_LINEAGE_VERSION
+ARG KUBE_LINEAGE_ARM_URL
+ARG KUBE_LINEAGE_AMD_URL
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates tar xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+      curl -fsSL -o /tmp/kube-lineage "${KUBE_LINEAGE_ARM_URL}"; \
+    elif [ "${TARGETARCH}" = "amd64" ]; then \
+      curl -fsSL -o /tmp/kube-lineage "${KUBE_LINEAGE_AMD_URL}"; \
+    else \
+      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
+    fi \
+    && chmod +x /tmp/kube-lineage
+
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+      curl -fsSL -o /tmp/argocd "${ARGOCD_ARM_URL}"; \
+    elif [ "${TARGETARCH}" = "amd64" ]; then \
+      curl -fsSL -o /tmp/argocd "${ARGOCD_AMD_URL}"; \
+    else \
+      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
+    fi \
+    && chmod +x /tmp/argocd
+
+RUN workdir="$(mktemp -d)" \
+    && helm_arch="${TARGETARCH}" \
+    && if [ "${TARGETARCH}" = "amd64" ]; then helm_arch="amd64"; fi \
+    && if [ "${TARGETARCH}" = "arm64" ]; then helm_arch="arm64"; fi \
+    && curl -fsSL -o "${workdir}/helm.tar.gz" \
+        "https://get.helm.sh/helm-v${HELM_VERSION}-${TARGETOS}-${helm_arch}.tar.gz" \
+    && tar -xzf "${workdir}/helm.tar.gz" -C "${workdir}" \
+    && mv "${workdir}/${TARGETOS}-${helm_arch}/helm" /tmp/helm \
+    && chmod +x /tmp/helm \
+    && rm -rf "${workdir}"
+
 FROM ghcr.io/spigell/debug-sre-workbench:${DEBUG_SRE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -37,17 +82,6 @@ ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH="${PYTHONPATH:-}:.:${APP_HOME}/holmes"
 
-# Runtime dependencies and CVE patches
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        curl \
-        jq \
-        git \
-        apt-transport-https \
-        gnupg2 \
-        software-properties-common \
-    && rm -rf /var/lib/apt/lists/*
-
 # Microsoft ODBC for Azure SQL (required by azure/sql toolset)
 RUN . /etc/os-release \
     && curl -fsSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" \
@@ -58,40 +92,12 @@ RUN . /etc/os-release \
     && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install kube-lineage
-RUN install -d -m 0755 /usr/local/bin \
-    && if [ "${TARGETARCH}" = "arm64" ]; then \
-         curl -fsSL -o /usr/local/bin/kube-lineage "${KUBE_LINEAGE_ARM_URL}"; \
-       elif [ "${TARGETARCH}" = "amd64" ]; then \
-         curl -fsSL -o /usr/local/bin/kube-lineage "${KUBE_LINEAGE_AMD_URL}"; \
-       else \
-         echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
-       fi \
-    && chmod +x /usr/local/bin/kube-lineage \
-    && kube-lineage --version
+COPY --from=fetch-tools /tmp/kube-lineage /usr/local/bin/kube-lineage
+COPY --from=fetch-tools /tmp/argocd /usr/local/bin/argocd
+COPY --from=fetch-tools /tmp/helm /usr/local/bin/helm
 
-# Install ArgoCD CLI
-RUN if [ "${TARGETARCH}" = "arm64" ]; then \
-      curl -fsSL -o /usr/local/bin/argocd "${ARGOCD_ARM_URL}"; \
-    elif [ "${TARGETARCH}" = "amd64" ]; then \
-      curl -fsSL -o /usr/local/bin/argocd "${ARGOCD_AMD_URL}"; \
-    else \
-      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
-    fi \
-    && chmod +x /usr/local/bin/argocd \
-    && argocd version --client
-
-# Install Helm (overwrite base version to ensure Helm 4)
-RUN workdir="$(mktemp -d)" \
-    && helm_arch="${TARGETARCH}" \
-    && if [ "${TARGETARCH}" = "amd64" ]; then helm_arch="amd64"; fi \
-    && if [ "${TARGETARCH}" = "arm64" ]; then helm_arch="arm64"; fi \
-    && curl -fsSL -o "${workdir}/helm.tar.gz" \
-        "https://get.helm.sh/helm-v${HELM_VERSION}-${TARGETOS}-${helm_arch}.tar.gz" \
-    && tar -xzf "${workdir}/helm.tar.gz" -C "${workdir}" \
-    && mv "${workdir}/${TARGETOS}-${helm_arch}/helm" /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm \
-    && rm -rf "${workdir}" \
+RUN kube-lineage --version \
+    && argocd version --client \
     && helm version
 
 # Python environment setup
