@@ -114,6 +114,8 @@ RUN kube-lineage --version \
 RUN python3 -m venv "${VIRTUAL_ENV}" \
     && "${VIRTUAL_ENV}/bin/pip" install --upgrade pip
 
+RUN python3 -m pip install --no-cache-dir "poetry==1.8.4"
+
 COPY --from=fetch-manifest /tmp/pyproject.toml /tmp/holmes-src/pyproject.toml
 COPY --from=fetch-manifest /tmp/poetry.lock /tmp/holmes-src/poetry.lock
 
