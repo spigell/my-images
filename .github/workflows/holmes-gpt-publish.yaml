@@ -1,10 +1,10 @@
-name: Build and Publish Holmes Debug Workbench
+name: Build and Publish Holmes GPT
 
 on:
   push:
     paths:
-      - 'holmes-debug-workbench-docker/**'
-      - '.github/workflows/holmes-debug-workbench-publish.yaml'
+      - 'holmes-gpt-docker/**'
+      - '.github/workflows/holmes-gpt-publish.yaml'
       - 'versions/debug-sre-workbench.json'
   workflow_dispatch:
 
@@ -24,25 +24,25 @@ jobs:
         with:
           path: versions/debug-sre-workbench.json
 
-  build-holmes-debug-workbench:
+  build-holmes-gpt:
     needs:
       - resolve-debug-sre-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
-      image-name: holmes-debug-workbench
-      context: ./holmes-debug-workbench-docker
-      version: v0.1.0
+      image-name: holmes-gpt
+      context: ./holmes-gpt-docker
+      version: v0.16.1
       build-args: |
         DEBUG_SRE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
-        HOLMES_SOURCE_IMAGE=robustadev/holmes:latest
+        HOLMES_SOURCE_IMAGE=robustadev/holmes:0.16.1
       build-contexts: |
         shared=./shared
 
   update-holmes-manifest:
     needs:
-      - build-holmes-debug-workbench
+      - build-holmes-gpt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +50,6 @@ jobs:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
       - uses: ./.github/actions/update-workbench-manifest
         with:
-          path: versions/holmes-debug-workbench.json
-          tag: ${{ needs.build-holmes-debug-workbench.outputs.sha-tag }}
-          commit-message: "chore(versions): update holmes debug workbench manifest"
+          path: versions/holmes-gpt.json
+          tag: ${{ needs.build-holmes-gpt.outputs.sha-tag }}
+          commit-message: "chore(versions): update holmes gpt manifest"

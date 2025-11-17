@@ -125,9 +125,9 @@ RUN git config --global core.symlinks false \
 USER ubuntu
 ENV HOME=/home/ubuntu
 
-LABEL org.opencontainers.image.title="Holmes Debug SRE Workbench" \
+LABEL org.opencontainers.image.title="Holmes GPT Workbench" \
       org.opencontainers.image.description="HolmesGPT runtime built on the debug SRE workbench with kubectl, Helm, ArgoCD, kube-lineage, and Azure SQL tooling" \
-      org.opencontainers.image.source="https://github.com/spigell/my-images/holmes-debug-workbench-docker" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/holmes-gpt-docker" \
       com.spigell.workbench.base-image="debug-sre-workbench" \
       com.spigell.workbench.base-image-tag="${DEBUG_SRE_TAG}" \
       com.spigell.holmes.workbench.source-image="${HOLMES_SOURCE_IMAGE}" \

@@ -27,7 +27,7 @@ consistently, and the publish workflows watch those manifests for changes.
 - **pulumi-talos-cluster-workbench** (`pulumi-talos-cluster-workbench-docker/`): Pulumi workbench extended with Talosctl and K9s.
 - **anki-desktop-workbench** (`anki-desktop-docker/`): Workbench for the Anki desktop tooling.
 - **debug-sre-workbench** (`debug-sre-workbench-docker/`): Kubernetes debugging toolbox layered on the universal base with Docker CLI, kubectl, Helm, K9s, Talosctl, etcdctl, Poetry, uv, and supporting CLIs guaranteed to be present.
-- **holmes-debug-workbench** (`holmes-debug-workbench-docker/`): HolmesGPT runtime that layers the debug SRE toolbox with upstream Holmes Python sources plus kube-lineage, ArgoCD, Helm 4, and Azure SQL prerequisites.
+- **holmes-gpt** (`holmes-gpt-docker/`): HolmesGPT runtime that layers the debug SRE toolbox with upstream Holmes Python sources plus kube-lineage, ArgoCD, Helm 4, and Azure SQL prerequisites.
 
 ## Git setup helper
 
