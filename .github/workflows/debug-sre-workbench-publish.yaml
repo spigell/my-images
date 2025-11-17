@@ -1,0 +1,57 @@
+name: Build and Publish Debug SRE Workbench
+
+on:
+  push:
+    paths:
+      - 'debug-sre-workbench-docker/**'
+      - '.github/workflows/debug-sre-workbench-publish.yaml'
+      - 'versions/universal-workbench.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+
+  build-debug-sre-workbench:
+    needs:
+      - resolve-universal-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: debug-sre-workbench
+      context: ./debug-sre-workbench-docker
+      version: v0.1.0
+      build-args: |
+        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        KUBECTL_VERSION=1.29.6
+        HELM_VERSION=3.15.2
+        K9S_VERSION=0.32.5
+        TALOSCTL_VERSION=1.11.2
+        ETCD_VERSION=3.5.15
+      build-contexts: |
+        shared=./shared
+
+  update-debug-sre-manifest:
+    needs:
+      - build-debug-sre-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: versions/debug-sre-workbench.json
+          tag: ${{ needs.build-debug-sre-workbench.outputs.sha-tag }}
+          commit-message: "chore(versions): update debug SRE workbench manifest"

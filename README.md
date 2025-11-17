@@ -56,3 +56,9 @@ Use the same `--build-context shared=./shared` flag for the other workbench Dock
 
 If you update the base image, bump the `tag` in `versions/universal-workbench.json` so dependent
 workflows pick up the new tag automatically.
+
+## Debug SRE CI workflow
+
+`.github/workflows/debug-sre-workbench-publish.yaml` builds and tags the new debug SRE image through the reusable workflow stored in `spigell/my-shared-workflows`. Because that shared workflow repository is private, the job will fail with a `workflow not accessible` error until `my-images` is explicitly granted permission to consume those reusable workflows.
+
+Manage that permission via the Pulumi GitHub provider: add an `github.ActionsRepositoryAccessLevel` resource in the `my-shared-infra/my-github` stack setting `repository: "my-shared-workflows"` and `accessLevel: "user"` (or `organization`). The Pulumi MCP documentation for the GitHub provider is mirrored locally at `my-shared-infra/my-github/node_modules/@pulumi/github/actionsRepositoryAccessLevel.d.ts`, which walks through the exact arguments if you need a refresher.
