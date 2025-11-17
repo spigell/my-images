@@ -90,7 +90,7 @@ ENV APP_HOME=/app
 ENV VIRTUAL_ENV=/opt/holmes-venv
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH="${PYTHONPATH:-}:.:${APP_HOME}/holmes"
+ENV PYTHONPATH=".:${APP_HOME}/holmes"
 
 # Microsoft ODBC for Azure SQL (required by azure/sql toolset)
 RUN . /etc/os-release \
