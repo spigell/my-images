@@ -1,0 +1,55 @@
+name: Build and Publish Holmes Debug Workbench
+
+on:
+  push:
+    paths:
+      - 'holmes-debug-workbench-docker/**'
+      - '.github/workflows/holmes-debug-workbench-publish.yaml'
+      - 'versions/debug-sre-workbench.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-debug-sre-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+        with:
+          path: versions/debug-sre-workbench.json
+
+  build-holmes-debug-workbench:
+    needs:
+      - resolve-debug-sre-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: holmes-debug-workbench
+      context: ./holmes-debug-workbench-docker
+      version: v0.1.0
+      build-args: |
+        DEBUG_SRE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
+        HOLMES_SOURCE_IMAGE=robustadev/holmes:latest
+      build-contexts: |
+        shared=./shared
+
+  update-holmes-manifest:
+    needs:
+      - build-holmes-debug-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: versions/holmes-debug-workbench.json
+          tag: ${{ needs.build-holmes-debug-workbench.outputs.sha-tag }}
+          commit-message: "chore(versions): update holmes debug workbench manifest"
