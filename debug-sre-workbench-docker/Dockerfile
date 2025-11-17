@@ -60,7 +60,7 @@ COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 
-# Docker CLI comes from apt since the universal image does not bundle it
+# Docker CLI comes from apt since the universal base keeps the system lean
 RUN apt-get update \
     && apt-get install -y --no-install-recommends docker.io \
     && rm -rf /var/lib/apt/lists/*
