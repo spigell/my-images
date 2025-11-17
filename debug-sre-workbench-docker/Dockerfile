@@ -80,7 +80,7 @@ RUN curl -fsSL -o /usr/local/bin/kubectl \
 # Install Helm
 RUN workdir="$(mktemp -d)" \
     && arch="${TARGETARCH}" \
-    && if [ "${TARGETARCH}" = "amd64" ]; then arch="x86_64"; fi \
+    && if [ "${TARGETARCH}" = "amd64" ]; then arch="amd64"; fi \
     && if [ "${TARGETARCH}" = "arm64" ]; then arch="arm64"; fi \
     && curl -fsSL -o "${workdir}/helm.tar.gz" \
          "https://get.helm.sh/helm-v${HELM_VERSION}-${TARGETOS}-${arch}.tar.gz" \
