@@ -132,6 +132,7 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     pyenv rehash; \
     curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/share/pypoetry python3 -; \
     ln -s /usr/local/share/pypoetry/bin/poetry /usr/local/bin/; \
+    poetry self add poetry-plugin-export; \
     curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
