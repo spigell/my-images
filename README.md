@@ -1,5 +1,7 @@
 # my-images
 
+> This repository is maintained for personal use. Contributions are welcome, but no official support is provided.
+
 ## Workbench Architecture
 
 All workbench images now build from a shared **Universal Workbench** base (`universal-workbench-docker/`). The base provides:
@@ -21,9 +23,11 @@ consistently, and the publish workflows watch those manifests for changes.
 - **openai-codex-workbench** (`openai-codex-docker/`): Codex tooling plus the Codex runtime binary.
 - **google-gemini-workbench** (`google-gemini-docker/`): Gemini CLI environment on top of the universal base.
 - **google-gemini-github-runner** (`github-runner-docker/`): GitHub Actions runner image layered on the Gemini workbench; published through its own dedicated workflow so it can track runner-specific updates independently.
-- **pulumi-workbench** (`pulumi-workbench-docker/`): Pulumi CLI stack with pulumictl, kubectl, and `@pulumi/mcp-server`.
+- **pulumi-workbench** (`pulumi-workbench-docker/`): Pulumi CLI stack with pulumictl, kubectl, and `@pulumi/mcp-server` built atop the debug SRE toolbox.
 - **pulumi-talos-cluster-workbench** (`pulumi-talos-cluster-workbench-docker/`): Pulumi workbench extended with Talosctl and K9s.
 - **anki-desktop-workbench** (`anki-desktop-docker/`): Workbench for the Anki desktop tooling.
+- **debug-sre-workbench** (`debug-sre-workbench-docker/`): Kubernetes debugging toolbox layered on the universal base with Docker CLI, kubectl, Helm, K9s, Talosctl, etcdctl, Poetry, uv, and supporting CLIs guaranteed to be present.
+- **holmes-gpt** (`holmes-gpt-docker/`): HolmesGPT runtime that layers the debug SRE toolbox with upstream Holmes Python sources plus kube-lineage, ArgoCD, Helm 4, and Azure SQL prerequisites.
 
 ## Git setup helper
 
@@ -38,20 +42,3 @@ Omit any flags to be prompted interactively for missing values. The script defau
 matching the editor bundled with each image.
 
 The canonical script source lives at `shared/setup-git-workbench.sh` and is copied into each workbench image during the build.
-
-### Building images locally
-
-When building a workbench image with `docker buildx`, pass the repository's `shared/` directory as an additional build context
-so the Dockerfile can copy the shared helper script:
-
-```bash
-docker buildx build \
-  --build-context shared=./shared \
-  -f google-gemini-docker/Dockerfile \
-  google-gemini-docker
-```
-
-Use the same `--build-context shared=./shared` flag for the other workbench Dockerfiles.
-
-If you update the base image, bump the `tag` in `versions/universal-workbench.json` so dependent
-workflows pick up the new tag automatically.

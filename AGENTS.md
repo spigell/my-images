@@ -7,6 +7,7 @@
   fresh tag.
 - Document any version bumps or related workflow updates in the PR summary.
 - When building images locally or in CI, continue providing the `shared/` build context so Dockerfiles can access the helper script.
+- Push and pull via the `http-spigell-bot` remote (https://github.com/spigell/my-images.git); the default `origin` SSH remote is read-only in this workspace. Run commands explicitly against that remote (for example, `git pull http-spigell-bot main`).
 
 ## Workbench Overview
 
@@ -15,6 +16,8 @@
 | `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling |
 | `openai-codex-docker/` | Universal workbench | Codex binary and related tooling |
 | `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases |
-| `pulumi-workbench-docker/` | Universal workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |
+| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv |
+| `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |
 | `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling |
 | `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via its own dedicated workflow |
+| `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT Python runtime plus kube-lineage, ArgoCD, Helm, Azure SQL tooling |

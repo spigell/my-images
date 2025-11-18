@@ -1,0 +1,55 @@
+name: Build and Publish Holmes GPT
+
+on:
+  push:
+    paths:
+      - 'holmes-gpt-docker/**'
+      - '.github/workflows/holmes-gpt-publish.yaml'
+      - 'versions/debug-sre-workbench.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-debug-sre-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+        with:
+          path: versions/debug-sre-workbench.json
+
+  build-holmes-gpt:
+    needs:
+      - resolve-debug-sre-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: holmes-gpt
+      context: ./holmes-gpt-docker
+      version: v0.16.1
+      build-args: |
+        DEBUG_SRE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
+        HOLMES_SOURCE_IMAGE=robustadev/holmes:0.16.1
+      build-contexts: |
+        shared=./shared
+
+  update-holmes-manifest:
+    needs:
+      - build-holmes-gpt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+      - uses: ./.github/actions/update-workbench-manifest
+        with:
+          path: versions/holmes-gpt.json
+          tag: ${{ needs.build-holmes-gpt.outputs.sha-tag }}
+          commit-message: "chore(versions): update holmes gpt manifest"

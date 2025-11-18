@@ -6,7 +6,7 @@
 ARG PULUMI_VERSION=3.200.0
 ARG PULUMICTL_VERSION=0.0.46
 ARG KUBECTL_VERSION=1.34.0
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG DEBUG_SRE_TAG=sha-dev
 ARG PULUMI_MCP_VERSION=0.2.0
 
 # Docker/buildx usually set these; provide safe defaults
@@ -49,7 +49,7 @@ RUN curl -fsSL -o pulumictl.tar.gz \
 ############################
 # Stage 2: final image
 ############################
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+FROM ghcr.io/spigell/debug-sre-workbench:${DEBUG_SRE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
@@ -58,7 +58,7 @@ ENV HOME=/root
 ARG TARGETOS
 ARG TARGETARCH
 ARG KUBECTL_VERSION
-ARG UNIVERSAL_WORKBENCH_TAG
+ARG DEBUG_SRE_TAG
 ARG PULUMI_VERSION
 ARG PULUMI_MCP_VERSION
 
@@ -100,11 +100,11 @@ USER ubuntu
 ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Pulumi Workbench" \
-      org.opencontainers.image.description="Pulumi workbench built on the universal base image with Pulumi CLI and MCP server tooling" \
+      org.opencontainers.image.description="Pulumi workbench built on the debug SRE base image with Pulumi CLI and MCP server tooling" \
       org.opencontainers.image.version="${PULUMI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-workbench-docker" \
-      com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.base-image="debug-sre-workbench" \
+      com.spigell.workbench.base-image-tag="${DEBUG_SRE_TAG}" \
       com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
