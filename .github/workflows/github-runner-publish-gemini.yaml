@@ -33,9 +33,9 @@ jobs:
     with:
       image-name: google-gemini-github-runner
       context: ./github-runner-docker
-      version: 2.329.0
+      version: 2.330.0
       build-args: |
-        RUNNER_VERSION=2.329.0
+        RUNNER_VERSION=2.330.0
         BASE_IMAGE_NAME=google-gemini-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
       build-contexts: |
