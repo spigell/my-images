@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.11.3
+ARG GEMINI_CLI_VERSION=0.16.0
 
 FROM golang:1.24-alpine AS builder
 # COPY gemini-telemetry/go.mod gemini-telemetry/go.sum ./

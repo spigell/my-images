@@ -42,7 +42,7 @@ RUN groupadd --gid 1001 "${RUNNER_USER}" \
 
 WORKDIR ${ACTIONS_RUNNER_DIR}
 
-ARG RUNNER_VERSION=2.329.0
+ARG RUNNER_VERSION=2.330.0
 RUN curl -fsSL "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" -o runner.tar.gz \
     && tar --extract --file runner.tar.gz \
     && rm runner.tar.gz \
