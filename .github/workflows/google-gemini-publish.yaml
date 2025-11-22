@@ -31,10 +31,10 @@ jobs:
     with:
       image-name: google-gemini-workbench
       context: ./google-gemini-docker
-      version: v0.17.0
+      version: v0.17.1
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        GEMINI_CLI_VERSION=0.17.0
+        GEMINI_CLI_VERSION=0.17.1
       build-contexts: |
         shared=./shared
 
