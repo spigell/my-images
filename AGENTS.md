@@ -1,6 +1,7 @@
 # Repository Guidelines
 
 - Maintain the **universal workbench** (`universal-workbench-docker/`) as the single source for shared runtimes and tooling.
+- The universal base now installs GitHub’s `spec-kit` via `uv specify-cli`, so spec-building tooling is immediately available in every downstream workbench.
 - All version manifests live under the repository-level `versions/` directory (one file per image, each exactly `{"tag": "<image-tag>"}`); do not introduce other fields because the composite action and workflows rely on this shared schema.
 - Version manifests are bumped automatically by CI; do not edit files under `versions/` manually.
 - When upgrading any tooling version in a Dockerfile, update the corresponding publish workflow inputs so CI builds the new tag.
@@ -18,7 +19,7 @@
 | Image directory | Base image | Extends with |
 | --- | --- | --- |
 | `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling |
-| `openai-codex-docker/` | Universal workbench | Codex binary and related tooling |
+| `openai-codex-docker/` | Universal workbench (already the primary base for the Codex workbench) | Codex binary and related tooling |
 | `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases |
 | `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv |
 | `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |

@@ -10,6 +10,7 @@ All workbench images now build from a shared **Universal Workbench** base (`univ
 - Go toolchain with delve and golangci-lint.
 - Python via pyenv with Poetry, uv, and common lint/test tooling.
 - Node.js managed by fnm with Yarn/Corepack enabled.
+- The `uv specify-cli` wrapper installs GitHub’s `spec-kit`, so API/CLI specification tooling is available out of the box.
 - Shared terminal utilities (`vim`, `file`, `less`, `tree`, `ripgrep`, etc.).
 
 Downstream workbenches (Codex, Gemini, Pulumi, Talos) only add their unique tooling on top. Version coordination happens through
@@ -20,7 +21,7 @@ consistently, and the publish workflows watch those manifests for changes.
 ## Available images
 
 - **universal-workbench** (`universal-workbench-docker/`): Common base layer shared across all workbenches.
-- **openai-codex-workbench** (`openai-codex-docker/`): Codex tooling plus the Codex runtime binary.
+- **openai-codex-workbench** (`openai-codex-docker/`): Codex CLI environment on top of the universal base.
 - **google-gemini-workbench** (`google-gemini-docker/`): Gemini CLI environment on top of the universal base.
 - **google-gemini-github-runner** (`github-runner-docker/`): GitHub Actions runner image layered on the Gemini workbench; published through its own dedicated workflow so it can track runner-specific updates independently.
 - **pulumi-workbench** (`pulumi-workbench-docker/`): Pulumi CLI stack with pulumictl, kubectl, and `@pulumi/mcp-server` built atop the debug SRE toolbox.
