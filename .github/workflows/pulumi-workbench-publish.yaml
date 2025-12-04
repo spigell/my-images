@@ -34,10 +34,10 @@ jobs:
     with:
       image-name: pulumi-workbench
       context: ./pulumi-workbench-docker
-      version: 3.200.0
+      version: 3.210.0
       build-args: |
         DEBUG_SRE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
-        PULUMI_VERSION=3.200.0
+        PULUMI_VERSION=3.210.0
         PULUMICTL_VERSION=0.0.46
         KUBECTL_VERSION=1.34.0
         PULUMI_MCP_VERSION=0.2.0

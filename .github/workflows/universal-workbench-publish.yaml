@@ -19,9 +19,9 @@ jobs:
     with:
       image-name: universal-workbench
       context: ./universal-workbench-docker
-      version: '1.0.1'
+      version: '1.0.2'
       build-args: |
-        UNIVERSAL_WORKBENCH_VERSION=1.0.1
+        UNIVERSAL_WORKBENCH_VERSION=1.0.2
       build-contexts: |
         shared=./shared
 
