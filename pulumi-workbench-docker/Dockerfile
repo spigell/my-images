@@ -3,7 +3,7 @@
 ############################
 # Global, configurable args
 ############################
-ARG PULUMI_VERSION=3.200.0
+ARG PULUMI_VERSION=3.210.0
 ARG PULUMICTL_VERSION=0.0.46
 ARG KUBECTL_VERSION=1.34.0
 ARG DEBUG_SRE_TAG=sha-dev
