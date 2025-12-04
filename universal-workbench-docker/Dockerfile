@@ -3,7 +3,7 @@
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.0.1
+ARG UNIVERSAL_WORKBENCH_VERSION=1.0.2
 ARG PYTHON_VERSION=3.12
 ARG NODE_VERSION=24
 ARG GOLANG_VERSION=1.25.1
@@ -91,6 +91,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         less \
         tree \
     && rm -rf /var/lib/apt/lists/*
+
+# Install .NET SDKs for LTS (8) and current (9) channels
+RUN curl -fsSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0 --install-dir /usr/local/share/dotnet \
+ && curl -fsSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 9.0 --install-dir /usr/local/share/dotnet
+
+ENV DOTNET_ROOT=/usr/local/share/dotnet
+ENV PATH="/usr/local/share/dotnet:${PATH}"
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+# Allow newer dotnet versions to build projects targeting older frameworks (v3.1)
+ENV DOTNET_ROLL_FORWARD=Major
 
 # Install golangci-lint
 RUN arch="${TARGETARCH:-amd64}"; \
