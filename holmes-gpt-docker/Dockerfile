@@ -8,10 +8,10 @@ ARG HOLMES_REF=master
 ARG KUBE_LINEAGE_VERSION=2.2.4
 ARG KUBE_LINEAGE_ARM_URL=https://github.com/robusta-dev/kube-lineage/releases/download/v${KUBE_LINEAGE_VERSION}/kube-lineage-macos-latest-v${KUBE_LINEAGE_VERSION}
 ARG KUBE_LINEAGE_AMD_URL=https://github.com/robusta-dev/kube-lineage/releases/download/v${KUBE_LINEAGE_VERSION}/kube-lineage-ubuntu-latest-v${KUBE_LINEAGE_VERSION}
-ARG ARGOCD_VERSION=3.2.0
+ARG ARGOCD_VERSION=3.2.1
 ARG ARGOCD_ARM_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-arm64
 ARG ARGOCD_AMD_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-amd64
-ARG HELM_VERSION=4.0.0
+ARG HELM_VERSION=3.19.2
 
 FROM ${HOLMES_SOURCE_IMAGE} AS holmes-src
 
