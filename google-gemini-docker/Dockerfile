@@ -3,7 +3,7 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.19.1
 
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25.5-alpine AS builder
 # COPY gemini-telemetry/go.mod gemini-telemetry/go.sum ./
 COPY gemini-telemetry/go.mod ./
 RUN go mod download
