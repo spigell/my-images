@@ -3,7 +3,7 @@
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.0.2
+ARG UNIVERSAL_WORKBENCH_VERSION=1.0.3
 ARG PYTHON_VERSION=3.13.7
 ARG NODE_VERSION=22.21.1
 ARG GOLANG_VERSION=1.25.5
@@ -11,6 +11,7 @@ ARG GOLANGCI_LINT_VERSION=2.7.1
 ARG DELVE_VERSION=1.25.2
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22
+ARG SPECIFY_VERSION=v0.0.90
 
 ENV LANG="C.UTF-8"
 ENV UBUNTU_HOME=/home/ubuntu
@@ -146,7 +147,7 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
-    uv tool install specify-cli --from git+https://github.com/github/spec-kit.git; \
+    uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
     pip install --no-cache-dir ruff black mypy pyright isort pytest; \
     rm -rf "${HOME}/.cache/pip"
@@ -188,6 +189,7 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       com.spigell.workbench.node.manager="fnm" \
       com.spigell.workbench.go.version="${GOLANG_VERSION}" \
       com.spigell.workbench.go.delve-version="${DELVE_VERSION}" \
+      com.spigell.workbench.specify.version="${SPECIFY_VERSION}" \
       com.spigell.workbench.golangci-lint.version="${GOLANGCI_LINT_VERSION}" \
       com.spigell.workbench.package-manager="apt"
 
