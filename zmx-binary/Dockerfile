@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 ARG ZMX_VERSION=0.1.0
-ARG ZIG_VERSION=0.15.0
+ARG ZIG_VERSION=0.15.2
 ARG TARGETARCH=amd64
 
 FROM ubuntu:24.04 AS builder

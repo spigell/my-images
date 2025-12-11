@@ -23,7 +23,7 @@ jobs:
       version: 0.1.0
       build-args: |
         ZMX_VERSION=0.1.0
-        ZIG_VERSION=0.15.0
+        ZIG_VERSION=0.15.2
 
   update-zmx-manifest:
     needs:
