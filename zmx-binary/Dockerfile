@@ -10,6 +10,8 @@ ARG ZMX_VERSION
 ARG ZIG_VERSION
 ARG TARGETARCH
 
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       ca-certificates \
@@ -20,8 +22,7 @@ RUN apt-get update \
 
 WORKDIR /tmp
 
-RUN set -euxo pipefail; \
-    case "${TARGETARCH}" in \
+RUN case "${TARGETARCH}" in \
       amd64) ARCH="x86_64" ;; \
       arm64) ARCH="aarch64" ;; \
       *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
@@ -35,8 +36,7 @@ RUN set -euxo pipefail; \
 
 WORKDIR /src
 
-RUN set -euxo pipefail; \
-    git clone --branch "v${ZMX_VERSION}" --depth 1 https://github.com/neurosnap/zmx.git
+RUN git clone --branch "v${ZMX_VERSION}" --depth 1 https://github.com/neurosnap/zmx.git
 
 WORKDIR /src/zmx
 
