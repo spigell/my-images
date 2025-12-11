@@ -42,7 +42,7 @@ WORKDIR /src/zmx
 
 RUN zig build -Doptimize=ReleaseSafe --prefix /opt/zmx install
 
-FROM alpine:3.20
+FROM debian:bookworm-slim
 
 ARG ZMX_VERSION
 LABEL org.opencontainers.image.title="zmx Binary" \
@@ -53,7 +53,9 @@ LABEL org.opencontainers.image.title="zmx Binary" \
       org.opencontainers.image.documentation="https://github.com/neurosnap/zmx/blob/v${ZMX_VERSION}/README.md" \
       org.opencontainers.image.licenses="MIT"
 
-RUN apk add --no-cache bash
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bash ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /opt/zmx/bin/zmx /usr/local/bin/zmx
 
 ENTRYPOINT ["/usr/local/bin/zmx"]
