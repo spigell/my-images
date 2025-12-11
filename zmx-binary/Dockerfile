@@ -42,7 +42,7 @@ WORKDIR /src/zmx
 
 RUN zig build -Doptimize=ReleaseSafe --prefix /opt/zmx install
 
-FROM scratch
+FROM alpine:3.20
 
 ARG ZMX_VERSION
 LABEL org.opencontainers.image.title="zmx Binary" \
@@ -53,6 +53,7 @@ LABEL org.opencontainers.image.title="zmx Binary" \
       org.opencontainers.image.documentation="https://github.com/neurosnap/zmx/blob/v${ZMX_VERSION}/README.md" \
       org.opencontainers.image.licenses="MIT"
 
+RUN apk add --no-cache bash
 COPY --from=builder /opt/zmx/bin/zmx /usr/local/bin/zmx
 
 ENTRYPOINT ["/usr/local/bin/zmx"]
