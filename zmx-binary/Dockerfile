@@ -54,7 +54,10 @@ LABEL org.opencontainers.image.title="zmx Binary" \
       org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bash ca-certificates \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      bash \
+      ca-certificates \
+      tmux \
  && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /opt/zmx/bin/zmx /usr/local/bin/zmx
 
