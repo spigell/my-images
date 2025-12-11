@@ -27,12 +27,12 @@ RUN case "${TARGETARCH}" in \
       arm64) ARCH="aarch64" ;; \
       *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
     esac; \
-    FILENAME="zig-linux-${ARCH}-${ZIG_VERSION}.tar.xz"; \
+    FILENAME="zig-${ARCH}-linux-${ZIG_VERSION}.tar.xz"; \
     URL="https://ziglang.org/download/${ZIG_VERSION}/${FILENAME}"; \
     curl -fsSL "${URL}" -o "${FILENAME}"; \
     tar -xJf "${FILENAME}" -C /opt; \
     rm -f "${FILENAME}"; \
-    ln -s "/opt/zig-linux-${ARCH}-${ZIG_VERSION}/zig" /usr/local/bin/zig
+    ln -s "/opt/zig-${ARCH}-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig
 
 WORKDIR /src
 
