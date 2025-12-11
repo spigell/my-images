@@ -90,7 +90,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-pip \
         file \
         less \
-        tmux=3.3a-* \
+        tmux=3.4-* \
         tree \
     && rm -rf /var/lib/apt/lists/*
 
