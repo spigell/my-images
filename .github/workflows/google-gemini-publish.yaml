@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - 'google-gemini-docker/**'
-      - 'zmx-binary/**'
-      - 'zmx/**'
       - 'versions/zmx.json'
       - '.github/workflows/google-gemini-publish.yaml'
       - 'versions/universal-workbench.json'

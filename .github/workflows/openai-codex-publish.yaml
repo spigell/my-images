@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - 'openai-codex-docker/**'
-      - 'zmx-binary/**'
-      - 'zmx/**'
       - 'versions/zmx.json'
       - '.github/workflows/openai-codex-publish.yaml'
       - 'versions/universal-workbench.json'

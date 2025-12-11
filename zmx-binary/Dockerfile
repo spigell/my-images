@@ -47,7 +47,11 @@ FROM scratch
 ARG ZMX_VERSION
 LABEL org.opencontainers.image.title="zmx Binary" \
       org.opencontainers.image.description="Slim container image that packages the zmx session persistence binary for reuse" \
-      org.opencontainers.image.version="${ZMX_VERSION}"
+      org.opencontainers.image.version="${ZMX_VERSION}" \
+      org.opencontainers.image.source="https://github.com/neurosnap/zmx" \
+      org.opencontainers.image.url="https://github.com/neurosnap/zmx" \
+      org.opencontainers.image.documentation="https://github.com/neurosnap/zmx/blob/v${ZMX_VERSION}/README.md" \
+      org.opencontainers.image.licenses="MIT"
 
 COPY --from=builder /opt/zmx/bin/zmx /usr/local/bin/zmx
 
