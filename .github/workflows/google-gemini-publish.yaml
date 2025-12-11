@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'google-gemini-docker/**'
+      - 'zmx-binary/**'
+      - 'zmx/**'
+      - 'versions/zmx.json'
       - '.github/workflows/google-gemini-publish.yaml'
       - 'versions/universal-workbench.json'
   workflow_dispatch:
@@ -22,9 +25,21 @@ jobs:
       - uses: ./.github/actions/read-universal-tag
         id: read
 
+  resolve-zmx-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+        with:
+          path: versions/zmx.json
+
   build-gemini-workbench:
     needs:
       - resolve-universal-tag
+      - resolve-zmx-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
@@ -35,6 +50,7 @@ jobs:
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         GEMINI_CLI_VERSION=0.19.1
+        ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 

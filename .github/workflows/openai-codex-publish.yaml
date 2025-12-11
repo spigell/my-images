@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'openai-codex-docker/**'
+      - 'zmx-binary/**'
+      - 'zmx/**'
+      - 'versions/zmx.json'
       - '.github/workflows/openai-codex-publish.yaml'
       - 'versions/universal-workbench.json'
   workflow_dispatch:
@@ -22,6 +25,17 @@ jobs:
       - uses: ./.github/actions/read-universal-tag
         id: read
 
+  resolve-zmx-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/read-universal-tag
+        id: read
+        with:
+          path: versions/zmx.json
+
   build-codex-binary:
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
@@ -37,6 +51,7 @@ jobs:
     needs:
       - resolve-universal-tag
       - build-codex-binary
+      - resolve-zmx-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
@@ -47,6 +62,7 @@ jobs:
       build-args: |
         CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
 
   update-codex-manifest:
     needs:
