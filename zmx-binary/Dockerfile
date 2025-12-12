@@ -36,7 +36,7 @@ RUN case "${TARGETARCH}" in \
 
 WORKDIR /src
 
-RUN git clone --filter=blob:none --no-checkout https://github.com/spigell/zmx.git \
+RUN git clone --filter=blob:none --no-checkout https://github.com/neurosnap/zmx.git \
  && cd zmx \
  && git fetch --depth 1 origin "${ZMX_REF}" \
  && git checkout --detach "${ZMX_REF}"
@@ -51,9 +51,9 @@ ARG ZMX_REF
 LABEL org.opencontainers.image.title="zmx Binary" \
       org.opencontainers.image.description="Slim container image that packages the zmx session persistence binary for reuse" \
       org.opencontainers.image.version="${ZMX_REF}" \
-      org.opencontainers.image.source="https://github.com/spigell/zmx" \
-      org.opencontainers.image.url="https://github.com/spigell/zmx" \
-      org.opencontainers.image.documentation="https://github.com/spigell/zmx/blob/${ZMX_REF}/README.md" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images" \
+      org.opencontainers.image.url="https://github.com/spigell/my-images" \
+      org.opencontainers.image.documentation="https://github.com/spigell/my-images/blob/main/zmx-binary/Dockerfile" \
       org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update \
