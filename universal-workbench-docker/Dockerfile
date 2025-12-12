@@ -3,7 +3,7 @@
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.0.4
+ARG UNIVERSAL_WORKBENCH_VERSION=1.0.5
 ARG PYTHON_VERSION=3.13.7
 ARG NODE_VERSION=22.21.1
 ARG GOLANG_VERSION=1.25.5
@@ -148,9 +148,8 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
-    uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
+    XDG_BIN_HOME=/usr/local/bin HOME=/root uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
-    pip install --no-cache-dir ruff black mypy pyright isort pytest; \
     rm -rf "${HOME}/.cache/pip"
 
 # Node.js via fnm with Yarn
