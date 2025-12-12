@@ -3,7 +3,7 @@
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.0.3
+ARG UNIVERSAL_WORKBENCH_VERSION=1.0.4
 ARG PYTHON_VERSION=3.13.7
 ARG NODE_VERSION=22.21.1
 ARG GOLANG_VERSION=1.25.5
@@ -90,6 +90,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-pip \
         file \
         less \
+        tmux=3.4-* \
         tree \
     && rm -rf /var/lib/apt/lists/*
 
