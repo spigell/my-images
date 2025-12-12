@@ -22,7 +22,7 @@ jobs:
       context: ./zmx-binary
       version: 0.1.0
       build-args: |
-        ZMX_VERSION=0.1.0
+        ZMX_REF=651dd7cd93c93acfbf8f3d0322bee0d82dd1beb9
         ZIG_VERSION=0.15.2
 
   update-zmx-manifest:
