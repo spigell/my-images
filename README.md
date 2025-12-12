@@ -8,9 +8,9 @@ All workbench images now build from a shared **Universal Workbench** base (`univ
 
 - Ubuntu 24.04 with the stock `ubuntu` user (no extra creation required).
 - Go toolchain with delve and golangci-lint.
-- Python via pyenv with Poetry, uv, and common lint/test tooling.
+- Python via pyenv with Poetry and uv.
 - Node.js managed by fnm with Yarn/Corepack enabled.
-- The `uv specify-cli` wrapper installs GitHub’s `spec-kit`, so API/CLI specification tooling is available out of the box.
+- The `uv specify-cli` wrapper installs GitHub’s `spec-kit` and is available on the `ubuntu` user PATH for API/CLI specification work.
 - Shared terminal utilities (`vim`, `file`, `less`, `tree`, `ripgrep`, etc.).
 
 Downstream workbenches (Codex, Gemini, Pulumi, Talos) only add their unique tooling on top. Version coordination happens through
