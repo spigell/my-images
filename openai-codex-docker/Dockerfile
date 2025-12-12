@@ -1,9 +1,11 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG CODEX_BINARY_REF=rust-v0.66.0
+ARG CODEX_BINARY_REF=rust-v0.72.0-alpha.3
+ARG ZMX_BINARY_REF=sha-dev
 
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
+FROM ghcr.io/spigell/zmx-binary:${ZMX_BINARY_REF} AS zmx
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 LABEL codex.binary.ref="${CODEX_BINARY_REF}"
@@ -20,6 +22,7 @@ ENV HOME=/root
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
+COPY --from=zmx /usr/local/bin/zmx /usr/local/bin/zmx
 
 USER ubuntu
 ENV HOME=/home/ubuntu
