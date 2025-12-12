@@ -148,7 +148,7 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
-    XDG_BIN_HOME=/usr/local/bin HOME=/root uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
+    XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
     rm -rf "${HOME}/.cache/pip"
 
