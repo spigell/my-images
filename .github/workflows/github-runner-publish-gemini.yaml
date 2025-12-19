@@ -3,6 +3,10 @@ name: Build and Publish GitHub Runner image (Gemini AI Agent)
 on:
   repository_dispatch:
     types: [gemini-workbench-updated]
+  push:
+    paths:
+      - 'github-runner-docker/**'
+      - '.github/workflows/github-runner-publish-gemini.yaml'
   workflow_dispatch:
     inputs:
       gemini_tag:
