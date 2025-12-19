@@ -1,12 +1,14 @@
 name: Build and Publish GitHub Runner image (Gemini AI Agent)
 
 on:
-  push:
-    paths:
-      - 'github-runner-docker/**'
-      - '.github/workflows/github-runner-publish-gemini.yaml'
-      - 'versions/google-gemini.json'
+  repository_dispatch:
+    types: [gemini-workbench-updated]
   workflow_dispatch:
+    inputs:
+      gemini_tag:
+        description: Gemini Workbench tag to consume
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,13 +18,15 @@ jobs:
   resolve-base-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
-        with:
-          path: versions/google-gemini.json
+      - id: final-tag
+        run: |
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            echo "tag=${{ github.event.client_payload.gemini_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ inputs.gemini_tag }}" >> "$GITHUB_OUTPUT"
+          fi
 
   build-github-runner:
     needs:
