@@ -56,6 +56,8 @@ jobs:
     needs: build-gemini-workbench
     runs-on: ubuntu-latest
     steps:
+      - name: Log dispatch payload
+        run: echo "Dispatching gemini-workbench-updated with tag ${{ needs.build-gemini-workbench.outputs.sha-tag }}"
       - name: Dispatch Gemini Workbench Update
         uses: peter-evans/repository-dispatch@v3
         with:
