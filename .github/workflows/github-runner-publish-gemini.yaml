@@ -1,12 +1,18 @@
 name: Build and Publish GitHub Runner image (Gemini AI Agent)
 
 on:
+  repository_dispatch:
+    types: [gemini-workbench-updated]
   push:
     paths:
       - 'github-runner-docker/**'
       - '.github/workflows/github-runner-publish-gemini.yaml'
-      - 'versions/google-gemini.json'
   workflow_dispatch:
+    inputs:
+      gemini_tag:
+        description: Gemini Workbench tag to consume
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,13 +22,31 @@ jobs:
   resolve-base-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/read-universal-tag
-        id: read
+        id: read-fallback
         with:
           path: versions/google-gemini.json
+      - id: final-tag
+        run: |
+          tag=""
+          if [[ "${{ github.event_name }}" == "repository_dispatch" && -n "${{ github.event.client_payload.gemini_tag }}" ]]; then
+            tag="${{ github.event.client_payload.gemini_tag }}"
+            echo "Using dispatch payload tag: $tag"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.gemini_tag }}" ]]; then
+            tag="${{ inputs.gemini_tag }}"
+            echo "Using manual input tag: $tag"
+          else
+            tag="${{ steps.read-fallback.outputs.tag }}"
+            echo "Dispatch payload/input missing; falling back to versions file tag: $tag"
+          fi
+          if [[ -z "$tag" ]]; then
+            echo "Tag resolution failed; empty tag detected." >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   build-github-runner:
     needs:

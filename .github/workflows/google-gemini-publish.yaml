@@ -52,6 +52,19 @@ jobs:
       build-contexts: |
         shared=./shared
 
+  trigger-downstreams:
+    needs: build-gemini-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log dispatch payload
+        run: echo "Dispatching gemini-workbench-updated with tag ${{ needs.build-gemini-workbench.outputs.sha-tag }}"
+      - name: Dispatch Gemini Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: gemini-workbench-updated
+          client-payload: '{"gemini_tag": "${{ needs.build-gemini-workbench.outputs.sha-tag }}"}'
+
   update-gemini-manifest:
     needs:
       - build-gemini-workbench
