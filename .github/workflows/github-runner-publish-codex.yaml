@@ -24,32 +24,14 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - id: final-tag
-        env:
-          OWNER: ${{ github.repository_owner }}
-          IMAGE: codex-workbench
-          PAYLOAD_TAG: ${{ github.event.client_payload.codex_tag }}
-          INPUT_TAG: ${{ inputs.codex_tag }}
-          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-        run: |
-          tag=""
-          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
-            tag="${PAYLOAD_TAG}"
-            echo "Using dispatch payload tag: $tag"
-          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
-            tag="${INPUT_TAG}"
-            echo "Using workflow_dispatch input tag: $tag"
-          else
-            echo "Fetching latest tag for ${IMAGE} from GHCR..."
-            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
-            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
-            if [[ -z "$tag" ]]; then
-              echo "No tags found for ${IMAGE}" >&2
-              exit 1
-            fi
-            echo "Using GHCR latest tag: $tag"
-          fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: codex-workbench
+          payload_tag: ${{ github.event.client_payload.codex_tag }}
+          input_tag: ${{ inputs.codex_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   build-github-runner:
     needs:

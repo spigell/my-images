@@ -1,0 +1,45 @@
+name: Resolve GHCR Tag
+runs:
+  using: composite
+  steps:
+    - id: resolve
+      shell: bash
+      env:
+        OWNER: ${{ inputs.owner }}
+        IMAGE: ${{ inputs.image }}
+        PAYLOAD_TAG: ${{ inputs.payload_tag }}
+        INPUT_TAG: ${{ inputs.input_tag }}
+        GHCR_TOKEN: ${{ inputs.ghcr_token }}
+      run: |
+        tag=""
+        if [[ -n "${PAYLOAD_TAG}" ]]; then
+          tag="${PAYLOAD_TAG}"
+          echo "Using payload tag: $tag"
+        elif [[ -n "${INPUT_TAG}" ]]; then
+          tag="${INPUT_TAG}"
+          echo "Using input tag: $tag"
+        else
+          echo "Fetching latest tag for ${IMAGE} from GHCR..."
+          bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+          tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+          if [[ -z "$tag" ]]; then
+            echo "No tags found for ${IMAGE}" >&2
+            exit 1
+          fi
+          echo "Using GHCR latest tag: $tag"
+        fi
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+inputs:
+  owner:
+    required: true
+  image:
+    required: true
+  payload_tag:
+    required: false
+  input_tag:
+    required: false
+  ghcr_token:
+    required: true
+outputs:
+  tag:
+    value: ${{ steps.resolve.outputs.tag }}
