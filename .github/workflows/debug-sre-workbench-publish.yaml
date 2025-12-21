@@ -1,12 +1,18 @@
 name: Build and Publish Debug SRE Workbench
 
 on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
   push:
     paths:
       - 'debug-sre-workbench-docker/**'
       - '.github/workflows/debug-sre-workbench-publish.yaml'
-      - 'versions/universal-workbench.json'
   workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag to use (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -16,11 +22,34 @@ jobs:
   resolve-universal-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - id: final-tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          IMAGE: universal-workbench
+          PAYLOAD_TAG: ${{ github.event.client_payload.universal_tag }}
+          INPUT_TAG: ${{ inputs.universal_tag }}
+          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+        run: |
+          tag=""
+          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
+            tag="${PAYLOAD_TAG}"
+            echo "Using dispatch payload tag: $tag"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            tag="${INPUT_TAG}"
+            echo "Using workflow_dispatch input tag: $tag"
+          else
+            echo "Fetching latest tag for ${IMAGE} from GHCR..."
+            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+            if [[ -z "$tag" ]]; then
+              echo "No tags found for ${IMAGE}" >&2
+              exit 1
+            fi
+            echo "Using GHCR latest tag: $tag"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   build-debug-sre-workbench:
     needs:
@@ -42,16 +71,14 @@ jobs:
       build-contexts: |
         shared=./shared
 
-  update-debug-sre-manifest:
+  trigger-downstreams:
     needs:
       - build-debug-sre-workbench
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Dispatch Debug SRE Workbench Update
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-      - uses: ./.github/actions/update-workbench-manifest
-        with:
-          path: versions/debug-sre-workbench.json
-          tag: ${{ needs.build-debug-sre-workbench.outputs.sha-tag }}
-          commit-message: "chore(versions): update debug SRE workbench manifest"
+          event-type: debug-sre-workbench-updated
+          client-payload: '{\"debug_sre_tag\": \"${{ needs.build-debug-sre-workbench.outputs.sha-tag }}\"}'

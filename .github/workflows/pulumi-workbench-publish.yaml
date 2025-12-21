@@ -1,14 +1,19 @@
 name: Build and Publish Pulumi images
 
 on:
+  repository_dispatch:
+    types: [debug-sre-workbench-updated]
   push:
     paths:
       - 'pulumi-workbench-docker/**'
       - 'pulumi-talos-cluster-workbench-docker/**'
       - '.github/workflows/pulumi-workbench-publish.yaml'
-      - 'versions/debug-sre-workbench.json'
   workflow_dispatch:
-
+    inputs:
+      debug_sre_tag:
+        description: Debug SRE tag to use (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -18,13 +23,34 @@ jobs:
   resolve-debug-sre-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
-        with:
-          path: versions/debug-sre-workbench.json
+      - id: final-tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          IMAGE: debug-sre-workbench
+          PAYLOAD_TAG: ${{ github.event.client_payload.debug_sre_tag }}
+          INPUT_TAG: ${{ inputs.debug_sre_tag }}
+          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+        run: |
+          tag=""
+          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
+            tag="${PAYLOAD_TAG}"
+            echo "Using dispatch payload tag: $tag"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            tag="${INPUT_TAG}"
+            echo "Using workflow_dispatch input tag: $tag"
+          else
+            echo "Fetching latest tag for ${IMAGE} from GHCR..."
+            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+            if [[ -z "$tag" ]]; then
+              echo "No tags found for ${IMAGE}" >&2
+              exit 1
+            fi
+            echo "Using GHCR latest tag: $tag"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   build-pulumi-workbench:
     needs: resolve-debug-sre-tag
@@ -59,3 +85,22 @@ jobs:
         TALOSCTL_VERSION=1.11.5
       build-contexts: |
         shared=./shared
+
+  trigger-downstreams:
+    needs:
+      - build-pulumi-workbench
+      - build-pulumi-talos-cluster-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Pulumi Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: pulumi-workbench-updated
+          client-payload: '{\"pulumi_tag\": \"${{ needs.build-pulumi-workbench.outputs.sha-tag }}\"}'
+      - name: Dispatch Pulumi Talos Cluster Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: pulumi-talos-cluster-workbench-updated
+          client-payload: '{\"pulumi_talos_tag\": \"${{ needs.build-pulumi-talos-cluster-workbench.outputs.sha-tag }}\"}'

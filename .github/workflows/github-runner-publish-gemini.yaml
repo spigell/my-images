@@ -11,7 +11,7 @@ on:
     inputs:
       gemini_tag:
         description: Gemini Workbench tag to consume
-        required: true
+        required: false
         type: string
 
 permissions:
@@ -24,23 +24,30 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read-fallback
-        with:
-          path: versions/google-gemini.json
       - id: final-tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          IMAGE: google-gemini-workbench
+          PAYLOAD_TAG: ${{ github.event.client_payload.gemini_tag }}
+          INPUT_TAG: ${{ inputs.gemini_tag }}
+          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
         run: |
           tag=""
-          if [[ "${{ github.event_name }}" == "repository_dispatch" && -n "${{ github.event.client_payload.gemini_tag }}" ]]; then
-            tag="${{ github.event.client_payload.gemini_tag }}"
+          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
+            tag="${PAYLOAD_TAG}"
             echo "Using dispatch payload tag: $tag"
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.gemini_tag }}" ]]; then
-            tag="${{ inputs.gemini_tag }}"
-            echo "Using manual input tag: $tag"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            tag="${INPUT_TAG}"
+            echo "Using workflow_dispatch input tag: $tag"
           else
-            tag="${{ steps.read-fallback.outputs.tag }}"
-            echo "Dispatch payload/input missing; falling back to versions file tag: $tag"
+            echo "Fetching latest tag for ${IMAGE} from GHCR..."
+            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+            if [[ -z "$tag" ]]; then
+              echo "No tags found for ${IMAGE}" >&2
+              exit 1
+            fi
+            echo "Using GHCR latest tag: $tag"
           fi
           if [[ -z "$tag" ]]; then
             echo "Tag resolution failed; empty tag detected." >&2

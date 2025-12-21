@@ -1,12 +1,18 @@
 name: Build and Publish GitHub Runner image (Codex AI agent)
 
 on:
+  repository_dispatch:
+    types: [openai-codex-workbench-updated]
   push:
     paths:
       - 'github-runner-docker/**'
       - '.github/workflows/github-runner-publish-codex.yaml'
-      - 'versions/openai-codex.json'
   workflow_dispatch:
+    inputs:
+      codex_tag:
+        description: Codex Workbench tag to consume (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -16,13 +22,34 @@ jobs:
   resolve-base-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
-        with:
-          path: versions/openai-codex.json
+      - id: final-tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          IMAGE: codex-workbench
+          PAYLOAD_TAG: ${{ github.event.client_payload.codex_tag }}
+          INPUT_TAG: ${{ inputs.codex_tag }}
+          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+        run: |
+          tag=""
+          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
+            tag="${PAYLOAD_TAG}"
+            echo "Using dispatch payload tag: $tag"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            tag="${INPUT_TAG}"
+            echo "Using workflow_dispatch input tag: $tag"
+          else
+            echo "Fetching latest tag for ${IMAGE} from GHCR..."
+            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+            if [[ -z "$tag" ]]; then
+              echo "No tags found for ${IMAGE}" >&2
+              exit 1
+            fi
+            echo "Using GHCR latest tag: $tag"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   build-github-runner:
     needs:

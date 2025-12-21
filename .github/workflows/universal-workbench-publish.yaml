@@ -31,11 +31,9 @@ jobs:
       - build-universal-workbench
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Dispatch Universal Workbench Update
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-      - uses: ./.github/actions/update-workbench-manifest
-        with:
-          path: versions/universal-workbench.json
-          tag: ${{ needs.build-universal-workbench.outputs.sha-tag }}
-          commit-message: "chore(versions): update universal workbench tag to ${{ needs.build-universal-workbench.outputs.sha-tag }}"
+          event-type: universal-workbench-updated
+          client-payload: '{\"universal_tag\": \"${{ needs.build-universal-workbench.outputs.sha-tag }}\"}'

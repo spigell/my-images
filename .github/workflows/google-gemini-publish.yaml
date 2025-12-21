@@ -1,13 +1,22 @@
 name: Build and Publish Gemini CLI images
 
 on:
+  repository_dispatch:
+    types: [universal-workbench-updated, zmx-binary-updated]
   push:
     paths:
       - 'google-gemini-docker/**'
-      - 'versions/zmx.json'
       - '.github/workflows/google-gemini-publish.yaml'
-      - 'versions/universal-workbench.json'
   workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+      zmx_tag:
+        description: zmx binary tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -17,22 +26,66 @@ jobs:
   resolve-universal-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - id: final-tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          IMAGE: universal-workbench
+          PAYLOAD_TAG: ${{ github.event.client_payload.universal_tag }}
+          INPUT_TAG: ${{ inputs.universal_tag }}
+          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+        run: |
+          tag=""
+          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
+            tag="${PAYLOAD_TAG}"
+            echo "Using dispatch payload tag: $tag"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            tag="${INPUT_TAG}"
+            echo "Using workflow_dispatch input tag: $tag"
+          else
+            echo "Fetching latest tag for ${IMAGE} from GHCR..."
+            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+            if [[ -z "$tag" ]]; then
+              echo "No tags found for ${IMAGE}" >&2
+              exit 1
+            fi
+            echo "Using GHCR latest tag: $tag"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   resolve-zmx-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
-        with:
-          path: versions/zmx.json
+      - id: final-tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          IMAGE: zmx-binary
+          PAYLOAD_TAG: ${{ github.event.client_payload.zmx_tag }}
+          INPUT_TAG: ${{ inputs.zmx_tag }}
+          GHCR_TOKEN: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+        run: |
+          tag=""
+          if [[ "${GITHUB_EVENT_NAME}" == "repository_dispatch" && -n "${PAYLOAD_TAG}" ]]; then
+            tag="${PAYLOAD_TAG}"
+            echo "Using dispatch payload tag: $tag"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            tag="${INPUT_TAG}"
+            echo "Using workflow_dispatch input tag: $tag"
+          else
+            echo "Fetching latest tag for ${IMAGE} from GHCR..."
+            bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
+            tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
+            if [[ -z "$tag" ]]; then
+              echo "No tags found for ${IMAGE}" >&2
+              exit 1
+            fi
+            echo "Using GHCR latest tag: $tag"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   build-gemini-workbench:
     needs:
@@ -56,25 +109,9 @@ jobs:
     needs: build-gemini-workbench
     runs-on: ubuntu-latest
     steps:
-      - name: Log dispatch payload
-        run: echo "Dispatching gemini-workbench-updated with tag ${{ needs.build-gemini-workbench.outputs.sha-tag }}"
       - name: Dispatch Gemini Workbench Update
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: gemini-workbench-updated
-          client-payload: '{"gemini_tag": "${{ needs.build-gemini-workbench.outputs.sha-tag }}"}'
-
-  update-gemini-manifest:
-    needs:
-      - build-gemini-workbench
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-      - uses: ./.github/actions/update-workbench-manifest
-        with:
-          path: versions/google-gemini.json
-          tag: ${{ needs.build-gemini-workbench.outputs.sha-tag }}
-          commit-message: "chore(versions): update gemini workbench manifest"
+          client-payload: '{\"gemini_tag\": \"${{ needs.build-gemini-workbench.outputs.sha-tag }}\"}'
