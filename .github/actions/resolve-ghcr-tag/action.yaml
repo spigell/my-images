@@ -11,34 +11,88 @@ runs:
         INPUT_TAG: ${{ inputs.input_tag }}
         GHCR_TOKEN: ${{ inputs.ghcr_token }}
       run: |
-        tag=""
-        case "${GITHUB_EVENT_NAME}" in
-          repository_dispatch)
-            if [[ -n "${PAYLOAD_TAG}" ]]; then
-              tag="${PAYLOAD_TAG}"
-              echo "Using dispatch payload tag: ${tag}"
-            fi
-            ;;
-          workflow_dispatch)
-            if [[ -n "${INPUT_TAG}" ]]; then
-              tag="${INPUT_TAG}"
-              echo "Using workflow_dispatch input tag: ${tag}"
-            fi
-            ;;
-        esac
+        node - <<'NODE'
+        const https = require('https');
 
-        if [[ -z "${tag}" ]]; then
-          echo "Fetching latest tag for ${IMAGE} from GHCR..."
-          bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
-          tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
-          if [[ -z "${tag}" ]]; then
-            echo "No tags found for ${IMAGE}" >&2
-            exit 1
-          fi
-          echo "Using GHCR latest tag: ${tag}"
-        fi
+        const env = process.env;
+        const owner = env.OWNER;
+        const image = env.IMAGE;
+        const payloadTag = env.PAYLOAD_TAG || '';
+        const inputTag = env.INPUT_TAG || '';
+        const ghcrToken = env.GHCR_TOKEN;
+        let tag = '';
 
-        echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+        function get(url, options = {}) {
+          return new Promise((resolve, reject) => {
+            const req = https.request(url, options, res => {
+              let data = '';
+              res.on('data', chunk => (data += chunk));
+              res.on('end', () => {
+                if (res.statusCode && res.statusCode >= 400) {
+                  return reject(new Error(`HTTP ${res.statusCode}: ${data}`));
+                }
+                resolve({ res, data });
+              });
+            });
+            req.on('error', reject);
+            if (options.body) req.write(options.body);
+            req.end();
+          });
+        }
+
+        async function fetchBearer() {
+          const auth = Buffer.from(`${owner}:${ghcrToken}`).toString('base64');
+          const url = `https://ghcr.io/token?service=ghcr.io&scope=repository:${owner}/${image}:pull`;
+          const { data } = await get(url, { headers: { Authorization: `Basic ${auth}` } });
+          const json = JSON.parse(data);
+          return json.token;
+        }
+
+        async function fetchLatestTag() {
+          const bearer = await fetchBearer();
+          const url = `https://ghcr.io/v2/${owner}/${image}/tags/list`;
+          const { data } = await get(url, { headers: { Authorization: `Bearer ${bearer}` } });
+          const json = JSON.parse(data);
+          const tags = Array.isArray(json.tags) ? json.tags.filter(t => t !== 'latest') : [];
+          if (!tags.length) throw new Error(`No tags found for ${image}`);
+          // version-sort: split numeric parts
+          const sorted = tags.sort((a, b) => {
+            const pa = a.split('.').map(Number);
+            const pb = b.split('.').map(Number);
+            const len = Math.max(pa.length, pb.length);
+            for (let i = 0; i < len; i++) {
+              const da = pa[i] ?? 0;
+              const db = pb[i] ?? 0;
+              if (da !== db) return da - db;
+            }
+            return 0;
+          });
+          return sorted[sorted.length - 1];
+        }
+
+        async function main() {
+          if (payloadTag) {
+            tag = payloadTag;
+            console.log(`Using dispatch payload tag: ${tag}`);
+          } else if (inputTag) {
+            tag = inputTag;
+            console.log(`Using workflow_dispatch input tag: ${tag}`);
+          } else {
+            console.log(`Fetching latest tag for ${image} from GHCR...`);
+            tag = await fetchLatestTag();
+            console.log(`Using GHCR latest tag: ${tag}`);
+          }
+          if (!tag) throw new Error('Tag resolution failed; empty tag.');
+          console.log(`tag=${tag}`);
+          const fs = require('fs');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `tag=${tag}\n`);
+        }
+
+        main().catch(err => {
+          console.error(err.message);
+          process.exit(1);
+        });
+        NODE
 inputs:
   owner:
     required: true
