@@ -97,10 +97,10 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: pulumi-workbench-updated
-          client-payload: '{\"pulumi_tag\": \"${{ needs.build-pulumi-workbench.outputs.sha-tag }}\"}'
+          client-payload: '{"pulumi_tag":"${{ needs.build-pulumi-workbench.outputs.sha-tag }}"}'
       - name: Dispatch Pulumi Talos Cluster Workbench Update
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: pulumi-talos-cluster-workbench-updated
-          client-payload: '{\"pulumi_talos_tag\": \"${{ needs.build-pulumi-talos-cluster-workbench.outputs.sha-tag }}\"}'
+          client-payload: '{"pulumi_talos_tag":"${{ needs.build-pulumi-talos-cluster-workbench.outputs.sha-tag }}"}'

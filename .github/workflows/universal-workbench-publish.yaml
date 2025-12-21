@@ -36,4 +36,4 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: universal-workbench-updated
-          client-payload: '{\"universal_tag\": \"${{ needs.build-universal-workbench.outputs.sha-tag }}\"}'
+          client-payload: '{"universal_tag":"${{ needs.build-universal-workbench.outputs.sha-tag }}"}'

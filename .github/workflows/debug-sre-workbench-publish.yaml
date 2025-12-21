@@ -81,4 +81,4 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: debug-sre-workbench-updated
-          client-payload: '{\"debug_sre_tag\": \"${{ needs.build-debug-sre-workbench.outputs.sha-tag }}\"}'
+          client-payload: '{"debug_sre_tag":"${{ needs.build-debug-sre-workbench.outputs.sha-tag }}"}'

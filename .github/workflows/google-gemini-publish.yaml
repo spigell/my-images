@@ -114,4 +114,4 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: gemini-workbench-updated
-          client-payload: '{\"gemini_tag\": \"${{ needs.build-gemini-workbench.outputs.sha-tag }}\"}'
+          client-payload: '{"gemini_tag":"${{ needs.build-gemini-workbench.outputs.sha-tag }}"}'

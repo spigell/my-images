@@ -76,4 +76,4 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: holmes-gpt-updated
-          client-payload: '{\"holmes_tag\": \"${{ needs.build-holmes-gpt.outputs.sha-tag }}\"}'
+          client-payload: '{"holmes_tag":"${{ needs.build-holmes-gpt.outputs.sha-tag }}"}'
