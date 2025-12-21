@@ -12,23 +12,33 @@ runs:
         GHCR_TOKEN: ${{ inputs.ghcr_token }}
       run: |
         tag=""
-        if [[ -n "${PAYLOAD_TAG}" ]]; then
-          tag="${PAYLOAD_TAG}"
-          echo "Using payload tag: $tag"
-        elif [[ -n "${INPUT_TAG}" ]]; then
-          tag="${INPUT_TAG}"
-          echo "Using input tag: $tag"
-        else
+        case "${GITHUB_EVENT_NAME}" in
+          repository_dispatch)
+            if [[ -n "${PAYLOAD_TAG}" ]]; then
+              tag="${PAYLOAD_TAG}"
+              echo "Using dispatch payload tag: ${tag}"
+            fi
+            ;;
+          workflow_dispatch)
+            if [[ -n "${INPUT_TAG}" ]]; then
+              tag="${INPUT_TAG}"
+              echo "Using workflow_dispatch input tag: ${tag}"
+            fi
+            ;;
+        esac
+
+        if [[ -z "${tag}" ]]; then
           echo "Fetching latest tag for ${IMAGE} from GHCR..."
           bearer=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:${OWNER}/${IMAGE}:pull" -u "${OWNER}:${GHCR_TOKEN}" | jq -r '.token')
           tag=$(curl -sH "Authorization: Bearer ${bearer}" "https://ghcr.io/v2/${OWNER}/${IMAGE}/tags/list" | jq -r '.tags[]' | grep -v latest | sort -V | tail -1)
-          if [[ -z "$tag" ]]; then
+          if [[ -z "${tag}" ]]; then
             echo "No tags found for ${IMAGE}" >&2
             exit 1
           fi
-          echo "Using GHCR latest tag: $tag"
+          echo "Using GHCR latest tag: ${tag}"
         fi
-        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+        echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
 inputs:
   owner:
     required: true
