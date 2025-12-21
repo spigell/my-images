@@ -34,4 +34,4 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: zmx-binary-updated
-          client-payload: '{\"zmx_tag\": \"${{ needs.build-zmx-binary.outputs.sha-tag }}\"}'
+          client-payload: '{"zmx_tag":"${{ needs.build-zmx-binary.outputs.sha-tag }}"}'
