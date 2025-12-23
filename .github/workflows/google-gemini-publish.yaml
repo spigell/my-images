@@ -1,13 +1,22 @@
 name: Build and Publish Gemini CLI images
 
 on:
+  repository_dispatch:
+    types: [universal-workbench-updated, zmx-binary-updated]
   push:
     paths:
       - 'google-gemini-docker/**'
-      - 'versions/zmx.json'
       - '.github/workflows/google-gemini-publish.yaml'
-      - 'versions/universal-workbench.json'
   workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+      zmx_tag:
+        description: zmx binary tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -17,22 +26,30 @@ jobs:
   resolve-universal-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   resolve-zmx-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
         with:
-          path: versions/zmx.json
+          owner: ${{ github.repository_owner }}
+          image: zmx-binary
+          payload_tag: ${{ github.event.client_payload.zmx_tag }}
+          input_tag: ${{ inputs.zmx_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   build-gemini-workbench:
     needs:
@@ -56,25 +73,9 @@ jobs:
     needs: build-gemini-workbench
     runs-on: ubuntu-latest
     steps:
-      - name: Log dispatch payload
-        run: echo "Dispatching gemini-workbench-updated with tag ${{ needs.build-gemini-workbench.outputs.sha-tag }}"
       - name: Dispatch Gemini Workbench Update
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: gemini-workbench-updated
-          client-payload: '{"gemini_tag": "${{ needs.build-gemini-workbench.outputs.sha-tag }}"}'
-
-  update-gemini-manifest:
-    needs:
-      - build-gemini-workbench
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-      - uses: ./.github/actions/update-workbench-manifest
-        with:
-          path: versions/google-gemini.json
-          tag: ${{ needs.build-gemini-workbench.outputs.sha-tag }}
-          commit-message: "chore(versions): update gemini workbench manifest"
+          client-payload: '{"gemini_tag":"${{ needs.build-gemini-workbench.outputs.sha-tag }}"}'

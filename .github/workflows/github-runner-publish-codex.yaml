@@ -1,12 +1,18 @@
 name: Build and Publish GitHub Runner image (Codex AI agent)
 
 on:
+  repository_dispatch:
+    types: [openai-codex-workbench-updated]
   push:
     paths:
       - 'github-runner-docker/**'
       - '.github/workflows/github-runner-publish-codex.yaml'
-      - 'versions/openai-codex.json'
   workflow_dispatch:
+    inputs:
+      codex_tag:
+        description: Codex Workbench tag to consume (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -16,13 +22,16 @@ jobs:
   resolve-base-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
         with:
-          path: versions/openai-codex.json
+          owner: ${{ github.repository_owner }}
+          image: codex-workbench
+          payload_tag: ${{ github.event.client_payload.codex_tag }}
+          input_tag: ${{ inputs.codex_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   build-github-runner:
     needs:

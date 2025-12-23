@@ -11,7 +11,7 @@ on:
     inputs:
       gemini_tag:
         description: Gemini Workbench tag to consume
-        required: true
+        required: false
         type: string
 
 permissions:
@@ -24,29 +24,14 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read-fallback
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
         with:
-          path: versions/google-gemini.json
-      - id: final-tag
-        run: |
-          tag=""
-          if [[ "${{ github.event_name }}" == "repository_dispatch" && -n "${{ github.event.client_payload.gemini_tag }}" ]]; then
-            tag="${{ github.event.client_payload.gemini_tag }}"
-            echo "Using dispatch payload tag: $tag"
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.gemini_tag }}" ]]; then
-            tag="${{ inputs.gemini_tag }}"
-            echo "Using manual input tag: $tag"
-          else
-            tag="${{ steps.read-fallback.outputs.tag }}"
-            echo "Dispatch payload/input missing; falling back to versions file tag: $tag"
-          fi
-          if [[ -z "$tag" ]]; then
-            echo "Tag resolution failed; empty tag detected." >&2
-            exit 1
-          fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          owner: ${{ github.repository_owner }}
+          image: google-gemini-workbench
+          payload_tag: ${{ github.event.client_payload.gemini_tag }}
+          input_tag: ${{ inputs.gemini_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   build-github-runner:
     needs:

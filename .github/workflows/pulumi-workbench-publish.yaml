@@ -1,14 +1,19 @@
 name: Build and Publish Pulumi images
 
 on:
+  repository_dispatch:
+    types: [debug-sre-workbench-updated]
   push:
     paths:
       - 'pulumi-workbench-docker/**'
       - 'pulumi-talos-cluster-workbench-docker/**'
       - '.github/workflows/pulumi-workbench-publish.yaml'
-      - 'versions/debug-sre-workbench.json'
   workflow_dispatch:
-
+    inputs:
+      debug_sre_tag:
+        description: Debug SRE tag to use (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -18,13 +23,16 @@ jobs:
   resolve-debug-sre-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
         with:
-          path: versions/debug-sre-workbench.json
+          owner: ${{ github.repository_owner }}
+          image: debug-sre-workbench
+          payload_tag: ${{ github.event.client_payload.debug_sre_tag }}
+          input_tag: ${{ inputs.debug_sre_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   build-pulumi-workbench:
     needs: resolve-debug-sre-tag
@@ -59,3 +67,22 @@ jobs:
         TALOSCTL_VERSION=1.11.5
       build-contexts: |
         shared=./shared
+
+  trigger-downstreams:
+    needs:
+      - build-pulumi-workbench
+      - build-pulumi-talos-cluster-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Pulumi Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: pulumi-workbench-updated
+          client-payload: '{"pulumi_tag":"${{ needs.build-pulumi-workbench.outputs.sha-tag }}"}'
+      - name: Dispatch Pulumi Talos Cluster Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: pulumi-talos-cluster-workbench-updated
+          client-payload: '{"pulumi_talos_tag":"${{ needs.build-pulumi-talos-cluster-workbench.outputs.sha-tag }}"}'

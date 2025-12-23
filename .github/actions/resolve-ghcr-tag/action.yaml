@@ -1,0 +1,118 @@
+name: Resolve GHCR Tag
+runs:
+  using: composite
+  steps:
+    - id: resolve
+      shell: bash
+      env:
+        OWNER: ${{ inputs.owner }}
+        IMAGE: ${{ inputs.image }}
+        PAYLOAD_TAG: ${{ inputs.payload_tag }}
+        INPUT_TAG: ${{ inputs.input_tag }}
+        GHCR_TOKEN: ${{ inputs.ghcr_token }}
+      run: |
+        node - <<'NODE'
+        const https = require('https');
+        const fs = require('fs');
+
+        const env = process.env;
+        const owner = env.OWNER;
+        const image = env.IMAGE;
+        const payloadTag = env.PAYLOAD_TAG || '';
+        const inputTag = env.INPUT_TAG || '';
+        const ghcrToken = env.GHCR_TOKEN;
+        const eventName = env.GITHUB_EVENT_NAME || '';
+        let tag = '';
+
+        function get(url, options = {}) {
+          return new Promise((resolve, reject) => {
+            const req = https.request(url, options, res => {
+              let data = '';
+              res.on('data', chunk => (data += chunk));
+              res.on('end', () => {
+                if (res.statusCode && res.statusCode >= 400) {
+                  return reject(new Error(`HTTP ${res.statusCode}: ${data}`));
+                }
+                resolve({ res, data });
+              });
+            });
+            req.on('error', reject);
+            if (options.body) req.write(options.body);
+            req.end();
+          });
+        }
+
+        async function fetchBearer() {
+          const auth = Buffer.from(`${owner}:${ghcrToken}`).toString('base64');
+          const url = `https://ghcr.io/token?service=ghcr.io&scope=repository:${owner}/${image}:pull`;
+          const { data } = await get(url, { headers: { Authorization: `Basic ${auth}` } });
+          const json = JSON.parse(data);
+          return json.token;
+        }
+
+        async function fetchLatestTag() {
+          const bearer = await fetchBearer();
+          const url = `https://ghcr.io/v2/${owner}/${image}/tags/list`;
+          const { data } = await get(url, { headers: { Authorization: `Bearer ${bearer}` } });
+          const json = JSON.parse(data);
+          const tags = Array.isArray(json.tags) ? json.tags.filter(t => t !== 'latest') : [];
+          if (!tags.length) throw new Error(`No tags found for ${image}`);
+          const sorted = tags.sort((a, b) => {
+            const pa = a.split('.').map(Number);
+            const pb = b.split('.').map(Number);
+            const len = Math.max(pa.length, pb.length);
+            for (let i = 0; i < len; i++) {
+              const da = pa[i] ?? 0;
+              const db = pb[i] ?? 0;
+              if (da !== db) return da - db;
+            }
+            return 0;
+          });
+          return sorted[sorted.length - 1];
+        }
+
+        async function main() {
+          switch (eventName) {
+            case 'repository_dispatch':
+              if (payloadTag) {
+                tag = payloadTag;
+                console.log(`Using dispatch payload tag: ${tag}`);
+                break;
+              }
+            // fall through intentionally if no payload tag
+            case 'workflow_dispatch':
+              if (inputTag) {
+                tag = inputTag;
+                console.log(`Using workflow_dispatch input tag: ${tag}`);
+                break;
+              }
+            // fall through to default
+            default:
+              console.log(`Fetching latest tag for ${image} from GHCR...`);
+              tag = await fetchLatestTag();
+              console.log(`Using GHCR latest tag: ${tag}`);
+          }
+
+          if (!tag) throw new Error('Tag resolution failed; empty tag.');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `tag=${tag}\n`);
+        }
+
+        main().catch(err => {
+          console.error(err.message);
+          process.exit(1);
+        });
+        NODE
+inputs:
+  owner:
+    required: true
+  image:
+    required: true
+  payload_tag:
+    required: false
+  input_tag:
+    required: false
+  ghcr_token:
+    required: true
+outputs:
+  tag:
+    value: ${{ steps.resolve.outputs.tag }}

@@ -1,12 +1,18 @@
 name: Build and Publish Debug SRE Workbench
 
 on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
   push:
     paths:
       - 'debug-sre-workbench-docker/**'
       - '.github/workflows/debug-sre-workbench-publish.yaml'
-      - 'versions/universal-workbench.json'
   workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag to use (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -16,11 +22,16 @@ jobs:
   resolve-universal-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.read.outputs.tag }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/read-universal-tag
-        id: read
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
   build-debug-sre-workbench:
     needs:
@@ -42,16 +53,14 @@ jobs:
       build-contexts: |
         shared=./shared
 
-  update-debug-sre-manifest:
+  trigger-downstreams:
     needs:
       - build-debug-sre-workbench
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Dispatch Debug SRE Workbench Update
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-      - uses: ./.github/actions/update-workbench-manifest
-        with:
-          path: versions/debug-sre-workbench.json
-          tag: ${{ needs.build-debug-sre-workbench.outputs.sha-tag }}
-          commit-message: "chore(versions): update debug SRE workbench manifest"
+          event-type: debug-sre-workbench-updated
+          client-payload: '{"debug_sre_tag":"${{ needs.build-debug-sre-workbench.outputs.sha-tag }}"}'
