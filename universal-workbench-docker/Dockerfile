@@ -120,6 +120,17 @@ RUN --mount=type=cache,target=/var/cache/apt \
 # QoL defaults shared by all workbenches
 RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
 
+# Pull common dotfiles for the ubuntu user
+RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
+ && install -d "${UBUNTU_HOME}/.vim/configs" \
+ && cp /tmp/dotfiles/bash/bashrc "${UBUNTU_HOME}/.bashrc" \
+ && cp /tmp/dotfiles/bash/bash_profile "${UBUNTU_HOME}/.bash_profile" \
+ && cp /tmp/dotfiles/git/gitconfig "${UBUNTU_HOME}/.gitconfig" \
+ && cp /tmp/dotfiles/vim/vimrc "${UBUNTU_HOME}/.vimrc" \
+ && cp /tmp/dotfiles/vim/pluginsrc "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
+ && chown -R ubuntu:ubuntu "${UBUNTU_HOME}/.bashrc" "${UBUNTU_HOME}/.bash_profile" "${UBUNTU_HOME}/.gitconfig" "${UBUNTU_HOME}/.vimrc" "${UBUNTU_HOME}/.vim" \
+ && rm -rf /tmp/dotfiles
+
 # Install Go toolchain
 RUN arch="${TARGETARCH:-amd64}"; \
     curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \
