@@ -28,6 +28,7 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/resolve-ghcr-tag
         id: final-tag
         with:
@@ -42,6 +43,7 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/resolve-ghcr-tag
         id: final-tag
         with:
