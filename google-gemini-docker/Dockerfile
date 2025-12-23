@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.20.0
+ARG GEMINI_CLI_VERSION=0.22.2
 ARG ZMX_BINARY_REF=sha-dev
 
 FROM ghcr.io/spigell/zmx-binary:${ZMX_BINARY_REF} AS zmx
