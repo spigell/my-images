@@ -1,0 +1,18 @@
+[user]
+	email = spigelly@gmail.com
+	name = Spigell
+[alias]
+	prepush = log --graph --stat origin/master..
+	co = checkout
+	ci = commit
+	br = branch
+	st = status
+	ol = log --pretty=oneline
+	last = log -1 HEAD
+	unstage = reset HEAD --
+[color]
+	branch = true
+	diff = true
+	interactive = true
+	pager = true
+	status = true

@@ -1,0 +1,19 @@
+set nocompatible
+filetype off  
+
+set rtp+=~/.vim/bundle/vundle/
+
+call vundle#rc()
+
+filetype plugin indent on
+
+Bundle 'tpope/vim-fugitive'
+Bundle 'WolfgangMehner/bash-support'
+Bundle 'ervandew/supertab'
+
+Bundle "MarcWeber/vim-addon-mw-utils"
+Bundle "tomtom/tlib_vim"
+Bundle "garbas/vim-snipmate"
+Bundle "vadv/vim-chef"
+
+autocmd FileType ruby,eruby set filetype=ruby.eruby.chef
