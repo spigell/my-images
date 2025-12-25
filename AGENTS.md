@@ -1,18 +1,27 @@
 # Repository Guidelines
 
-- Maintain the **universal workbench** (`universal-workbench-docker/`) as the single source for shared runtimes and tooling.
-- The universal base now installs GitHub’s `spec-kit` via `uv specify-cli`, so spec-building tooling is immediately available in every downstream workbench.
-- All version manifests live under the repository-level `versions/` directory (one file per image, each exactly `{"tag": "<image-tag>"}`); do not introduce other fields because the composite action and workflows rely on this shared schema.
-- Version manifests are bumped automatically by CI; do not edit files under `versions/` manually.
-- When upgrading any tooling version in a Dockerfile, update the corresponding publish workflow inputs so CI builds the new tag.
-- GitHub runner upgrades track official releases; fetch the newest tag from https://github.com/actions/runner/releases (for example via `curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name`) before making changes.
-- For any GitHub-hosted release, prefer querying the API (`curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | jq -r .tag_name`) so agents can script updates consistently and avoid relying on manual web checks.
-- The universal base already includes the Ubuntu `ubuntu` user. Do **not** add another `useradd ubuntu` step in downstream Dockerfiles.
-- Update `versions/universal-workbench.json` whenever the universal image changes so dependent workflows pull the
-  fresh tag.
-- Document any version bumps or related workflow updates in the PR summary.
-- When building images locally or in CI, continue providing the `shared/` build context so Dockerfiles can access the helper script.
-- Push and pull via the `http-spigell-bot` remote (https://github.com/spigell/my-images.git); the default `origin` SSH remote is read-only in this workspace. Run commands explicitly against that remote (for example, `git pull http-spigell-bot main`).
+## Build and publish flow
+
+- The **universal workbench** (`universal-workbench-docker/`) is the single base; all downstream images layer on top of it.
+- Publish workflows propagate via repository_dispatch: `universal-workbench-publish` triggers `universal-workbench-updated`, `google-gemini-publish` listens and triggers `gemini-workbench-updated`, and `github-runner-publish-gemini` listens for that. Keep downstream dispatch jobs named `trigger-downstreams`.
+- Always include the `shared/` build context when building locally or in CI so helper scripts are available.
+
+## Versioning and tooling
+
+- Version manifests live under `versions/` and are exactly `{"tag": "<image-tag>"}`; CI bumps them automatically—do not edit manually.
+- When changing a tool or base version in a Dockerfile, update the matching publish workflow inputs (build args or `version:`) so CI builds the new tag.
+- For GitHub runner updates, fetch the latest runner tag from the GitHub API (for example `curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name`).
+- For any GitHub-hosted release, prefer the API over manual checks (for example `curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | jq -r .tag_name`).
+
+## Base image rules and docs
+
+- The universal base already includes the Ubuntu `ubuntu` user; do not add another `useradd ubuntu` step downstream.
+- `uv specify-cli` installs GitHub’s `spec-kit` in the universal image, so downstream workbenches already have it.
+- Document version bumps or workflow updates in PR summaries.
+
+## Git remote usage
+
+- Push and pull via the `http-spigell-bot` remote (`https://github.com/spigell/my-images.git`); `origin` (SSH) is read-only here. Call git explicitly with that remote (for example `git pull http-spigell-bot main`).
 - Name downstream dispatch jobs `trigger-downstreams` (renamed from `update-manifest`) so workflows stay consistent.
 
 ## Workbench Overview
