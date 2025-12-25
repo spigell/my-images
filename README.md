@@ -30,6 +30,21 @@ consistently, and the publish workflows watch those manifests for changes.
 - **debug-sre-workbench** (`debug-sre-workbench-docker/`): Kubernetes debugging toolbox layered on the universal base with Docker CLI, kubectl, Helm, K9s, Talosctl, etcdctl, Poetry, uv, and supporting CLIs guaranteed to be present.
 - **holmes-gpt** (`holmes-gpt-docker/`): HolmesGPT runtime that layers the debug SRE toolbox with upstream Holmes Python sources plus kube-lineage, ArgoCD, Helm 4, and Azure SQL prerequisites.
 
+## Browse images (explore.ggcr.dev)
+
+- universal-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/universal-workbench:latest
+- google-gemini-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/google-gemini-workbench:latest
+- google-gemini-github-runner: https://explore.ggcr.dev/?image=ghcr.io/spigell/google-gemini-github-runner:latest
+- openai-codex-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/codex-workbench:latest
+- codex-github-runner: https://explore.ggcr.dev/?image=ghcr.io/spigell/codex-github-runner:latest
+- pulumi-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/pulumi-workbench:latest
+- pulumi-talos-cluster-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/pulumi-talos-cluster-workbench:latest
+- debug-sre-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/debug-sre-workbench:latest
+- holmes-gpt: https://explore.ggcr.dev/?image=ghcr.io/spigell/holmes-gpt:latest
+- anki-desktop-docker: https://explore.ggcr.dev/?image=ghcr.io/spigell/anki-desktop-docker:latest
+- zmx-binary: https://explore.ggcr.dev/?image=ghcr.io/spigell/zmx-binary:latest
+- github-mcp-server: https://explore.ggcr.dev/?image=ghcr.io/spigell/github-mcp-server:latest
+
 ## Git setup helper
 
 Every workbench image includes the `setup-git-workbench` helper under `/usr/local/bin` and preinstalls `vim`. Run the helper
