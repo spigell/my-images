@@ -26,7 +26,7 @@ jobs:
       build-contexts: |
         shared=./shared
 
-  update-manifest:
+  trigger-downstreams:
     needs:
       - build-universal-workbench
     runs-on: ubuntu-latest
