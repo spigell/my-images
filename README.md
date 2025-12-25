@@ -20,15 +20,19 @@ consistently, and the publish workflows watch those manifests for changes.
 
 ## Available images
 
-- **universal-workbench** (`universal-workbench-docker/`): Common base layer shared across all workbenches.
-- **openai-codex-workbench** (`openai-codex-docker/`): Codex CLI environment on top of the universal base.
-- **google-gemini-workbench** (`google-gemini-docker/`): Gemini CLI environment on top of the universal base.
-- **google-gemini-github-runner** (`github-runner-docker/`): GitHub Actions runner image layered on the Gemini workbench; published through its own dedicated workflow so it can track runner-specific updates independently.
-- **pulumi-workbench** (`pulumi-workbench-docker/`): Pulumi CLI stack with pulumictl, kubectl, and `@pulumi/mcp-server` built atop the debug SRE toolbox.
-- **pulumi-talos-cluster-workbench** (`pulumi-talos-cluster-workbench-docker/`): Pulumi workbench extended with Talosctl and K9s.
-- **anki-desktop-workbench** (`anki-desktop-docker/`): Workbench for the Anki desktop tooling.
-- **debug-sre-workbench** (`debug-sre-workbench-docker/`): Kubernetes debugging toolbox layered on the universal base with Docker CLI, kubectl, Helm, K9s, Talosctl, etcdctl, Poetry, uv, and supporting CLIs guaranteed to be present.
-- **holmes-gpt** (`holmes-gpt-docker/`): HolmesGPT runtime that layers the debug SRE toolbox with upstream Holmes Python sources plus kube-lineage, ArgoCD, Helm 4, and Azure SQL prerequisites.
+| Image directory | Base image | Extends with |
+| --- | --- | --- |
+| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling |
+| `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling |
+| `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases |
+| `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via a dedicated workflow |
+| `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |
+| `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling |
+| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv |
+| `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT runtime plus kube-lineage, ArgoCD, Helm 4, Azure SQL tooling |
+| `anki-desktop-docker/` | Universal workbench | Anki desktop tooling and defaults |
+| `zmx-binary/` | - | zmx binary image used by workbench builds |
+| `github-mcp-server-docker/` | Universal workbench | GitHub MCP server |
 
 ## Browse images (explore.ggcr.dev)
 

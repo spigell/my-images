@@ -31,16 +31,3 @@
 
 - Push and pull via the `http-spigell-bot` remote (`https://github.com/spigell/my-images.git`); `origin` (SSH) is read-only here. Call git explicitly with that remote (for example `git pull http-spigell-bot main`).
 - Name downstream dispatch jobs `trigger-downstreams` (renamed from `update-manifest`) so workflows stay consistent.
-
-## Workbench Overview
-
-| Image directory | Base image | Extends with |
-| --- | --- | --- |
-| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling |
-| `openai-codex-docker/` | Universal workbench (already the primary base for the Codex workbench) | Codex binary and related tooling |
-| `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases |
-| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv |
-| `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |
-| `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling |
-| `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via its own dedicated workflow |
-| `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT Python runtime plus kube-lineage, ArgoCD, Helm, Azure SQL tooling |
