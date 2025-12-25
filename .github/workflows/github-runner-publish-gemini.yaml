@@ -1,5 +1,5 @@
 name: Build and Publish GitHub Runner image (Gemini AI Agent)
-run-name: ${{ github.event.client_payload.message || format('{0}: repository_dispatch by {1}', github.event.action, github.actor) }}
+run-name: "${{ github.event.client_payload.message || format('{0}: repository_dispatch by {1}', github.event.action, github.actor) }}"
 
 on:
   repository_dispatch:
