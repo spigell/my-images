@@ -8,7 +8,6 @@
 
 ## Versioning and tooling
 
-- Version manifests live under `versions/` and are exactly `{"tag": "<image-tag>"}`; CI bumps them automatically—do not edit manually.
 - When changing a tool or base version in a Dockerfile, update the matching publish workflow inputs (build args or `version:`) so CI builds the new tag.
 - For GitHub runner updates, fetch the latest runner tag from the GitHub API (for example `curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name`).
 - For any GitHub-hosted release, prefer the API over manual checks (for example `curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | jq -r .tag_name`).
