@@ -13,6 +13,7 @@
 - Document any version bumps or related workflow updates in the PR summary.
 - When building images locally or in CI, continue providing the `shared/` build context so Dockerfiles can access the helper script.
 - Push and pull via the `http-spigell-bot` remote (https://github.com/spigell/my-images.git); the default `origin` SSH remote is read-only in this workspace. Run commands explicitly against that remote (for example, `git pull http-spigell-bot main`).
+- Name downstream dispatch jobs `trigger-downstreams` (renamed from `update-manifest`) so workflows stay consistent.
 
 ## Workbench Overview
 
