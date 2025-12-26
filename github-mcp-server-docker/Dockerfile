@@ -2,7 +2,7 @@
 FROM alpine:3.20 AS downloader
 
 # Set environment variables for the server version and architecture
-ENV GITHUB_MCP_SERVER_VERSION=v0.18.0
+ENV GITHUB_MCP_SERVER_VERSION=v0.26.3
 ENV ARCH=x86_64
 ENV DIST=Linux
 
