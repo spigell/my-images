@@ -4,34 +4,19 @@
 
 ## Available images
 
-| Image directory | Base image | Extends with |
-| --- | --- | --- |
-| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling |
-| `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling |
-| `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases |
-| `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via a dedicated workflow |
-| `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` |
-| `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling |
-| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv |
-| `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT runtime plus kube-lineage, ArgoCD, Helm 4, Azure SQL tooling |
-| `anki-desktop-docker/` | Universal workbench | Anki desktop tooling and defaults |
-| `zmx-binary/` | - | zmx binary image used by workbench builds |
-| `github-mcp-server-docker/` | Universal workbench | GitHub MCP server |
-
-## Browse images (explore.ggcr.dev)
-
-- universal-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench
-- google-gemini-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench
-- google-gemini-github-runner: https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner
-- openai-codex-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench
-- codex-github-runner: https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-github-runner
-- pulumi-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-workbench
-- pulumi-talos-cluster-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench
-- debug-sre-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench
-- holmes-gpt: https://explore.ggcr.dev/?repo=ghcr.io/spigell/holmes-gpt
-- anki-desktop-docker: https://explore.ggcr.dev/?repo=ghcr.io/spigell/anki-desktop-docker
-- zmx-binary: https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary
-- github-mcp-server: https://explore.ggcr.dev/?repo=ghcr.io/spigell/github-mcp-server
+| Image directory | Base image | Extends with | Browse |
+| --- | --- | --- | --- |
+| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling | https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench |
+| `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling | https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench |
+| `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases | https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench |
+| `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via a dedicated workflow | https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner |
+| `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` | https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-workbench |
+| `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling | https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench |
+| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv | https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench |
+| `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT runtime plus kube-lineage, ArgoCD, Helm 4, Azure SQL tooling | https://explore.ggcr.dev/?repo=ghcr.io/spigell/holmes-gpt |
+| `anki-desktop-docker/` | Universal workbench | Anki desktop tooling and defaults | https://explore.ggcr.dev/?repo=ghcr.io/spigell/anki-desktop-docker |
+| `zmx-binary/` | - | zmx binary image used by workbench builds | https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary |
+| `github-mcp-server-docker/` | Universal workbench | GitHub MCP server | https://explore.ggcr.dev/?repo=ghcr.io/spigell/github-mcp-server |
 
 ## Git setup helper
 
