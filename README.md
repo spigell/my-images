@@ -36,18 +36,18 @@ consistently, and the publish workflows watch those manifests for changes.
 
 ## Browse images (explore.ggcr.dev)
 
-- universal-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/universal-workbench:latest
-- google-gemini-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/google-gemini-workbench:latest
-- google-gemini-github-runner: https://explore.ggcr.dev/?image=ghcr.io/spigell/google-gemini-github-runner:latest
-- openai-codex-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/codex-workbench:latest
-- codex-github-runner: https://explore.ggcr.dev/?image=ghcr.io/spigell/codex-github-runner:latest
-- pulumi-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/pulumi-workbench:latest
-- pulumi-talos-cluster-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/pulumi-talos-cluster-workbench:latest
-- debug-sre-workbench: https://explore.ggcr.dev/?image=ghcr.io/spigell/debug-sre-workbench:latest
-- holmes-gpt: https://explore.ggcr.dev/?image=ghcr.io/spigell/holmes-gpt:latest
-- anki-desktop-docker: https://explore.ggcr.dev/?image=ghcr.io/spigell/anki-desktop-docker:latest
-- zmx-binary: https://explore.ggcr.dev/?image=ghcr.io/spigell/zmx-binary:latest
-- github-mcp-server: https://explore.ggcr.dev/?image=ghcr.io/spigell/github-mcp-server:latest
+- universal-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench
+- google-gemini-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench
+- google-gemini-github-runner: https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner
+- openai-codex-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench
+- codex-github-runner: https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-github-runner
+- pulumi-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-workbench
+- pulumi-talos-cluster-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench
+- debug-sre-workbench: https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench
+- holmes-gpt: https://explore.ggcr.dev/?repo=ghcr.io/spigell/holmes-gpt
+- anki-desktop-docker: https://explore.ggcr.dev/?repo=ghcr.io/spigell/anki-desktop-docker
+- zmx-binary: https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary
+- github-mcp-server: https://explore.ggcr.dev/?repo=ghcr.io/spigell/github-mcp-server
 
 ## Git setup helper
 
