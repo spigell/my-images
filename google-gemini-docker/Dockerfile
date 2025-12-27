@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.22.2
+ARG GEMINI_CLI_VERSION=0.22.4
+ARG SPLITRAIL_VERSION=3.2.2
 ARG ZMX_BINARY_REF=sha-dev
 
 FROM ghcr.io/spigell/zmx-binary:${ZMX_BINARY_REF} AS zmx
@@ -20,6 +21,7 @@ USER root
 ENV HOME=/root
 
 ARG GEMINI_CLI_VERSION
+ARG SPLITRAIL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
@@ -28,6 +30,13 @@ RUN yarn config set prefix /usr/local \
  && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
  && npm cache clean --force || true \
  && yarn cache clean || true
+
+RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+ && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
+ && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
+ && tar -xvf "/tmp/${ARCHIVE}" -C /tmp \
+ && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
+ && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
 RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json

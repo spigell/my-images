@@ -2,6 +2,7 @@
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG CODEX_BINARY_REF=rust-v0.77.0
+ARG SPLITRAIL_VERSION=3.2.2
 ARG ZMX_BINARY_REF=sha-dev
 
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
@@ -16,10 +17,19 @@ LABEL org.opencontainers.image.title="OpenAI Codex Workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}"
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+ARG SPLITRAIL_VERSION
+
 USER root
 ENV HOME=/root
 
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+
+RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+ && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
+ && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
+ && tar -xvf "/tmp/${ARCHIVE}" -C /tmp \
+ && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
+ && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
 COPY --from=zmx /usr/local/bin/zmx /usr/local/bin/zmx
