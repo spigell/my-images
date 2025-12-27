@@ -17,6 +17,8 @@ LABEL org.opencontainers.image.title="OpenAI Codex Workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}"
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+ARG SPLITRAIL_VERSION
+
 USER root
 ENV HOME=/root
 
