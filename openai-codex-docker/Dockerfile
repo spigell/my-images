@@ -25,10 +25,11 @@ ENV HOME=/root
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
 
 RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+ && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
  && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
  && tar -xvf "/tmp/${ARCHIVE}" -C /tmp \
- && install -m 0755 /tmp/splitrail /usr/local/bin/splitrail \
- && rm -f "/tmp/${ARCHIVE}" /tmp/splitrail
+ && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
+ && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
 COPY --from=zmx /usr/local/bin/zmx /usr/local/bin/zmx

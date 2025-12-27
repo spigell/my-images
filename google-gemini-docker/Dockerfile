@@ -32,10 +32,11 @@ RUN yarn config set prefix /usr/local \
  && yarn cache clean || true
 
 RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+ && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
  && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
  && tar -xvf "/tmp/${ARCHIVE}" -C /tmp \
- && install -m 0755 /tmp/splitrail /usr/local/bin/splitrail \
- && rm -f "/tmp/${ARCHIVE}" /tmp/splitrail
+ && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
+ && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
 RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
