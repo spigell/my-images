@@ -3,9 +3,6 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.22.4
 ARG SPLITRAIL_VERSION=3.2.2
-ARG ZMX_BINARY_REF=sha-dev
-
-FROM ghcr.io/spigell/zmx-binary:${ZMX_BINARY_REF} AS zmx
 
 FROM golang:1.25.5-alpine AS builder
 # COPY gemini-telemetry/go.mod gemini-telemetry/go.sum ./
@@ -42,7 +39,6 @@ RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
 COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
 COPY --from=builder /gemini-telemetry /usr/local/bin/gemini-telemetry
-COPY --from=zmx /usr/local/bin/zmx /usr/local/bin/zmx
 
 USER ubuntu
 ENV HOME=/home/ubuntu

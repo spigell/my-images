@@ -3,10 +3,8 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG CODEX_BINARY_REF=rust-v0.77.0
 ARG SPLITRAIL_VERSION=3.2.2
-ARG ZMX_BINARY_REF=sha-dev
 
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
-FROM ghcr.io/spigell/zmx-binary:${ZMX_BINARY_REF} AS zmx
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 LABEL codex.binary.ref="${CODEX_BINARY_REF}"
@@ -32,7 +30,6 @@ RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
-COPY --from=zmx /usr/local/bin/zmx /usr/local/bin/zmx
 
 USER ubuntu
 ENV HOME=/home/ubuntu
