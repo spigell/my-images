@@ -3,7 +3,7 @@ run-name: "${{ github.event.client_payload.message || (github.event_name == 'rep
 
 on:
   repository_dispatch:
-    types: [universal-workbench-updated, zmx-binary-updated]
+    types: [universal-workbench-updated]
   push:
     paths:
       - 'google-gemini-docker/**'
@@ -12,10 +12,6 @@ on:
     inputs:
       universal_tag:
         description: Universal Workbench tag (optional; falls back to GHCR latest)
-        required: false
-        type: string
-      zmx_tag:
-        description: zmx binary tag (optional; falls back to GHCR latest)
         required: false
         type: string
 
@@ -39,25 +35,9 @@ jobs:
           input_tag: ${{ inputs.universal_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
-  resolve-zmx-tag:
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.final-tag.outputs.tag }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/resolve-ghcr-tag
-        id: final-tag
-        with:
-          owner: ${{ github.repository_owner }}
-          image: zmx-binary
-          payload_tag: ${{ github.event.client_payload.zmx_tag }}
-          input_tag: ${{ inputs.zmx_tag }}
-          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-
   build-gemini-workbench:
     needs:
       - resolve-universal-tag
-      - resolve-zmx-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
@@ -68,7 +48,6 @@ jobs:
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         GEMINI_CLI_VERSION=0.22.4
-        ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 
