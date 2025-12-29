@@ -1,5 +1,10 @@
 # syntax=docker/dockerfile:1.18
 
+ARG ZMX_REF=651dd7cd93c93acfbf8f3d0322bee0d82dd1beb9
+ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
+
+FROM ${ZMX_BINARY_IMAGE}:${ZMX_REF} AS zmx-binary
+
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -12,6 +17,7 @@ ARG DELVE_VERSION=1.25.2
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22
 ARG SPECIFY_VERSION=v0.0.90
+ARG ZMX_REF
 
 ENV LANG="C.UTF-8"
 ENV UBUNTU_HOME=/home/ubuntu
@@ -180,6 +186,8 @@ RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_D
 # Provided by --build-context shared=path/to/repo-root/shared
 COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
 
+COPY --from=zmx-binary /zmx /usr/local/bin/zmx
+
 RUN install -d -m 0755 "${UBUNTU_HOME}" && chown -R ubuntu:ubuntu "${UBUNTU_HOME}"
 
 USER ubuntu
@@ -202,6 +210,7 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       com.spigell.workbench.go.delve-version="${DELVE_VERSION}" \
       com.spigell.workbench.specify.version="${SPECIFY_VERSION}" \
       com.spigell.workbench.golangci-lint.version="${GOLANGCI_LINT_VERSION}" \
+      com.spigell.workbench.zmx.version="${ZMX_REF}" \
       com.spigell.workbench.package-manager="apt"
 
 ENTRYPOINT ["/bin/bash", "-lc"]
