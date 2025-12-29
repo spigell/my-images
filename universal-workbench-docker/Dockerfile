@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.18
 
-ARG ZMX_BINARY_REF=sha-dev
+ARG ZMX_BINARY_REF=0.1.0
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_REF} AS zmx-binary
