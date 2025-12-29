@@ -1,6 +1,8 @@
 name: Build and Publish Universal Workbench
 
 on:
+  repository_dispatch:
+    types: [zmx-binary-updated]
   push:
     paths:
       - 'universal-workbench-docker/**'
@@ -28,6 +30,7 @@ jobs:
         with:
           owner: ${{ github.repository_owner }}
           image: zmx-binary
+          payload_tag: ${{ github.event.client_payload.zmx_tag }}
           input_tag: ${{ inputs.zmx_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
