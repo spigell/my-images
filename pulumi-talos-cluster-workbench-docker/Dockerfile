@@ -4,7 +4,7 @@
 ############################
 ARG PULUMI_WORKBENCH_TAG=3.210.0
 ARG K9S_VERSION=0.50.16
-ARG PACKER_VERSION=1.12.0
+ARG PACKER_VERSION=1.14.3
 
 # Set by buildx/BuildKit (defaults for classic docker build)
 ARG TARGETOS=linux
