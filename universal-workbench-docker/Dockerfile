@@ -2,8 +2,11 @@
 
 ARG ZMX_BINARY_REF=0.1.0
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
+ARG MCP_PROXY_VERSION=v0.9.0
+ARG MCP_SHELL_SERVER_VERSION=1.0.3
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_REF} AS zmx-binary
+FROM ghcr.io/sparfenyuk/mcp-proxy:${MCP_PROXY_VERSION} AS mcp-proxy
 
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -18,6 +21,8 @@ ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22
 ARG SPECIFY_VERSION=v0.0.90
 ARG ZMX_BINARY_REF
+ARG MCP_PROXY_VERSION
+ARG MCP_SHELL_SERVER_VERSION
 
 ENV LANG="C.UTF-8"
 ENV UBUNTU_HOME=/home/ubuntu
@@ -166,6 +171,7 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
     XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
+    XDG_BIN_HOME=/usr/local/bin uv tool install "mcp-shell-server==${MCP_SHELL_SERVER_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
     rm -rf "${HOME}/.cache/pip"
 
@@ -185,8 +191,10 @@ RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_D
 
 # Provided by --build-context shared=path/to/repo-root/shared
 COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git-workbench
+COPY --from=shared --chmod=0755 /start-shell-mcp.sh /usr/local/bin/start-shell-mcp
 
 COPY --from=zmx-binary /zmx /usr/local/bin/zmx
+COPY --from=mcp-proxy /usr/local/bin/mcp-proxy /usr/local/bin/mcp-proxy
 
 RUN install -d -m 0755 "${UBUNTU_HOME}" && chown -R ubuntu:ubuntu "${UBUNTU_HOME}"
 
