@@ -161,6 +161,7 @@ ENV PYENV_ROOT=/usr/local/share/pyenv
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 ENV PATH="/opt/mcp-proxy-venv/bin:${PATH}"
 ENV UV_NO_PROGRESS=1
+ENV XDG_DATA_HOME=/usr/local/share/uv
 RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     pyenv install "${PYTHON_VERSION}"; \
     pyenv global "${PYTHON_VERSION}"; \
