@@ -19,13 +19,14 @@ export ALLOWED_COMMANDS="${ALLOWED_COMMANDS:-${ALLOW_COMMANDS}}"
 HOST="${MCP_PROXY_HOST:-0.0.0.0}"
 PORT="${MCP_PROXY_PORT:-8080}"
 ALLOW_ORIGIN="${MCP_PROXY_ALLOW_ORIGIN:-*}"
+MCP_PROXY_BIN="${MCP_PROXY_BIN:-/opt/mcp-proxy-venv/bin/mcp-proxy}"
 
 server_cmd=("${MCP_SHELL_SERVER_CMD:-/usr/local/bin/mcp-shell-server}")
 if [[ $# -gt 0 ]]; then
   server_cmd=("$@")
 fi
 
-exec /usr/local/bin/mcp-proxy \
+exec "${MCP_PROXY_BIN}" \
   --host="${HOST}" \
   --port="${PORT}" \
   --allow-origin="${ALLOW_ORIGIN}" \

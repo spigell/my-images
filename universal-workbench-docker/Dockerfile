@@ -159,6 +159,7 @@ RUN chown -R ubuntu:ubuntu "${UBUNTU_GOPATH}" "${UBUNTU_HOME}/.cache"
 # Python via pyenv + tooling
 ENV PYENV_ROOT=/usr/local/share/pyenv
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
+ENV PATH="/opt/mcp-proxy-venv/bin:${PATH}"
 ENV UV_NO_PROGRESS=1
 RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     pyenv install "${PYTHON_VERSION}"; \
@@ -194,7 +195,7 @@ COPY --from=shared --chmod=0755 /setup-git-workbench.sh /usr/local/bin/setup-git
 COPY --from=shared --chmod=0755 /start-shell-mcp.sh /usr/local/bin/start-shell-mcp
 
 COPY --from=zmx-binary /zmx /usr/local/bin/zmx
-COPY --from=mcp-proxy /usr/local/bin/mcp-proxy /usr/local/bin/mcp-proxy
+COPY --from=mcp-proxy /app/.venv /opt/mcp-proxy-venv
 
 RUN install -d -m 0755 "${UBUNTU_HOME}" && chown -R ubuntu:ubuntu "${UBUNTU_HOME}"
 
