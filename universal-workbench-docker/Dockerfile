@@ -161,7 +161,6 @@ ENV PYENV_ROOT=/usr/local/share/pyenv
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 ENV PATH="/opt/mcp-proxy-venv/bin:${PATH}"
 ENV UV_NO_PROGRESS=1
-ENV XDG_DATA_HOME=/usr/local/share/uv
 RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     pyenv install "${PYTHON_VERSION}"; \
     pyenv global "${PYTHON_VERSION}"; \
@@ -172,8 +171,8 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     curl -LsSf https://astral.sh/uv/install.sh | XDG_BIN_HOME=/usr/local/share/uv bash -s -- --no-modify-path; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
-    XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
-    XDG_BIN_HOME=/usr/local/bin uv tool install "mcp-shell-server==${MCP_SHELL_SERVER_VERSION}"; \
+    XDG_DATA_HOME=/usr/local/share/uv XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
+    XDG_DATA_HOME=/usr/local/share/uv XDG_BIN_HOME=/usr/local/bin uv tool install "mcp-shell-server==${MCP_SHELL_SERVER_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
     rm -rf "${HOME}/.cache/pip"
 
