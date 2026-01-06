@@ -3,7 +3,7 @@
 ARG ZMX_BINARY_REF=0.1.0
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG MCP_PROXY_VERSION=v0.10.0
-ARG MCP_SHELL_SERVER_VERSION=1.0.3
+ARG MCP_SHELL_SERVER_VERSION=fd7863bf397494e15d3184fcb2e2d09e34f37920
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_REF} AS zmx-binary
 
@@ -170,7 +170,7 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
     UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
-    UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install "mcp-shell-server==${MCP_SHELL_SERVER_VERSION}"; \
+    UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install "git+https://github.com/tumf/mcp-shell-server.git@${MCP_SHELL_SERVER_VERSION}"; \
     UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install "git+https://github.com/sparfenyuk/mcp-proxy.git@${MCP_PROXY_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
     rm -rf "${HOME}/.cache/pip"
