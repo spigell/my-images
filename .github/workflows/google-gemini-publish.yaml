@@ -44,7 +44,7 @@ jobs:
     with:
       image-name: google-gemini-workbench
       context: ./google-gemini-docker
-      version: v0.22.4
+      version: v0.22.5
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         GEMINI_CLI_VERSION=0.22.5
