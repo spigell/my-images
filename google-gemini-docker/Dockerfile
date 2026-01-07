@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.22.5
+ARG GEMINI_CLI_VERSION=0.23.0
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM golang:1.25.5-alpine AS builder
