@@ -31,6 +31,9 @@ RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
 
+RUN install -d /etc/codex
+COPY config/config.toml /etc/codex/config.toml
+
 USER ubuntu
 ENV HOME=/home/ubuntu
 
