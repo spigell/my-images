@@ -1,0 +1,18 @@
+# --- Workbench Environment Defaults ---
+model_provider = "openai"
+model = "gpt-5.1-codex-max"
+network_access = true
+
+# Reasoning settings
+model_reasoning_effort = "low"
+model_reasoning_summary = "detailed"
+model_verbosity = "medium"
+
+# Sandbox settings - Defaulting to full access for this workbench
+approval_policy = "on-failure"
+sandbox_mode = "danger-full-access"
+
+# --- Global UX ---
+
+[notice]
+"hide_gpt-5.1-codex-max_migration_prompt" = true
