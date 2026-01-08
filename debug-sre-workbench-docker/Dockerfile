@@ -5,7 +5,7 @@ ARG KUBECTL_VERSION=1.34.2
 ARG HELM_VERSION=3.19.2
 ARG K9S_VERSION=0.50.16
 ARG TALOSCTL_VERSION=1.12.0
-ARG GKE_AUTH_PLUGIN_VERSION=0.7.4
+ARG GKE_AUTH_PLUGIN_VERSION=542.0.0
 ARG ETCD_VERSION=3.6.5
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
@@ -33,9 +33,16 @@ RUN curl -fsSL -o talosctl \
       "https://github.com/siderolabs/talos/releases/download/v${TALOSCTL_VERSION}/talosctl-${TARGETOS}-${TARGETARCH}" \
     && chmod +x talosctl
 
-RUN curl -fsSL -o gke-gcloud-auth-plugin \
-      "https://storage.googleapis.com/gke-release/gke-gcloud-auth-plugin/v${GKE_AUTH_PLUGIN_VERSION}/bin/${TARGETOS}/${TARGETARCH}/gke-gcloud-auth-plugin" \
-    && chmod +x gke-gcloud-auth-plugin
+RUN arch="${TARGETARCH}" \
+    && archive_arch="${arch}" \
+    && if [ "${arch}" = "amd64" ]; then archive_arch="amd64"; fi \
+    && if [ "${arch}" = "arm64" ]; then archive_arch="aarch64"; fi \
+    && curl -fsSL -o gke-auth.tar.gz \
+         "https://dl.google.com/dl/cloudsdk/release/downloads/for_packagers/linux/google-cloud-cli-gke-gcloud-auth-plugin_${GKE_AUTH_PLUGIN_VERSION}.orig_${archive_arch}.tar.gz" \
+    && tar -xzf gke-auth.tar.gz \
+    && mv google-cloud-sdk/bin/gke-gcloud-auth-plugin /tmp/fetch/gke-gcloud-auth-plugin \
+    && chmod +x /tmp/fetch/gke-gcloud-auth-plugin \
+    && rm -rf google-cloud-sdk gke-auth.tar.gz
 
 RUN arch="${TARGETARCH}"; \
     if [ "${TARGETARCH}" = "amd64" ]; then arch="amd64"; fi; \
