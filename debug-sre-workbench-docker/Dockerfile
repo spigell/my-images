@@ -5,7 +5,8 @@ ARG KUBECTL_VERSION=1.34.2
 ARG HELM_VERSION=3.19.2
 ARG K9S_VERSION=0.50.16
 ARG TALOSCTL_VERSION=1.12.0
-ARG GKE_AUTH_PLUGIN_VERSION=542.0.0
+ARG GKE_AUTH_PLUGIN_VERSION=551.0.0
+ARG GCLOUD_VERSION=551.0.0
 ARG ETCD_VERSION=3.6.5
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
@@ -16,6 +17,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG K9S_VERSION
 ARG TALOSCTL_VERSION
 ARG GKE_AUTH_PLUGIN_VERSION
+ARG GCLOUD_VERSION
 ARG ETCD_VERSION
 ARG TARGETOS
 ARG TARGETARCH
@@ -44,6 +46,16 @@ RUN arch="${TARGETARCH}" \
     && chmod +x /tmp/fetch/gke-gcloud-auth-plugin \
     && rm -rf google-cloud-sdk gke-auth.tar.gz
 
+RUN arch="${TARGETARCH}" \
+    && archive_arch="${arch}" \
+    && if [ "${arch}" = "amd64" ]; then archive_arch="amd64"; fi \
+    && if [ "${arch}" = "arm64" ]; then archive_arch="aarch64"; fi \
+    && curl -fsSL -o gcloud-sdk.tar.gz \
+         "https://dl.google.com/dl/cloudsdk/release/downloads/for_packagers/linux/google-cloud-cli_${GCLOUD_VERSION}.orig_${archive_arch}.tar.gz" \
+    && tar -xzf gcloud-sdk.tar.gz \
+    && mv google-cloud-sdk /tmp/fetch/google-cloud-sdk \
+    && rm -f gcloud-sdk.tar.gz
+
 RUN arch="${TARGETARCH}"; \
     if [ "${TARGETARCH}" = "amd64" ]; then arch="amd64"; fi; \
     if [ "${TARGETARCH}" = "arm64" ]; then arch="arm64"; fi; \
@@ -67,6 +79,7 @@ ARG HELM_VERSION
 ARG K9S_VERSION
 ARG TALOSCTL_VERSION
 ARG GKE_AUTH_PLUGIN_VERSION
+ARG GCLOUD_VERSION
 ARG ETCD_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
@@ -74,6 +87,14 @@ COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-auth-plugin
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
+COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
+
+RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
+ && ln -sf /opt/google-cloud-cli/bin/gcloud-crc32c /usr/local/bin/gcloud-crc32c \
+ && ln -sf /opt/google-cloud-cli/bin/gsutil /usr/local/bin/gsutil \
+ && ln -sf /opt/google-cloud-cli/bin/bq /usr/local/bin/bq \
+ && ln -sf /opt/google-cloud-cli/bin/docker-credential-gcloud /usr/local/bin/docker-credential-gcloud \
+ && ln -sf /opt/google-cloud-cli/bin/git-credential-gcloud.sh /usr/local/bin/git-credential-gcloud.sh
 
 # Docker CLI comes from apt since the universal base keeps the system lean
 RUN apt-get update \
@@ -117,6 +138,7 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.k9s.version="${K9S_VERSION}" \
       com.spigell.workbench.talosctl.version="${TALOSCTL_VERSION}" \
       com.spigell.workbench.gke-gcloud-auth-plugin.version="${GKE_AUTH_PLUGIN_VERSION}" \
+      com.spigell.workbench.gcloud.version="${GCLOUD_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]

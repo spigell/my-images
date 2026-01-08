@@ -51,7 +51,8 @@ jobs:
         HELM_VERSION=3.19.2
         K9S_VERSION=0.50.16
         TALOSCTL_VERSION=1.12.0
-        GKE_AUTH_PLUGIN_VERSION=542.0.0
+        GKE_AUTH_PLUGIN_VERSION=551.0.0
+        GCLOUD_VERSION=551.0.0
         ETCD_VERSION=3.6.5
       build-contexts: |
         shared=./shared
