@@ -52,8 +52,8 @@ RUN arch="${TARGETARCH}" \
     && if [ "${arch}" = "arm64" ]; then archive_arch="aarch64"; fi \
     && curl -fsSL -o gcloud-sdk.tar.gz \
          "https://dl.google.com/dl/cloudsdk/release/downloads/for_packagers/linux/google-cloud-cli_${GCLOUD_VERSION}.orig_${archive_arch}.tar.gz" \
+    && rm -rf google-cloud-sdk \
     && tar -xzf gcloud-sdk.tar.gz \
-    && mv google-cloud-sdk /tmp/fetch/google-cloud-sdk \
     && rm -f gcloud-sdk.tar.gz
 
 RUN arch="${TARGETARCH}"; \
