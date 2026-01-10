@@ -35,10 +35,8 @@ Use this skill when adding a brand-new image directory or wiring a new publish w
    - Add a build job that `uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main` with `image-name`, `context`, `version`, and `build-args` (include upstream tags/digests as needed).
    - If another image depends on this one, add `trigger-downstreams` using `peter-evans/repository-dispatch@v3` to emit an update event (keep the job name `trigger-downstreams`).
 4) **Secrets**: The workflow expects `IMAGES_PUBLISH_TOKEN` for GHCR pushes and dispatch.
-5) **Local sanity build (optional)**: `docker build -f <dir>/Dockerfile -t <test-tag> --build-arg ... --build-context shared=./shared <dir>`.
-6) **Dispatch wiring**: Choose an event name that downstream workflows will watch (pattern: `<image>-updated`). If this image depends on another, add a `repository_dispatch` trigger to listen to that upstream event.
-7) **Versioning**: Prefer dynamic tag resolution and avoid static manifest JSON. When bumping tools in the new image, also update the workflow `version`/build args to match.
+5) **Dispatch wiring**: Choose an event name that downstream workflows will watch (pattern: `<image>-updated`). If this image depends on another, add a `repository_dispatch` trigger to listen to that upstream event.
+6) **Versioning**: Prefer dynamic tag resolution and avoid static manifest JSON. When bumping tools in the new image, also update the workflow `version`/build args to match.
 
 ## Git remote and approvals
-- Push and pull via the `http-spigell-bot` remote (`https://github.com/spigell/my-images.git`); `origin` (SSH) is read-only here.
 - Keep PR summaries noting new workflows, dispatch events, and any version bump rationale.
