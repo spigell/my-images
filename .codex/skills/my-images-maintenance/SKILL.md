@@ -1,11 +1,11 @@
 ---
 name: my-images-maintenance
-description: Update Codex releases (e.g., rust-v0.xx.x) and other image versions in the my-images repo, configure MCP servers, and manage skills for this codebase.
+description: Update tool versions in the my-images container builds (e.g., Codex tags, runner/tool bumps) and capture MCP/skill setup steps needed for those updates.
 ---
 
 # My Images Maintenance
 
-Use this skill when updating Codex or other image versions, wiring MCP servers, or installing/managing skills for this repository.
+Use this skill when updating tools or base versions inside the images (e.g., Codex binaries, runner versions) and when wiring MCP/skill setup needed for those updates. Do not use it for unrelated feature work.
 
 ## Repo basics
 - Run git commands against the `http-spigell-bot` remote (HTTPS; `origin` is read-only).
@@ -22,7 +22,7 @@ Use this skill when updating Codex or other image versions, wiring MCP servers, 
 - Re-run `rg "rust-v"` to ensure no stale versions remain; keep the tag format `rust-v0.80.0` and include digests when known.
 - Note any version bump and related workflow impact in the PR summary.
 
-## Other image/version updates
+## Other image/tool updates
 - Favor dynamic tag resolution in workflows; avoid static manifest files.
 - When changing a base/tool version in a Dockerfile, mirror the new value in publish workflow inputs so CI builds the updated tag.
 - For GitHub runner updates, pull the latest runner tag from the GitHub API (curl + jq) instead of guessing.
