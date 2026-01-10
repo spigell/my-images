@@ -12,6 +12,22 @@ Use this skill when updating tools or base versions inside the images (e.g., Cod
 - Each top-level image directory acts like its own module; edit only what the change requires.
 - Builds depend on the universal workbench base and `shared/` context; keep downstream dispatch jobs named `trigger-downstreams`.
 
+## Build and publish flow (images)
+- Universal workbench (`universal-workbench-docker/`) is the base; downstream images layer on top.
+- Publish flows are event-driven via `repository_dispatch`:
+  - `universal-workbench-publish` → `universal-workbench-updated`.
+  - Downstreams (e.g., `google-gemini-publish`, `openai-codex-publish`) listen, resolve the new base tag, build, then dispatch their own updates (e.g., `gemini-workbench-updated`, `openai-codex-workbench-updated`).
+  - GitHub Runner workflows (`github-runner-publish-gemini`, `github-runner-publish-codex`) listen for the specific workbench update to build runner images.
+- Always include the `shared/` build context when building locally or in CI so helper scripts are available.
+
+## Versioning and tooling
+- Dynamic tag resolution: workflows use `resolve-ghcr-tag`, preferring (1) dispatch payload, (2) manual `workflow_dispatch` input, (3) latest GHCR tag.
+- No static manifests (versions JSON); versioning is handled dynamically via dispatch.
+- When changing a tool/base version in a Dockerfile, mirror the change in the publish workflow inputs (build args or `version:`) so CI builds the new tag.
+- For GitHub runner updates, fetch the latest runner tag from the GitHub API (`curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name`).
+- For any GitHub-hosted release, prefer the API over manual checks (`curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | jq -r .tag_name`).
+- Document version bumps or workflow updates in PR summaries.
+
 ## Codex version bumps (rust-vX.Y.Z)
 - Search for the prior tag with `rg "rust-v"` inside `openai-codex-docker`.
 - Update defaults:
