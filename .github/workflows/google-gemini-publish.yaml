@@ -48,6 +48,7 @@ jobs:
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         GEMINI_CLI_VERSION=0.24.0-preview.0
+        JULES_VERSION=0.1.42
       build-contexts: |
         shared=./shared
 

@@ -2,6 +2,7 @@
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.24.0-preview.0
+ARG JULES_VERSION=0.1.42
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM golang:1.25.5-alpine AS builder
@@ -18,13 +19,14 @@ USER root
 ENV HOME=/root
 
 ARG GEMINI_CLI_VERSION
+ARG JULES_VERSION
 ARG SPLITRAIL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
- && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} @google/jules@${JULES_VERSION} \
  && npm cache clean --force || true \
  && yarn cache clean || true
 
@@ -49,7 +51,8 @@ LABEL org.opencontainers.image.title="Google Gemini Workbench" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
-      com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}"
+      com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}" \
+      com.spigell.workbench.jules.version="${JULES_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["gemini --help || true"]
