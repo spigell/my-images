@@ -6,8 +6,8 @@ on:
     types: [universal-workbench-updated]
   push:
     paths:
-      - 'jules-docker/**'
-      - '.github/workflows/jules-publish.yaml'
+      - 'google-jules-docker/**'
+      - '.github/workflows/google-jules-publish.yaml'
   workflow_dispatch:
     inputs:
       universal_tag:
@@ -35,15 +35,15 @@ jobs:
           input_tag: ${{ inputs.universal_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
-  build-jules-workbench:
+  build-google-jules-workbench:
     needs:
       - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
-      image-name: jules-workbench
-      context: ./jules-docker
+      image-name: google-jules-workbench
+      context: ./google-jules-docker
       version: v0.1.42
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
@@ -52,12 +52,12 @@ jobs:
         shared=./shared
 
   trigger-downstreams:
-    needs: build-jules-workbench
+    needs: build-google-jules-workbench
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch Jules Workbench Update
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-          event-type: jules-workbench-updated
-          client-payload: '{"jules_tag":"${{ needs.build-jules-workbench.outputs.sha-tag }}"}'
+          event-type: google-jules-workbench-updated
+          client-payload: '{"jules_tag":"${{ needs.build-google-jules-workbench.outputs.sha-tag }}"}'

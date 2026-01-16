@@ -22,10 +22,10 @@ RUN yarn config set prefix /usr/local \
 USER ubuntu
 ENV HOME=/home/ubuntu
 
-LABEL org.opencontainers.image.title="Jules Workbench" \
-      org.opencontainers.image.description="Jules Workbench built on the universal base image" \
+LABEL org.opencontainers.image.title="Google Jules Workbench" \
+      org.opencontainers.image.description="Google Jules Workbench built on the universal base image" \
       org.opencontainers.image.version="${JULES_VERSION}" \
-      org.opencontainers.image.source="https://github.com/spigell/my-images/jules-docker" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/google-jules-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
       com.spigell.workbench.jules.version="${JULES_VERSION}"
