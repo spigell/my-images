@@ -1,0 +1,63 @@
+name: Build and Publish Jules images
+run-name: "${{ github.event.client_payload.message || (github.event_name == 'repository_dispatch' && format('{0}: repository_dispatch by {1}', github.event.action, github.actor)) || format('{0} by {1}', github.event_name, github.actor) }}"
+
+on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
+  push:
+    paths:
+      - 'google-jules-docker/**'
+      - '.github/workflows/google-jules-publish.yaml'
+  workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
+  build-google-jules-workbench:
+    needs:
+      - resolve-universal-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: google-jules-workbench
+      context: ./google-jules-docker
+      version: v0.1.42
+      build-args: |
+        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        JULES_VERSION=0.1.42
+      build-contexts: |
+        shared=./shared
+
+  trigger-downstreams:
+    needs: build-google-jules-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Jules Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: google-jules-workbench-updated
+          client-payload: '{"jules_tag":"${{ needs.build-google-jules-workbench.outputs.sha-tag }}"}'
