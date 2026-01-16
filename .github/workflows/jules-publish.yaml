@@ -1,4 +1,4 @@
-name: Build and Publish Gemini CLI images
+name: Build and Publish Jules images
 run-name: "${{ github.event.client_payload.message || (github.event_name == 'repository_dispatch' && format('{0}: repository_dispatch by {1}', github.event.action, github.actor)) || format('{0} by {1}', github.event_name, github.actor) }}"
 
 on:
@@ -6,8 +6,8 @@ on:
     types: [universal-workbench-updated]
   push:
     paths:
-      - 'google-gemini-docker/**'
-      - '.github/workflows/google-gemini-publish.yaml'
+      - 'jules-docker/**'
+      - '.github/workflows/jules-publish.yaml'
   workflow_dispatch:
     inputs:
       universal_tag:
@@ -35,29 +35,29 @@ jobs:
           input_tag: ${{ inputs.universal_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
-  build-gemini-workbench:
+  build-jules-workbench:
     needs:
       - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
-      image-name: google-gemini-workbench
-      context: ./google-gemini-docker
-      version: v0.24.0-preview.0
+      image-name: jules-workbench
+      context: ./jules-docker
+      version: v0.1.42
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        GEMINI_CLI_VERSION=0.24.0-preview.0
+        JULES_VERSION=0.1.42
       build-contexts: |
         shared=./shared
 
   trigger-downstreams:
-    needs: build-gemini-workbench
+    needs: build-jules-workbench
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch Gemini Workbench Update
+      - name: Dispatch Jules Workbench Update
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-          event-type: gemini-workbench-updated
-          client-payload: '{"gemini_tag":"${{ needs.build-gemini-workbench.outputs.sha-tag }}"}'
+          event-type: jules-workbench-updated
+          client-payload: '{"jules_tag":"${{ needs.build-jules-workbench.outputs.sha-tag }}"}'
