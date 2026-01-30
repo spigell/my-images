@@ -18,8 +18,8 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && yarn global add @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} \
- && npm cache clean --force || true \
- && yarn cache clean || true
+ && (npm cache clean --force || true) \
+ && (yarn cache clean || true)
 
 RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
