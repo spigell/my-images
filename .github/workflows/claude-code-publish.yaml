@@ -1,0 +1,61 @@
+name: Build and Publish Claude Code images
+run-name: "${{ github.event.client_payload.message || (github.event_name == 'repository_dispatch' && format('{0}: repository_dispatch by {1}', github.event.action, github.actor)) || format('{0} by {1}', github.event_name, github.actor) }}"
+
+on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
+  push:
+    paths:
+      - 'claude-code-docker/**'
+      - '.github/workflows/claude-code-publish.yaml'
+  workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
+  build-claude-workbench:
+    needs:
+      - resolve-universal-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: claude-code-workbench
+      context: ./claude-code-docker
+      version: v2.1.25
+      build-args: |
+        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        CLAUDE_CODE_VERSION=2.1.25
+
+  trigger-downstreams:
+    needs: build-claude-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Claude Code Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: claude-code-workbench-updated
+          client-payload: '{"claude_tag":"${{ needs.build-claude-workbench.outputs.sha-tag }}"}'
