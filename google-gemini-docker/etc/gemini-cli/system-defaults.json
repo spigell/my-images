@@ -1,6 +1,7 @@
 {
   "general": {
     "disableAutoUpdate": true,
+    "enableAutoUpdate": false,
     "vimMode": true,
     "preferredEditor": "vim",
     "checkpointing": {
