@@ -15,8 +15,7 @@
     "showMemoryUsage": true
   },
   "tools": {
-    "sandbox": false,
-    "autoAccept": true
+    "sandbox": false
   },
   "telemetry": {
     "enabled": false,
