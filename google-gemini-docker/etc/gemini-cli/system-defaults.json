@@ -1,6 +1,6 @@
 {
   "general": {
-    "disableAutoUpdate": true,
+    "enableAutoUpdate": false,
     "vimMode": true,
     "preferredEditor": "vim",
     "checkpointing": {
@@ -15,8 +15,7 @@
     "showMemoryUsage": true
   },
   "tools": {
-    "sandbox": false,
-    "autoAccept": true
+    "sandbox": false
   },
   "telemetry": {
     "enabled": false,
