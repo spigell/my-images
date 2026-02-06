@@ -20,9 +20,9 @@ jobs:
     with:
       image-name: zmx-binary
       context: ./zmx-binary
-      version: 0.1.0
+      version: 0.3.0
       build-args: |
-        ZMX_REF=cb35332c5774828358c17a96e7a0846c7f846668
+        ZMX_REF=0dae6cf3a761236b2e5c75fda43d612cf9f679c4
         ZIG_VERSION=0.15.2
 
   trigger-downstreams:
