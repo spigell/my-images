@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG CODEX_BINARY_REF=rust-v0.96.0
+ARG CODEX_BINARY_REF=rust-v0.98.0
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
