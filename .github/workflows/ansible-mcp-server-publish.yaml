@@ -6,13 +6,35 @@ on:
       - 'ansible-mcp-server-docker/**'
       - '.github/workflows/ansible-mcp-server-publish.yaml'
   workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
 
 permissions:
   contents: write
   packages: write
 
 jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
   build-ansible-mcp-server:
+    needs:
+      - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
@@ -22,4 +44,4 @@ jobs:
       version: 0.1.0
       build-args: |
         VSCODE_ANSIBLE_REF=main
-        UNIVERSAL_WORKBENCH_TAG=sha-dev
+        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
