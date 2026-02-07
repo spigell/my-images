@@ -21,8 +21,9 @@ RUN yarn workspace @ansible/ansible-mcp-server run compile
 # Create a production-focused install to keep the runtime slim
 RUN yarn workspaces focus @ansible/ansible-mcp-server --production
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG:-sha-dev}
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG UNIVERSAL_WORKBENCH_TAG=latest
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+ARG UNIVERSAL_WORKBENCH_TAG
 WORKDIR /opt/ansible-mcp-server
 
 # Copy runtime artifacts
