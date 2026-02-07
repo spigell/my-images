@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
-# Build the Ansible MCP server from source (vscode-ansible) and expose it over HTTP via mcp-proxy.
+# Build the Ansible MCP server from source (vscode-ansible) and expose it over HTTP via mcp-proxy,
+# reusing the universal workbench base so pyenv/python tooling matches the rest of the images.
 
 FROM node:22-alpine AS builder
 ARG VSCODE_ANSIBLE_REF=main
@@ -20,11 +21,9 @@ RUN yarn workspace @ansible/ansible-mcp-server run compile
 # Create a production-focused install to keep the runtime slim
 RUN yarn workspaces focus @ansible/ansible-mcp-server --production
 
-FROM ghcr.io/sparfenyuk/mcp-proxy:v0.9.0
-WORKDIR /usr/local/ansible-mcp-server
-
-USER root
-RUN apk add --no-cache nodejs npm
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG:-sha-dev}
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+WORKDIR /opt/ansible-mcp-server
 
 # Copy runtime artifacts
 COPY --from=builder /src/node_modules ./node_modules
@@ -33,8 +32,7 @@ COPY --from=builder /src/packages/ansible-mcp-server/out ./out
 COPY --from=builder /src/packages/ansible-mcp-server/src/resources ./src/resources
 
 # Non-root execution
-RUN addgroup -S app && adduser -S -G app app
-USER app
+USER ubuntu
 
 # Expose the MCP server through the proxy on HTTP (default port 8080).
 ENTRYPOINT ["mcp-proxy"]

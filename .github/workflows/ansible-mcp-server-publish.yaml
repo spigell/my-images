@@ -22,3 +22,4 @@ jobs:
       version: 0.1.0
       build-args: |
         VSCODE_ANSIBLE_REF=main
+        UNIVERSAL_WORKBENCH_TAG=sha-dev
