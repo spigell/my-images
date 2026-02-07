@@ -2,6 +2,7 @@
 
 # Build the Ansible MCP server from source (vscode-ansible) and expose it over HTTP via mcp-proxy,
 # reusing the universal workbench base so pyenv/python tooling matches the rest of the images.
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 
 FROM node:22-alpine AS builder
 ARG VSCODE_ANSIBLE_REF=main
@@ -21,9 +22,7 @@ RUN yarn workspace @ansible/ansible-mcp-server run compile
 # Create a production-focused install to keep the runtime slim
 RUN yarn workspaces focus @ansible/ansible-mcp-server --production
 
-ARG UNIVERSAL_WORKBENCH_TAG=latest
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
-ARG UNIVERSAL_WORKBENCH_TAG
 WORKDIR /opt/ansible-mcp-server
 
 # Copy runtime artifacts
