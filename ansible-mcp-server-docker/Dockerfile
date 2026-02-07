@@ -2,9 +2,8 @@
 
 # Build the Ansible MCP server from source (vscode-ansible) and expose it over HTTP via mcp-proxy.
 
-ARG VSCODE_ANSIBLE_REF=main
-
 FROM node:22-alpine AS builder
+ARG VSCODE_ANSIBLE_REF=main
 WORKDIR /src
 
 # Tooling needed for node-gyp and git clone
