@@ -33,4 +33,4 @@ COPY --from=builder /src/packages/ansible-mcp-server/src/resources /opt/ansible-
 
 # Expose the MCP server through the proxy on HTTP (default port 8080).
 ENTRYPOINT ["mcp-proxy"]
-CMD ["--host=0.0.0.0", "--port=8080", "--allow-origin=*", "--pass-environment", "--", "node", "out/server/src/cli.js", "--stdio"]
+CMD ["--host=0.0.0.0", "--port=8080", "--allow-origin=*", "--pass-environment", "--", "node", "/opt/ansible-mcp-server/out/server/src/cli.js", "--stdio"]
