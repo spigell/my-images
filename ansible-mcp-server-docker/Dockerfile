@@ -25,11 +25,11 @@ RUN yarn workspaces focus @ansible/ansible-mcp-server --production
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 WORKDIR /opt/ansible-mcp-server
 
-# Copy runtime artifacts
-COPY --from=builder /src/node_modules ./node_modules
-COPY --from=builder /src/packages/ansible-mcp-server/package.json ./package.json
-COPY --from=builder /src/packages/ansible-mcp-server/out ./out
-COPY --from=builder /src/packages/ansible-mcp-server/src/resources ./src/resources
+# Copy runtime artifacts explicitly into /opt/ansible-mcp-server
+COPY --from=builder /src/node_modules /opt/ansible-mcp-server/node_modules
+COPY --from=builder /src/packages/ansible-mcp-server/package.json /opt/ansible-mcp-server/package.json
+COPY --from=builder /src/packages/ansible-mcp-server/out /opt/ansible-mcp-server/out
+COPY --from=builder /src/packages/ansible-mcp-server/src/resources /opt/ansible-mcp-server/src/resources
 
 # Expose the MCP server through the proxy on HTTP (default port 8080).
 ENTRYPOINT ["mcp-proxy"]
