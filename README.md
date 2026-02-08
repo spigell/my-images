@@ -19,6 +19,7 @@
 | `anki-desktop-docker/` | Universal workbench | Anki desktop tooling and defaults | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/anki-desktop-docker) |
 | `zmx-binary/` | - | zmx binary image used by workbench builds | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary) |
 | `github-mcp-server-docker/` | Universal workbench | GitHub MCP server | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/github-mcp-server) |
+| `ansible-mcp-server-docker/` | MCP proxy base | Ansible MCP server exposed over HTTP | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/ansible-mcp-server) |
 
 ## Git setup helper
 
