@@ -43,5 +43,5 @@ jobs:
       context: ./ansible-mcp-server-docker
       version: 0.1.0
       build-args: |
-        VSCODE_ANSIBLE_REF=main
+        VSCODE_ANSIBLE_REF=v26.1.1
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}

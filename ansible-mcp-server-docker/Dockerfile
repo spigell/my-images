@@ -5,7 +5,7 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 
 FROM node:22-alpine AS builder
-ARG VSCODE_ANSIBLE_REF=main
+ARG VSCODE_ANSIBLE_REF=v26.1.1
 WORKDIR /src
 
 # Tooling needed for node-gyp and git clone
@@ -30,9 +30,6 @@ COPY --from=builder /src/node_modules ./node_modules
 COPY --from=builder /src/packages/ansible-mcp-server/package.json ./package.json
 COPY --from=builder /src/packages/ansible-mcp-server/out ./out
 COPY --from=builder /src/packages/ansible-mcp-server/src/resources ./src/resources
-
-# Non-root execution
-USER ubuntu
 
 # Expose the MCP server through the proxy on HTTP (default port 8080).
 ENTRYPOINT ["mcp-proxy"]
