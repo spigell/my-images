@@ -4,12 +4,12 @@
 # reusing the universal workbench base so pyenv/python tooling matches the rest of the images.
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 
-FROM node:22-alpine AS builder
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG} AS builder
 ARG VSCODE_ANSIBLE_REF=v26.1.1
 WORKDIR /src
 
-# Tooling needed for node-gyp and git clone
-RUN apk add --no-cache git python3 make g++ bash
+# Ensure build tooling is available; universal base already has pyenv/python and yarn
+RUN apt-get update && apt-get install -y --no-install-recommends git build-essential && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 
 # Fetch the upstream repo at the requested ref
