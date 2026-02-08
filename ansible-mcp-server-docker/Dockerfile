@@ -9,6 +9,7 @@ ARG VSCODE_ANSIBLE_REF=v26.1.1
 WORKDIR /src
 
 # Ensure build tooling is available; universal base already has pyenv/python and yarn
+USER root
 RUN apt-get update && apt-get install -y --no-install-recommends git build-essential && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 
