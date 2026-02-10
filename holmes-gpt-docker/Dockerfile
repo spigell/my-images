@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1.18
 
 ARG DEBUG_SRE_TAG=sha-dev
-ARG HOLMES_SOURCE_IMAGE=robustadev/holmes:latest
+ARG HOLMES_SOURCE_IMAGE=robustadev/holmes:0.19.1
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_REF=master
+ARG HOLMES_REF=0.19.1
 ARG KUBE_LINEAGE_VERSION=2.2.4
 ARG KUBE_LINEAGE_ARM_URL=https://github.com/robusta-dev/kube-lineage/releases/download/v${KUBE_LINEAGE_VERSION}/kube-lineage-macos-latest-v${KUBE_LINEAGE_VERSION}
 ARG KUBE_LINEAGE_AMD_URL=https://github.com/robusta-dev/kube-lineage/releases/download/v${KUBE_LINEAGE_VERSION}/kube-lineage-ubuntu-latest-v${KUBE_LINEAGE_VERSION}
