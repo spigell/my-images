@@ -166,26 +166,26 @@ RUN /tmp/krew-installer install krew \
     && lineage_url="https://github.com/tohjustin/kube-lineage/releases/download/v${LINEAGE_VERSION}/${lineage_archive}" \
     && curl -fsSL -o "/tmp/${lineage_archive}" "${lineage_url}" \
     && lineage_sha="$(sha256sum "/tmp/${lineage_archive}" | awk '{print $1}')" \
-    && cat > /tmp/lineage.yaml <<EOF \
-apiVersion: krew.googlecontainertools.github.com/v1alpha2
-kind: Plugin
-metadata:
-  name: lineage
-spec:
-  version: v${LINEAGE_VERSION}
-  homepage: https://github.com/tohjustin/kube-lineage
-  shortDescription: Display all dependent resources or resource dependencies
-  platforms:
-  - selector:
-      matchLabels:
-        os: ${TARGETOS}
-        arch: ${lineage_arch}
-    uri: ${lineage_url}
-    sha256: ${lineage_sha}
-    bin: kube-lineage
-EOF
+    && printf '%s\n' \
+      'apiVersion: krew.googlecontainertools.github.com/v1alpha2' \
+      'kind: Plugin' \
+      'metadata:' \
+      '  name: lineage' \
+      'spec:' \
+      "  version: v${LINEAGE_VERSION}" \
+      '  homepage: https://github.com/tohjustin/kube-lineage' \
+      '  shortDescription: Display all dependent resources or resource dependencies' \
+      '  platforms:' \
+      '  - selector:' \
+      '      matchLabels:' \
+      "        os: ${TARGETOS}" \
+      "        arch: ${lineage_arch}" \
+      "    uri: ${lineage_url}" \
+      "    sha256: ${lineage_sha}" \
+      '    bin: kube-lineage' \
+      > /tmp/lineage.yaml \
     && kubectl krew install --manifest=/tmp/lineage.yaml --archive="/tmp/${lineage_archive}" \
-    && rm -f /tmp/krew-installer
+    && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, krew, kube-lineage, Poetry, uv)" \
