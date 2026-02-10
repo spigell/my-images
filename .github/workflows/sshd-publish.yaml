@@ -1,0 +1,69 @@
+name: Build and Publish SSHD Workbench
+run-name: "${{ github.event.client_payload.message || (github.event_name == 'repository_dispatch' && format('{0}: repository_dispatch by {1}', github.event.action, github.actor)) || format('{0} by {1}', github.event_name, github.actor) }}"
+
+on:
+  repository_dispatch:
+    types: [zmx-binary-updated]
+  push:
+    paths:
+      - 'sshd-docker/**'
+      - '.github/workflows/sshd-publish.yaml'
+  workflow_dispatch:
+    inputs:
+      zmx_tag:
+        description: zmx binary tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+      openssh_server_tag:
+        description: linuxserver/openssh-server tag (defaults to version-10.2_p1-r0)
+        required: false
+        default: version-10.2_p1-r0
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-zmx-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: zmx-binary
+          payload_tag: ${{ github.event.client_payload.zmx_tag }}
+          input_tag: ${{ inputs.zmx_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
+  build-sshd-workbench:
+    needs:
+      - resolve-zmx-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: sshd-workbench
+      context: ./sshd-docker
+      version: v1.0.0
+      build-args: |
+        OPENSSH_SERVER_TAG=${{ inputs.openssh_server_tag || 'version-10.2_p1-r0' }}
+        ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
+      build-contexts: |
+        shared=./shared
+
+  trigger-downstreams:
+    needs:
+      - build-sshd-workbench
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch SSHD Workbench Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: sshd-workbench-updated
+          client-payload: '{"sshd_tag":"${{ needs.build-sshd-workbench.outputs.sha-tag }}"}'

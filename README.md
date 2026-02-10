@@ -16,6 +16,7 @@
 | `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench) |
 | `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench) |
 | `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT runtime plus ArgoCD, Helm 4, Azure SQL tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/holmes-gpt) |
+| `sshd-docker/` | linuxserver/openssh-server | OpenSSH server runtime with zmx binary | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/sshd-workbench) |
 | `anki-desktop-docker/` | Universal workbench | Anki desktop tooling and defaults | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/anki-desktop-docker) |
 | `zmx-binary/` | - | zmx binary image used by workbench builds | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary) |
 | `github-mcp-server-docker/` | Universal workbench | GitHub MCP server | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/github-mcp-server) |
