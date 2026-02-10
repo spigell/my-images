@@ -127,9 +127,24 @@ RUN workdir="$(mktemp -d)" \
 
 USER ubuntu
 ENV HOME=/home/ubuntu
+ENV KREW_ROOT=/home/ubuntu/.krew
+ENV PATH="${KREW_ROOT}/bin:${PATH}"
+
+# Install krew and kube-lineage (kubectl lineage) for cluster dependency tracing.
+RUN tmpdir="$(mktemp -d)" \
+    && cd "${tmpdir}" \
+    && krew_arch="${TARGETARCH}" \
+    && if [ "${krew_arch}" = "x86_64" ]; then krew_arch="amd64"; fi \
+    && if [ "${krew_arch}" = "aarch64" ]; then krew_arch="arm64"; fi \
+    && krew="krew-${TARGETOS}_${krew_arch}" \
+    && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${krew}.tar.gz" \
+    && tar -xzf "${krew}.tar.gz" \
+    && "./${krew}" install krew \
+    && kubectl krew install lineage \
+    && rm -rf "${tmpdir}"
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, Poetry, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, krew, kube-lineage, Poetry, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \

@@ -44,7 +44,7 @@ jobs:
     with:
       image-name: debug-sre-workbench
       context: ./debug-sre-workbench-docker
-      version: v0.1.0
+      version: v0.2.0
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         KUBECTL_VERSION=1.34.2
