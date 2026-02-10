@@ -23,10 +23,11 @@ ARG TARGETOS
 ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl tar xz-utils \
+      ca-certificates curl git tar xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp/fetch
+ENV KREW_ROOT=/tmp/fetch/krew-root
 
 RUN curl -fsSL -o k9s.deb \
       "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${TARGETOS}_${TARGETARCH}.deb"
@@ -65,6 +66,19 @@ RUN arch="${TARGETARCH}"; \
     mv "etcd-v${ETCD_VERSION}-${TARGETOS}-${arch}/etcdctl" /tmp/fetch/etcdctl; \
     chmod +x /tmp/fetch/etcdctl; \
     rm -rf "etcd-v${ETCD_VERSION}-${TARGETOS}-${arch}" etcd.tar.gz
+
+# Install krew and the lineage plugin in the fetch stage, then copy into runtime.
+RUN tmpdir="$(mktemp -d)" \
+    && cd "${tmpdir}" \
+    && krew_arch="${TARGETARCH}" \
+    && if [ "${krew_arch}" = "x86_64" ]; then krew_arch="amd64"; fi \
+    && if [ "${krew_arch}" = "aarch64" ]; then krew_arch="arm64"; fi \
+    && krew="krew-${TARGETOS}_${krew_arch}" \
+    && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${krew}.tar.gz" \
+    && tar -xzf "${krew}.tar.gz" \
+    && "./${krew}" install krew \
+    && "${KREW_ROOT}/bin/kubectl-krew" install lineage \
+    && rm -rf "${tmpdir}"
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -125,23 +139,13 @@ RUN workdir="$(mktemp -d)" \
     && chmod +x /usr/local/bin/helm \
     && rm -rf "${workdir}"
 
+COPY --from=fetch /tmp/fetch/krew-root /home/ubuntu/.krew
+RUN chown -R ubuntu:ubuntu /home/ubuntu/.krew
+
 USER ubuntu
 ENV HOME=/home/ubuntu
 ENV KREW_ROOT=/home/ubuntu/.krew
 ENV PATH="${KREW_ROOT}/bin:${PATH}"
-
-# Install krew and kube-lineage (kubectl lineage) for cluster dependency tracing.
-RUN tmpdir="$(mktemp -d)" \
-    && cd "${tmpdir}" \
-    && krew_arch="${TARGETARCH}" \
-    && if [ "${krew_arch}" = "x86_64" ]; then krew_arch="amd64"; fi \
-    && if [ "${krew_arch}" = "aarch64" ]; then krew_arch="arm64"; fi \
-    && krew="krew-${TARGETOS}_${krew_arch}" \
-    && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${krew}.tar.gz" \
-    && tar -xzf "${krew}.tar.gz" \
-    && "./${krew}" install krew \
-    && kubectl krew install lineage \
-    && rm -rf "${tmpdir}"
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, krew, kube-lineage, Poetry, uv)" \
