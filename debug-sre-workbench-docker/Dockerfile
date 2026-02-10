@@ -8,6 +8,8 @@ ARG TALOSCTL_VERSION=1.12.0
 ARG GKE_AUTH_PLUGIN_VERSION=551.0.0
 ARG GCLOUD_VERSION=551.0.0
 ARG ETCD_VERSION=3.6.5
+ARG KREW_VERSION=latest
+ARG LINEAGE_VERSION=0.5.0
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
@@ -15,15 +17,18 @@ FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG K9S_VERSION
+ARG KUBECTL_VERSION
+ARG HELM_VERSION
 ARG TALOSCTL_VERSION
 ARG GKE_AUTH_PLUGIN_VERSION
 ARG GCLOUD_VERSION
 ARG ETCD_VERSION
+ARG KREW_VERSION
 ARG TARGETOS
 ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl tar xz-utils \
+      ca-certificates curl git tar xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp/fetch
@@ -34,6 +39,21 @@ RUN curl -fsSL -o k9s.deb \
 RUN curl -fsSL -o talosctl \
       "https://github.com/siderolabs/talos/releases/download/v${TALOSCTL_VERSION}/talosctl-${TARGETOS}-${TARGETARCH}" \
     && chmod +x talosctl
+
+RUN curl -fsSL -o kubectl \
+      "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
+    && chmod +x kubectl
+
+RUN workdir="$(mktemp -d)" \
+    && arch="${TARGETARCH}" \
+    && if [ "${TARGETARCH}" = "amd64" ]; then arch="amd64"; fi \
+    && if [ "${TARGETARCH}" = "arm64" ]; then arch="arm64"; fi \
+    && curl -fsSL -o "${workdir}/helm.tar.gz" \
+         "https://get.helm.sh/helm-v${HELM_VERSION}-${TARGETOS}-${arch}.tar.gz" \
+    && tar -xzf "${workdir}/helm.tar.gz" -C "${workdir}" \
+    && mv "${workdir}/${TARGETOS}-${arch}/helm" /tmp/fetch/helm \
+    && chmod +x /tmp/fetch/helm \
+    && rm -rf "${workdir}"
 
 RUN arch="${TARGETARCH}" \
     && archive_arch="${arch}" \
@@ -66,6 +86,24 @@ RUN arch="${TARGETARCH}"; \
     chmod +x /tmp/fetch/etcdctl; \
     rm -rf "etcd-v${ETCD_VERSION}-${TARGETOS}-${arch}" etcd.tar.gz
 
+# Fetch krew installer in the fetch stage; installation happens in the runtime stage.
+RUN tmpdir="$(mktemp -d)" \
+    && cd "${tmpdir}" \
+    && krew_arch="${TARGETARCH}" \
+    && if [ "${krew_arch}" = "x86_64" ]; then krew_arch="amd64"; fi \
+    && if [ "${krew_arch}" = "aarch64" ]; then krew_arch="arm64"; fi \
+    && krew="krew-${TARGETOS}_${krew_arch}" \
+    && if [ "${KREW_VERSION}" = "latest" ]; then \
+         krew_url="https://github.com/kubernetes-sigs/krew/releases/latest/download/${krew}.tar.gz"; \
+       else \
+         krew_url="https://github.com/kubernetes-sigs/krew/releases/download/${KREW_VERSION}/${krew}.tar.gz"; \
+       fi \
+    && curl -fsSL -o "${krew}.tar.gz" "${krew_url}" \
+    && tar -xzf "${krew}.tar.gz" \
+    && mv "./${krew}" /tmp/fetch/krew-installer \
+    && chmod +x /tmp/fetch/krew-installer \
+    && rm -rf "${tmpdir}"
+
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -81,13 +119,18 @@ ARG TALOSCTL_VERSION
 ARG GKE_AUTH_PLUGIN_VERSION
 ARG GCLOUD_VERSION
 ARG ETCD_VERSION
+ARG KREW_VERSION
+ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
+COPY --from=fetch /tmp/fetch/kubectl /usr/local/bin/kubectl
+COPY --from=fetch /tmp/fetch/helm /usr/local/bin/helm
 COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-auth-plugin
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
+COPY --from=fetch /tmp/fetch/krew-installer /tmp/krew-installer
 
 RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/gcloud-crc32c /usr/local/bin/gcloud-crc32c \
@@ -108,28 +151,44 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && rm -f /tmp/k9s.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install kubectl
-RUN curl -fsSL -o /usr/local/bin/kubectl \
-      "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
-    && chmod +x /usr/local/bin/kubectl
-
-# Install Helm
-RUN workdir="$(mktemp -d)" \
-    && arch="${TARGETARCH}" \
-    && if [ "${TARGETARCH}" = "amd64" ]; then arch="amd64"; fi \
-    && if [ "${TARGETARCH}" = "arm64" ]; then arch="arm64"; fi \
-    && curl -fsSL -o "${workdir}/helm.tar.gz" \
-         "https://get.helm.sh/helm-v${HELM_VERSION}-${TARGETOS}-${arch}.tar.gz" \
-    && tar -xzf "${workdir}/helm.tar.gz" -C "${workdir}" \
-    && mv "${workdir}/${TARGETOS}-${arch}/helm" /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm \
-    && rm -rf "${workdir}"
+RUN chown ubuntu:ubuntu /tmp/krew-installer
 
 USER ubuntu
 ENV HOME=/home/ubuntu
+ENV KREW_ROOT=/home/ubuntu/.krew
+ENV PATH="${KREW_ROOT}/bin:${PATH}"
+
+RUN /tmp/krew-installer install krew \
+    && lineage_arch="${TARGETARCH}" \
+    && if [ "${TARGETARCH}" = "amd64" ]; then lineage_arch="amd64"; fi \
+    && if [ "${TARGETARCH}" = "arm64" ]; then lineage_arch="arm64"; fi \
+    && lineage_archive="kube-lineage_${TARGETOS}_${lineage_arch}.tar.gz" \
+    && lineage_url="https://github.com/tohjustin/kube-lineage/releases/download/v${LINEAGE_VERSION}/${lineage_archive}" \
+    && curl -fsSL -o "/tmp/${lineage_archive}" "${lineage_url}" \
+    && lineage_sha="$(sha256sum "/tmp/${lineage_archive}" | awk '{print $1}')" \
+    && printf '%s\n' \
+      'apiVersion: krew.googlecontainertools.github.com/v1alpha2' \
+      'kind: Plugin' \
+      'metadata:' \
+      '  name: lineage' \
+      'spec:' \
+      "  version: v${LINEAGE_VERSION}" \
+      '  homepage: https://github.com/tohjustin/kube-lineage' \
+      '  shortDescription: Display all dependent resources or resource dependencies' \
+      '  platforms:' \
+      '  - selector:' \
+      '      matchLabels:' \
+      "        os: ${TARGETOS}" \
+      "        arch: ${lineage_arch}" \
+      "    uri: ${lineage_url}" \
+      "    sha256: ${lineage_sha}" \
+      '    bin: kube-lineage' \
+      > /tmp/lineage.yaml \
+    && kubectl krew install --manifest=/tmp/lineage.yaml --archive="/tmp/${lineage_archive}" \
+    && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, Poetry, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, krew, kube-lineage, Poetry, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
@@ -139,6 +198,8 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.talosctl.version="${TALOSCTL_VERSION}" \
       com.spigell.workbench.gke-gcloud-auth-plugin.version="${GKE_AUTH_PLUGIN_VERSION}" \
       com.spigell.workbench.gcloud.version="${GCLOUD_VERSION}" \
+      com.spigell.workbench.krew.version="${KREW_VERSION}" \
+      com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]

@@ -5,9 +5,6 @@ ARG HOLMES_SOURCE_IMAGE=robustadev/holmes:0.19.1
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_REF=0.19.1
-ARG KUBE_LINEAGE_VERSION=2.2.4
-ARG KUBE_LINEAGE_ARM_URL=https://github.com/robusta-dev/kube-lineage/releases/download/v${KUBE_LINEAGE_VERSION}/kube-lineage-macos-latest-v${KUBE_LINEAGE_VERSION}
-ARG KUBE_LINEAGE_AMD_URL=https://github.com/robusta-dev/kube-lineage/releases/download/v${KUBE_LINEAGE_VERSION}/kube-lineage-ubuntu-latest-v${KUBE_LINEAGE_VERSION}
 ARG ARGOCD_VERSION=3.2.1
 ARG ARGOCD_ARM_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-arm64
 ARG ARGOCD_AMD_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-amd64
@@ -32,22 +29,10 @@ ARG ARGOCD_VERSION
 ARG ARGOCD_ARM_URL
 ARG ARGOCD_AMD_URL
 ARG HELM_VERSION
-ARG KUBE_LINEAGE_VERSION
-ARG KUBE_LINEAGE_ARM_URL
-ARG KUBE_LINEAGE_AMD_URL
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl ca-certificates tar xz-utils \
     && rm -rf /var/lib/apt/lists/*
-
-RUN if [ "${TARGETARCH}" = "arm64" ]; then \
-      curl -fsSL -o /tmp/kube-lineage "${KUBE_LINEAGE_ARM_URL}"; \
-    elif [ "${TARGETARCH}" = "amd64" ]; then \
-      curl -fsSL -o /tmp/kube-lineage "${KUBE_LINEAGE_AMD_URL}"; \
-    else \
-      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
-    fi \
-    && chmod +x /tmp/kube-lineage
 
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
       curl -fsSL -o /tmp/argocd "${ARGOCD_ARM_URL}"; \
@@ -77,9 +62,6 @@ ENV HOME=/root
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG KUBE_LINEAGE_VERSION
-ARG KUBE_LINEAGE_ARM_URL
-ARG KUBE_LINEAGE_AMD_URL
 ARG ARGOCD_VERSION
 ARG ARGOCD_ARM_URL
 ARG ARGOCD_AMD_URL
@@ -102,12 +84,10 @@ RUN . /etc/os-release \
     && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=fetch-tools /tmp/kube-lineage /usr/local/bin/kube-lineage
 COPY --from=fetch-tools /tmp/argocd /usr/local/bin/argocd
 COPY --from=fetch-tools /tmp/helm /usr/local/bin/helm
 
-RUN kube-lineage --version \
-    && argocd version --client \
+RUN argocd version --client \
     && helm version
 
 # Python environment setup
@@ -142,12 +122,11 @@ USER ubuntu
 ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Holmes GPT Workbench" \
-      org.opencontainers.image.description="HolmesGPT runtime built on the debug SRE workbench with kubectl, Helm, ArgoCD, kube-lineage, and Azure SQL tooling" \
+      org.opencontainers.image.description="HolmesGPT runtime built on the debug SRE workbench with kubectl, Helm, ArgoCD, and Azure SQL tooling" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/holmes-gpt-docker" \
       com.spigell.workbench.base-image="debug-sre-workbench" \
       com.spigell.workbench.base-image-tag="${DEBUG_SRE_TAG}" \
       com.spigell.holmes.workbench.source-image="${HOLMES_SOURCE_IMAGE}" \
-      com.spigell.holmes.workbench.kube-lineage.version="${KUBE_LINEAGE_VERSION}" \
       com.spigell.holmes.workbench.argocd.version="${ARGOCD_VERSION}" \
       com.spigell.workbench.helm.version="${HELM_VERSION}"
 
