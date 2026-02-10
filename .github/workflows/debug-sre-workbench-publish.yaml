@@ -54,6 +54,7 @@ jobs:
         GKE_AUTH_PLUGIN_VERSION=551.0.0
         GCLOUD_VERSION=551.0.0
         ETCD_VERSION=3.6.5
+        KREW_VERSION=latest
       build-contexts: |
         shared=./shared
 
