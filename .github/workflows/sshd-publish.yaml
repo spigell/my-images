@@ -49,7 +49,7 @@ jobs:
     with:
       image-name: openssh-server
       context: ./sshd-docker
-      version: ${{ inputs.openssh_server_tag || 'version-10.2_p1-r0' }}
+      version: ${{ replace(inputs.openssh_server_tag || 'version-10.2_p1-r0', 'version-', '') }}
       build-args: |
         OPENSSH_SERVER_TAG=${{ inputs.openssh_server_tag || 'version-10.2_p1-r0' }}
         ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
