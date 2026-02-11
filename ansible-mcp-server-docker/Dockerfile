@@ -4,13 +4,11 @@
 # reusing the universal workbench base so pyenv/python tooling matches the rest of the images.
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 
-FROM node:22-alpine AS builder
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG} AS builder
 ARG VSCODE_ANSIBLE_REF=v26.1.1
 WORKDIR /src
 
-# Tooling needed for node-gyp and git clone
-RUN apk add --no-cache git python3 make g++ bash
-RUN corepack enable
+# universal base already includes Python, yarn/corepack, and build tooling
 
 # Fetch the upstream repo at the requested ref
 RUN git clone --depth=1 --branch "${VSCODE_ANSIBLE_REF}" https://github.com/ansible/vscode-ansible .
