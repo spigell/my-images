@@ -40,16 +40,29 @@ jobs:
           input_tag: ${{ inputs.zmx_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
+  resolve-openssh-version:
+    runs-on: ubuntu-latest
+    outputs:
+      publish_version: ${{ steps.out.outputs.publish_version }}
+    steps:
+      - id: out
+        env:
+          OPENSSH_SERVER_TAG: ${{ inputs.openssh_server_tag || 'version-10.2_p1-r0' }}
+        run: |
+          publish_version="${OPENSSH_SERVER_TAG#version-}"
+          echo "publish_version=${publish_version}" >> "$GITHUB_OUTPUT"
+
   build-sshd-workbench:
     needs:
       - resolve-zmx-tag
+      - resolve-openssh-version
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: openssh-server
       context: ./sshd-docker
-      version: ${{ replace(inputs.openssh_server_tag || 'version-10.2_p1-r0', 'version-', '') }}
+      version: ${{ needs.resolve-openssh-version.outputs.publish_version }}
       build-args: |
         OPENSSH_SERVER_TAG=${{ inputs.openssh_server_tag || 'version-10.2_p1-r0' }}
         ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
