@@ -3,7 +3,7 @@ run-name: "${{ github.event.client_payload.message || (github.event_name == 'rep
 
 on:
   repository_dispatch:
-    types: [zmx-binary-updated]
+    types: [zmx-binary-updated, debug-sre-workbench-updated]
   push:
     paths:
       - 'sshd-docker/**'
@@ -18,6 +18,10 @@ on:
         description: linuxserver/openssh-server tag (defaults to version-10.2_p1-r0)
         required: false
         default: version-10.2_p1-r0
+        type: string
+      sre_toolset_tag:
+        description: debug-sre-workbench tag (optional; falls back to GHCR latest)
+        required: false
         type: string
 
 permissions:
@@ -40,6 +44,21 @@ jobs:
           input_tag: ${{ inputs.zmx_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
+  resolve-sre-toolset-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: debug-sre-workbench
+          payload_tag: ${{ github.event.client_payload.debug_sre_tag }}
+          input_tag: ${{ inputs.sre_toolset_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
   resolve-openssh-version:
     runs-on: ubuntu-latest
     outputs:
@@ -55,6 +74,7 @@ jobs:
   build-sshd-workbench:
     needs:
       - resolve-zmx-tag
+      - resolve-sre-toolset-tag
       - resolve-openssh-version
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
@@ -66,6 +86,7 @@ jobs:
       build-args: |
         OPENSSH_SERVER_TAG=${{ inputs.openssh_server_tag || 'version-10.2_p1-r0' }}
         ZMX_BINARY_REF=${{ needs.resolve-zmx-tag.outputs.tag }}
+        SRE_TOOLSET_TAG=${{ needs.resolve-sre-toolset-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 
