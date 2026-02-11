@@ -16,6 +16,7 @@ ARG ZMX_BINARY_REF
 
 LABEL org.opencontainers.image.title="SSHD Workbench" \
       org.opencontainers.image.description="LinuxServer OpenSSH server image extended with the zmx binary" \
+      org.opencontainers.image.version="${OPENSSH_SERVER_TAG}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/sshd-docker" \
       com.spigell.workbench.base-image="linuxserver/openssh-server" \
       com.spigell.workbench.base-image-tag="${OPENSSH_SERVER_TAG}" \
