@@ -8,10 +8,7 @@ FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG} AS builder
 ARG VSCODE_ANSIBLE_REF=v26.1.1
 WORKDIR /src
 
-# Ensure build tooling is available; universal base already has pyenv/python and yarn
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends git build-essential && rm -rf /var/lib/apt/lists/*
-RUN corepack enable
+# universal base already includes Python, yarn/corepack, and build tooling
 
 # Fetch the upstream repo at the requested ref
 RUN git clone --depth=1 --branch "${VSCODE_ANSIBLE_REF}" https://github.com/ansible/vscode-ansible .
