@@ -11,11 +11,6 @@ USER root
 
 COPY --from=zmx-binary /zmx /usr/local/bin/zmx
 
-# Ensure the `ubuntu` user can log in via SSH and can write its ~/.ssh directory.
-# linuxserver/openssh-server images are typically Alpine-based, so use adduser/addgroup.
-RUN addgroup -S ubuntu 2>/dev/null || true \
- && adduser -S -D -H -h /home/ubuntu -s /bin/ash -G ubuntu ubuntu 2>/dev/null || true
-
 ARG OPENSSH_SERVER_TAG
 ARG ZMX_BINARY_REF
 
