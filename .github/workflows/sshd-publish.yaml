@@ -47,7 +47,7 @@ jobs:
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
-      image-name: sshd-workbench
+      image-name: openssh-server
       context: ./sshd-docker
       version: v1.0.0
       build-args: |

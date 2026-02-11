@@ -10,7 +10,6 @@ FROM linuxserver/openssh-server:${OPENSSH_SERVER_TAG}
 USER root
 
 COPY --from=zmx-binary /zmx /usr/local/bin/zmx
-RUN chmod 0755 /usr/local/bin/zmx
 
 ARG OPENSSH_SERVER_TAG
 ARG ZMX_BINARY_REF
