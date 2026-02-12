@@ -144,7 +144,7 @@ RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
  && install -d -m 0755 "${UBUNTU_HOME}/.vim/bundle" \
  && git clone --depth=1 https://github.com/VundleVim/Vundle.vim "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" \
  && ln -s "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" "${UBUNTU_HOME}/.vim/bundle/vundle" \
- && (HOME="${UBUNTU_HOME}" su -s /bin/bash ubuntu -c "vim -V1 -Nu ~/.vimrc -n -i NONE -es +'set nomore' +'PluginInstall' +'qa!'" 2>&1 | tee /tmp/vim-plugin-install.log) \
+ && (su -s /bin/bash - ubuntu -c "vim -V1 -Nu ~/.vimrc -n -i NONE -es +'set nomore' +'PluginInstall' +'qa!'" 2>&1 | tee /tmp/vim-plugin-install.log) \
  && test "${PIPESTATUS[0]}" = "0" \
  && echo "Installed Vim bundles:" \
  && ls -1 "${UBUNTU_HOME}/.vim/bundle" | sort \
