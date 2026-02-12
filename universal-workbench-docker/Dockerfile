@@ -138,6 +138,9 @@ RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
  && cp /tmp/dotfiles/git/gitconfig "${UBUNTU_HOME}/.gitconfig" \
  && cp /tmp/dotfiles/vim/vimrc "${UBUNTU_HOME}/.vimrc" \
  && cp /tmp/dotfiles/vim/pluginsrc "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
+ && printf '\n" Theme\nBundle '"'"'morhetz/gruvbox'"'"'\n' >> "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
+ && sed -i 's/\\<colorscheme\\s\\+desert\\>/colorscheme gruvbox/g' "${UBUNTU_HOME}/.vimrc" \
+ && cat >> "${UBUNTU_HOME}/.vimrc" <<'EOF'\n\n\" Ensure the colorscheme is applied after plugins are on 'runtimepath'.\naugroup WorkbenchTheme\n  autocmd!\n  autocmd VimEnter * silent! colorscheme gruvbox\naugroup END\nEOF\n \
  && install -d -m 0755 "${UBUNTU_HOME}/.vim/bundle" \
  && git clone --depth=1 https://github.com/VundleVim/Vundle.vim "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" \
  && ln -s "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" "${UBUNTU_HOME}/.vim/bundle/vundle" \
