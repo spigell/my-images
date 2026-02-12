@@ -141,6 +141,7 @@ RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
  && install -d -m 0755 "${UBUNTU_HOME}/.vim/bundle" \
  && git clone --depth=1 https://github.com/VundleVim/Vundle.vim "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" \
  && ln -s "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" "${UBUNTU_HOME}/.vim/bundle/vundle" \
+ && HOME="${UBUNTU_HOME}" su -s /bin/bash ubuntu -c "vim -Nu ~/.vimrc -n -i NONE -es +'silent! BundleInstall' +'qa!'" \
  && chown -R ubuntu:ubuntu "${UBUNTU_HOME}/.bashrc" "${UBUNTU_HOME}/.bash_profile" "${UBUNTU_HOME}/.gitconfig" "${UBUNTU_HOME}/.vimrc" "${UBUNTU_HOME}/.vim" \
  && rm -rf /tmp/dotfiles
 

@@ -23,7 +23,7 @@
 
 ## Git setup helper
 
-Every workbench image includes the `setup-git-workbench` helper under `/usr/local/bin` and preinstalls `vim`. Run the helper
+Every workbench image includes the `setup-git-workbench` helper under `/usr/local/bin` and preinstalls `vim` (including its configured plugins). Run the helper
 once inside a container to configure your preferred Git identity and editor:
 
 ```bash
