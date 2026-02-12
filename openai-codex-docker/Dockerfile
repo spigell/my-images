@@ -1,10 +1,11 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG CODEX_BINARY_REF=rust-v0.98.0
+ARG CODEX_BINARY_IMAGE=ghcr.io/spigell/codex-binary
+ARG CODEX_BINARY_REF=rust-v0.99.0
 ARG SPLITRAIL_VERSION=3.2.2
 
-FROM ghcr.io/spigell/codex-binary:${CODEX_BINARY_REF} AS codex
+FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_REF} AS codex
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 LABEL codex.binary.ref="${CODEX_BINARY_REF}"
