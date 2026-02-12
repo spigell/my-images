@@ -130,24 +130,6 @@ RUN --mount=type=cache,target=/var/cache/apt \
 # QoL defaults shared by all workbenches
 RUN echo 'source /usr/share/bash-completion/bash_completion || true' >> /etc/bash.bashrc
 
-# Pull common dotfiles for the ubuntu user
-RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
- && install -d "${UBUNTU_HOME}/.vim/configs" \
- && cp /tmp/dotfiles/bash/bashrc "${UBUNTU_HOME}/.bashrc" \
- && cp /tmp/dotfiles/bash/bash_profile "${UBUNTU_HOME}/.bash_profile" \
- && cp /tmp/dotfiles/git/gitconfig "${UBUNTU_HOME}/.gitconfig" \
- && cp /tmp/dotfiles/vim/vimrc "${UBUNTU_HOME}/.vimrc" \
- && cp /tmp/dotfiles/vim/pluginsrc "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
- && printf '\n" Theme\nBundle '"'"'morhetz/gruvbox'"'"'\n' >> "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
- && sed -i 's/\\<colorscheme\\s\\+desert\\>/colorscheme gruvbox/g' "${UBUNTU_HOME}/.vimrc" \
- && printf '\n" Ensure the colorscheme is applied after plugins are on '"'"'runtimepath'"'"'.\naugroup WorkbenchTheme\n  autocmd!\n  autocmd VimEnter * silent! colorscheme gruvbox\naugroup END\n' >> "${UBUNTU_HOME}/.vimrc" \
- && install -d -m 0755 "${UBUNTU_HOME}/.vim/bundle" \
- && git clone --depth=1 https://github.com/VundleVim/Vundle.vim "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" \
- && ln -s "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" "${UBUNTU_HOME}/.vim/bundle/vundle" \
- && HOME="${UBUNTU_HOME}" su -s /bin/bash ubuntu -c "vim -Nu ~/.vimrc -n -i NONE -es +'silent! BundleInstall' +'qa!'" \
- && chown -R ubuntu:ubuntu "${UBUNTU_HOME}/.bashrc" "${UBUNTU_HOME}/.bash_profile" "${UBUNTU_HOME}/.gitconfig" "${UBUNTU_HOME}/.vimrc" "${UBUNTU_HOME}/.vim" \
- && rm -rf /tmp/dotfiles
-
 # Install Go toolchain
 RUN arch="${TARGETARCH:-amd64}"; \
     curl -fsSLo /tmp/go.tgz "https://golang.org/dl/go${GOLANG_VERSION}.linux-${arch}.tar.gz"; \
@@ -208,6 +190,27 @@ USER ubuntu
 ENV HOME="${UBUNTU_HOME}"
 ENV GOPATH="${UBUNTU_GOPATH}"
 ENV PATH="${GOPATH}/bin:/usr/local/go/bin:${PATH}"
+
+# Pull common dotfiles for the ubuntu user (run as ubuntu so plugin installs land under /home/ubuntu)
+RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
+ && install -d "${UBUNTU_HOME}/.vim/configs" \
+ && cp /tmp/dotfiles/bash/bashrc "${UBUNTU_HOME}/.bashrc" \
+ && cp /tmp/dotfiles/bash/bash_profile "${UBUNTU_HOME}/.bash_profile" \
+ && cp /tmp/dotfiles/git/gitconfig "${UBUNTU_HOME}/.gitconfig" \
+ && cp /tmp/dotfiles/vim/vimrc "${UBUNTU_HOME}/.vimrc" \
+ && cp /tmp/dotfiles/vim/pluginsrc "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
+ && printf '\n" Theme\nBundle '"'"'morhetz/gruvbox'"'"'\n' >> "${UBUNTU_HOME}/.vim/configs/pluginsrc" \
+ && sed -i 's/\\<colorscheme\\s\\+desert\\>/colorscheme gruvbox/g' "${UBUNTU_HOME}/.vimrc" \
+ && printf '\n" Ensure the colorscheme is applied after plugins are on '"'"'runtimepath'"'"'.\naugroup WorkbenchTheme\n  autocmd!\n  autocmd VimEnter * silent! colorscheme gruvbox\naugroup END\n' >> "${UBUNTU_HOME}/.vimrc" \
+ && install -d -m 0755 "${UBUNTU_HOME}/.vim/bundle" \
+ && git clone --depth=1 https://github.com/VundleVim/Vundle.vim "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" \
+ && ln -s "${UBUNTU_HOME}/.vim/bundle/Vundle.vim" "${UBUNTU_HOME}/.vim/bundle/vundle" \
+ && (vim -V1 -Nu ~/.vimrc -n -i NONE -es +'set nomore' +'PluginInstall' +'qa!' 2>&1 | tee /tmp/vim-plugin-install.log) \
+ && test "${PIPESTATUS[0]}" = "0" \
+ && echo "Installed Vim bundles:" \
+ && ls -1 "${UBUNTU_HOME}/.vim/bundle" | sort \
+ && test -d "${UBUNTU_HOME}/.vim/bundle/gruvbox" \
+ && rm -rf /tmp/dotfiles
 
 LABEL org.opencontainers.image.title="Universal Workbench" \
       org.opencontainers.image.description="Common Ubuntu 24.04 workbench runtime with Go, Python, Node.js, delve, yarn, and shared tooling for Codex and Gemini" \
