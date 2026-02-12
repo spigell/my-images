@@ -8,10 +8,17 @@ ARG TALOSCTL_VERSION=1.12.0
 ARG GKE_AUTH_PLUGIN_VERSION=551.0.0
 ARG GCLOUD_VERSION=551.0.0
 ARG ETCD_VERSION=3.6.5
-ARG KREW_VERSION=latest
+ARG KREW_VERSION=v0.4.4
 ARG LINEAGE_VERSION=0.5.0
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
+ARG HOLMES_SOURCE_IMAGE=robustadev/holmes:0.19.1
+ARG HOLMES_REF=0.19.1
+ARG ARGOCD_VERSION=3.2.1
+ARG ARGOCD_ARM_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-arm64
+ARG ARGOCD_AMD_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-amd64
+
+FROM ${HOLMES_SOURCE_IMAGE} AS holmes-src
 
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -26,12 +33,32 @@ ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG TARGETOS
 ARG TARGETARCH
+ARG HOLMES_REF
+ARG ARGOCD_VERSION
+ARG ARGOCD_ARM_URL
+ARG ARGOCD_AMD_URL
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git tar xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp/fetch
+
+# Fetch Holmes manifests in parallel to reduce network wait in this stage.
+RUN curl -fsSL -o pyproject.toml "https://raw.githubusercontent.com/HolmesGPT/holmesgpt/${HOLMES_REF}/pyproject.toml" & \
+    pid1=$!; \
+    curl -fsSL -o poetry.lock "https://raw.githubusercontent.com/HolmesGPT/holmesgpt/${HOLMES_REF}/poetry.lock" & \
+    pid2=$!; \
+    wait "$pid1" "$pid2"
+
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+      curl -fsSL -o argocd "${ARGOCD_ARM_URL}"; \
+    elif [ "${TARGETARCH}" = "amd64" ]; then \
+      curl -fsSL -o argocd "${ARGOCD_AMD_URL}"; \
+    else \
+      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
+    fi \
+    && chmod +x argocd
 
 RUN curl -fsSL -o k9s.deb \
       "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${TARGETOS}_${TARGETARCH}.deb"
@@ -122,15 +149,27 @@ ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
+ARG HOLMES_SOURCE_IMAGE
+ARG HOLMES_REF
+ARG ARGOCD_VERSION
+
+ENV APP_HOME=/app
+ENV VIRTUAL_ENV=/opt/holmes-venv
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=".:${APP_HOME}/holmes"
 
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 COPY --from=fetch /tmp/fetch/kubectl /usr/local/bin/kubectl
 COPY --from=fetch /tmp/fetch/helm /usr/local/bin/helm
+COPY --from=fetch /tmp/fetch/argocd /usr/local/bin/argocd
 COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-auth-plugin
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
 COPY --from=fetch /tmp/fetch/krew-installer /tmp/krew-installer
+COPY --from=fetch /tmp/fetch/pyproject.toml /tmp/holmes-src/pyproject.toml
+COPY --from=fetch /tmp/fetch/poetry.lock /tmp/holmes-src/poetry.lock
 
 RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/gcloud-crc32c /usr/local/bin/gcloud-crc32c \
@@ -150,6 +189,35 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && (dpkg -i /tmp/k9s.deb || (apt-get -y -f install && dpkg -i /tmp/k9s.deb)) \
     && rm -f /tmp/k9s.deb \
     && rm -rf /var/lib/apt/lists/*
+
+# Microsoft ODBC for Azure SQL (required by Holmes azure/sql toolset)
+RUN . /etc/os-release \
+    && curl -fsSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" \
+    && dpkg -i /tmp/packages-microsoft-prod.deb \
+    && rm /tmp/packages-microsoft-prod.deb \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Holmes Python environment
+RUN python3 -m venv "${VIRTUAL_ENV}" \
+    && "${VIRTUAL_ENV}/bin/pip" install --upgrade pip
+
+RUN cd /tmp/holmes-src \
+    && poetry export -f requirements.txt --output requirements.txt --without-hashes \
+    && "${VIRTUAL_ENV}/bin/pip" install -r requirements.txt \
+    && rm -rf /tmp/holmes-src
+
+WORKDIR ${APP_HOME}
+
+COPY --from=holmes-src /app/holmes ${APP_HOME}/holmes
+COPY --from=holmes-src /app/server.py ${APP_HOME}/server.py
+COPY --from=holmes-src /app/holmes_cli.py ${APP_HOME}/holmes_cli.py
+RUN install -d -m 0755 ${APP_HOME}/experimental/ag-ui
+COPY --from=holmes-src /app/experimental/ag-ui/server-agui.py ${APP_HOME}/experimental/ag-ui/server-agui.py
+
+RUN chown -R ubuntu:ubuntu ${APP_HOME}
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
@@ -188,7 +256,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, krew, kube-lineage, Poetry, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, Poetry, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
@@ -200,7 +268,10 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.gcloud.version="${GCLOUD_VERSION}" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
-      com.spigell.workbench.etcdctl.version="${ETCD_VERSION}"
+      com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
+      com.spigell.holmes.workbench.source-image="${HOLMES_SOURCE_IMAGE}" \
+      com.spigell.holmes.workbench.ref="${HOLMES_REF}" \
+      com.spigell.holmes.workbench.argocd.version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]

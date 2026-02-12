@@ -14,8 +14,7 @@
 | `github-runner-docker/` | Codex workbench | GitHub Actions runner dependencies for Codex | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-github-runner) |
 | `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-workbench) |
 | `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench) |
-| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, Poetry, uv | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench) |
-| `holmes-gpt-docker/` | Debug SRE workbench | HolmesGPT runtime plus ArgoCD, Helm 4, Azure SQL tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/holmes-gpt) |
+| `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, HolmesGPT runtime, Azure SQL tooling, Poetry, uv | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench) |
 | `sshd-docker/` | linuxserver/openssh-server | OpenSSH server runtime with zmx binary | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/openssh-server) |
 | `anki-desktop-docker/` | Universal workbench | Anki desktop tooling and defaults | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/anki-desktop-docker) |
 | `zmx-binary/` | - | zmx binary image used by workbench builds | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary) |
