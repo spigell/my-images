@@ -199,10 +199,13 @@ WORKDIR ${HOLMES_APP_HOME}
 COPY --from=holmes_src /app/holmes ${HOLMES_APP_HOME}/holmes
 COPY --from=holmes_src /app/server.py ${HOLMES_APP_HOME}/server.py
 COPY --from=holmes_src /app/holmes_cli.py ${HOLMES_APP_HOME}/holmes_cli.py
+COPY --from=holmes_src /app/holmes_cli.py ${HOLMES_VIRTUAL_ENV}/bin/holmes
 RUN install -d -m 0755 ${HOLMES_APP_HOME}/experimental/ag-ui
 COPY --from=holmes_src /app/experimental/ag-ui/server-agui.py ${HOLMES_APP_HOME}/experimental/ag-ui/server-agui.py
 
 RUN chown -R ubuntu:ubuntu ${HOLMES_APP_HOME}
+RUN sed -i '1i#!/usr/bin/env python3' ${HOLMES_VIRTUAL_ENV}/bin/holmes \
+    && chmod 0755 ${HOLMES_VIRTUAL_ENV}/bin/holmes
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
