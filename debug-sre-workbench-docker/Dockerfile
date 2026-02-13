@@ -206,6 +206,7 @@ COPY --from=holmes_src /app/experimental/ag-ui/server-agui.py ${HOLMES_APP_HOME}
 RUN chown -R ubuntu:ubuntu ${HOLMES_APP_HOME}
 RUN sed -i '1i#!/usr/bin/env python3' ${HOLMES_VIRTUAL_ENV}/bin/holmes \
     && chmod 0755 ${HOLMES_VIRTUAL_ENV}/bin/holmes
+RUN holmes --version
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
