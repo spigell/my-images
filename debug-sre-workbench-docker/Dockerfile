@@ -186,16 +186,6 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && rm -f /tmp/k9s.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# Microsoft ODBC for Azure SQL (required by Holmes azure/sql toolset)
-RUN . /etc/os-release \
-    && curl -fsSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb" \
-    && dpkg -i /tmp/packages-microsoft-prod.deb \
-    && rm /tmp/packages-microsoft-prod.deb \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
-    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install Holmes Python environment
 RUN python3 -m venv "${VIRTUAL_ENV}" \
     && "${VIRTUAL_ENV}/bin/pip" install --upgrade pip
