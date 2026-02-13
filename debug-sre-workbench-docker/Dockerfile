@@ -12,13 +12,12 @@ ARG KREW_VERSION=v0.4.4
 ARG LINEAGE_VERSION=0.5.0
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_SOURCE_IMAGE=robustadev/holmes:0.19.1
 ARG HOLMES_REF=0.19.1
 ARG ARGOCD_VERSION=3.2.1
 ARG ARGOCD_ARM_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-arm64
 ARG ARGOCD_AMD_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-amd64
 
-FROM ${HOLMES_SOURCE_IMAGE} AS holmes-src
+FROM robustadev/holmes:${HOLMES_REF} AS holmes-src
 
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -149,7 +148,6 @@ ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
-ARG HOLMES_SOURCE_IMAGE
 ARG HOLMES_REF
 ARG ARGOCD_VERSION
 
@@ -269,7 +267,6 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
-      com.spigell.holmes.workbench.source-image="${HOLMES_SOURCE_IMAGE}" \
       com.spigell.holmes.workbench.ref="${HOLMES_REF}" \
       com.spigell.holmes.workbench.argocd.version="${ARGOCD_VERSION}"
 

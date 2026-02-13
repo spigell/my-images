@@ -55,7 +55,6 @@ jobs:
         GCLOUD_VERSION=551.0.0
         ETCD_VERSION=3.6.5
         KREW_VERSION=v0.4.4
-        HOLMES_SOURCE_IMAGE=robustadev/holmes:0.19.1
         HOLMES_REF=0.19.1
         ARGOCD_VERSION=3.2.1
       build-contexts: |
