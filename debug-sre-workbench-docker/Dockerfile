@@ -39,13 +39,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /tmp/fetch
 
-# Fetch Holmes manifests in parallel to reduce network wait in this stage.
-RUN curl -fsSL -o pyproject.toml "https://raw.githubusercontent.com/HolmesGPT/holmesgpt/${HOLMES_REF}/pyproject.toml" & \
-    pid1=$!; \
-    curl -fsSL -o poetry.lock "https://raw.githubusercontent.com/HolmesGPT/holmesgpt/${HOLMES_REF}/poetry.lock" & \
-    pid2=$!; \
-    wait "$pid1" "$pid2"
-
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
       argocd_arch="arm64"; \
     elif [ "${TARGETARCH}" = "amd64" ]; then \
@@ -164,8 +157,8 @@ COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-au
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
 COPY --from=fetch /tmp/fetch/krew-installer /tmp/krew-installer
-COPY --from=fetch /tmp/fetch/pyproject.toml /tmp/holmes-src/pyproject.toml
-COPY --from=fetch /tmp/fetch/poetry.lock /tmp/holmes-src/poetry.lock
+COPY --from=holmes-src /app/pyproject.toml /tmp/holmes-src/pyproject.toml
+COPY --from=holmes-src /app/poetry.lock /tmp/holmes-src/poetry.lock
 
 RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/gcloud-crc32c /usr/local/bin/gcloud-crc32c \
