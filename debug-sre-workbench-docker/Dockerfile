@@ -15,7 +15,7 @@ ARG TARGETARCH=amd64
 ARG HOLMES_REF=0.19.1
 ARG ARGOCD_VERSION=3.2.1
 
-FROM robustadev/holmes:${HOLMES_REF} AS holmes-src
+FROM robustadev/holmes:${HOLMES_REF} AS holmes_src
 
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -142,11 +142,11 @@ ARG UNIVERSAL_WORKBENCH_TAG
 ARG HOLMES_REF
 ARG ARGOCD_VERSION
 
-ENV APP_HOME=/app
-ENV VIRTUAL_ENV=/opt/holmes-venv
-ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
+ENV HOLMES_APP_HOME=/app
+ENV HOLMES_VIRTUAL_ENV=/opt/holmes-venv
+ENV PATH="${HOLMES_VIRTUAL_ENV}/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=".:${APP_HOME}/holmes"
+ENV PYTHONPATH=".:${HOLMES_APP_HOME}/holmes"
 
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
@@ -157,8 +157,8 @@ COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-au
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
 COPY --from=fetch /tmp/fetch/krew-installer /tmp/krew-installer
-COPY --from=holmes-src /app/pyproject.toml /tmp/holmes-src/pyproject.toml
-COPY --from=holmes-src /app/poetry.lock /tmp/holmes-src/poetry.lock
+COPY --from=holmes_src /app/pyproject.toml /tmp/holmes_src/pyproject.toml
+COPY --from=holmes_src /app/poetry.lock /tmp/holmes_src/poetry.lock
 
 RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/gcloud-crc32c /usr/local/bin/gcloud-crc32c \
@@ -180,23 +180,23 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Holmes Python environment
-RUN python3 -m venv "${VIRTUAL_ENV}" \
-    && "${VIRTUAL_ENV}/bin/pip" install --upgrade pip
+RUN python3 -m venv "${HOLMES_VIRTUAL_ENV}" \
+    && "${HOLMES_VIRTUAL_ENV}/bin/pip" install --upgrade pip
 
-RUN cd /tmp/holmes-src \
+RUN cd /tmp/holmes_src \
     && poetry export -f requirements.txt --output requirements.txt --without-hashes \
-    && "${VIRTUAL_ENV}/bin/pip" install -r requirements.txt \
-    && rm -rf /tmp/holmes-src
+    && "${HOLMES_VIRTUAL_ENV}/bin/pip" install -r requirements.txt \
+    && rm -rf /tmp/holmes_src
 
-WORKDIR ${APP_HOME}
+WORKDIR ${HOLMES_APP_HOME}
 
-COPY --from=holmes-src /app/holmes ${APP_HOME}/holmes
-COPY --from=holmes-src /app/server.py ${APP_HOME}/server.py
-COPY --from=holmes-src /app/holmes_cli.py ${APP_HOME}/holmes_cli.py
-RUN install -d -m 0755 ${APP_HOME}/experimental/ag-ui
-COPY --from=holmes-src /app/experimental/ag-ui/server-agui.py ${APP_HOME}/experimental/ag-ui/server-agui.py
+COPY --from=holmes_src /app/holmes ${HOLMES_APP_HOME}/holmes
+COPY --from=holmes_src /app/server.py ${HOLMES_APP_HOME}/server.py
+COPY --from=holmes_src /app/holmes_cli.py ${HOLMES_APP_HOME}/holmes_cli.py
+RUN install -d -m 0755 ${HOLMES_APP_HOME}/experimental/ag-ui
+COPY --from=holmes_src /app/experimental/ag-ui/server-agui.py ${HOLMES_APP_HOME}/experimental/ag-ui/server-agui.py
 
-RUN chown -R ubuntu:ubuntu ${APP_HOME}
+RUN chown -R ubuntu:ubuntu ${HOLMES_APP_HOME}
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
@@ -248,8 +248,8 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
-      com.spigell.holmes.workbench.ref="${HOLMES_REF}" \
-      com.spigell.holmes.workbench.argocd.version="${ARGOCD_VERSION}"
+      com.spigell.holmes_ref="${HOLMES_REF}" \
+      com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]
