@@ -8,10 +8,12 @@ ARG TALOSCTL_VERSION=1.12.0
 ARG GKE_AUTH_PLUGIN_VERSION=551.0.0
 ARG GCLOUD_VERSION=551.0.0
 ARG ETCD_VERSION=3.6.5
-ARG KREW_VERSION=latest
+ARG KREW_VERSION=v0.4.4
 ARG LINEAGE_VERSION=0.5.0
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
+ARG HOLMES_REF=0.19.1
+ARG ARGOCD_VERSION=3.2.1
 
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -26,12 +28,24 @@ ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG TARGETOS
 ARG TARGETARCH
+ARG ARGOCD_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git tar xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp/fetch
+
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+      argocd_arch="arm64"; \
+    elif [ "${TARGETARCH}" = "amd64" ]; then \
+      argocd_arch="amd64"; \
+    else \
+      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
+    fi \
+    && curl -fsSL -o argocd \
+      "https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-${argocd_arch}" \
+    && chmod +x argocd
 
 RUN curl -fsSL -o k9s.deb \
       "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${TARGETOS}_${TARGETARCH}.deb"
@@ -122,11 +136,16 @@ ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
+ARG HOLMES_REF
+ARG ARGOCD_VERSION
+
+ENV PYTHONUNBUFFERED=1
 
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 COPY --from=fetch /tmp/fetch/kubectl /usr/local/bin/kubectl
 COPY --from=fetch /tmp/fetch/helm /usr/local/bin/helm
+COPY --from=fetch /tmp/fetch/argocd /usr/local/bin/argocd
 COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-auth-plugin
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
@@ -150,6 +169,12 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && (dpkg -i /tmp/k9s.deb || (apt-get -y -f install && dpkg -i /tmp/k9s.deb)) \
     && rm -f /tmp/k9s.deb \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Holmes CLI via uv-managed tool environment (same pattern as universal).
+RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
+    XDG_DATA_HOME=/usr/local/share/uv-data \
+    XDG_BIN_HOME=/usr/local/bin \
+    uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_REF}"
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
@@ -188,7 +213,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools (kubectl, Helm, Docker CLI, K9s, Talosctl, etcdctl, krew, kube-lineage, Poetry, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
@@ -200,7 +225,9 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.gcloud.version="${GCLOUD_VERSION}" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
-      com.spigell.workbench.etcdctl.version="${ETCD_VERSION}"
+      com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
+      com.spigell.holmes_ref="${HOLMES_REF}" \
+      com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]
