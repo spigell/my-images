@@ -15,8 +15,6 @@ ARG TARGETARCH=amd64
 ARG HOLMES_REF=0.19.1
 ARG ARGOCD_VERSION=3.2.1
 
-FROM robustadev/holmes:${HOLMES_REF} AS holmes_src
-
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -30,7 +28,6 @@ ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG TARGETOS
 ARG TARGETARCH
-ARG HOLMES_REF
 ARG ARGOCD_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -38,12 +35,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp/fetch
-
-RUN curl -fsSL -o pyproject.toml \
-      "https://raw.githubusercontent.com/HolmesGPT/holmesgpt/${HOLMES_REF}/pyproject.toml"
-
-RUN curl -fsSL -o poetry.lock \
-      "https://raw.githubusercontent.com/HolmesGPT/holmesgpt/${HOLMES_REF}/poetry.lock"
 
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
       argocd_arch="arm64"; \
@@ -148,11 +139,7 @@ ARG UNIVERSAL_WORKBENCH_TAG
 ARG HOLMES_REF
 ARG ARGOCD_VERSION
 
-ENV HOLMES_APP_HOME=/app
-ENV HOLMES_VIRTUAL_ENV=/opt/holmes-venv
-ENV PATH="${HOLMES_VIRTUAL_ENV}/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=".:${HOLMES_APP_HOME}/holmes"
 
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
@@ -163,8 +150,6 @@ COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-au
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
 COPY --from=fetch /tmp/fetch/krew-installer /tmp/krew-installer
-COPY --from=fetch /tmp/fetch/pyproject.toml /tmp/holmes_src/pyproject.toml
-COPY --from=fetch /tmp/fetch/poetry.lock /tmp/holmes_src/poetry.lock
 
 RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/gcloud-crc32c /usr/local/bin/gcloud-crc32c \
@@ -185,28 +170,12 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && rm -f /tmp/k9s.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Holmes Python environment
-RUN python3 -m venv "${HOLMES_VIRTUAL_ENV}" \
-    && "${HOLMES_VIRTUAL_ENV}/bin/pip" install --upgrade pip
-
-RUN cd /tmp/holmes_src \
-    && poetry export -f requirements.txt --output requirements.txt --without-hashes \
-    && "${HOLMES_VIRTUAL_ENV}/bin/pip" install -r requirements.txt \
-    && rm -rf /tmp/holmes_src
-
-WORKDIR ${HOLMES_APP_HOME}
-
-COPY --from=holmes_src /app/holmes ${HOLMES_APP_HOME}/holmes
-COPY --from=holmes_src /app/server.py ${HOLMES_APP_HOME}/server.py
-COPY --from=holmes_src /app/holmes_cli.py ${HOLMES_APP_HOME}/holmes_cli.py
-COPY --from=holmes_src /app/holmes_cli.py ${HOLMES_VIRTUAL_ENV}/bin/holmes
-RUN install -d -m 0755 ${HOLMES_APP_HOME}/experimental/ag-ui
-COPY --from=holmes_src /app/experimental/ag-ui/server-agui.py ${HOLMES_APP_HOME}/experimental/ag-ui/server-agui.py
-
-RUN chown -R ubuntu:ubuntu ${HOLMES_APP_HOME}
-RUN sed -i '1i#!/usr/bin/env python3' ${HOLMES_VIRTUAL_ENV}/bin/holmes \
-    && chmod 0755 ${HOLMES_VIRTUAL_ENV}/bin/holmes
-RUN holmes --version
+# Install Holmes CLI via uv-managed tool environment (same pattern as universal).
+RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
+    XDG_DATA_HOME=/usr/local/share/uv-data \
+    XDG_BIN_HOME=/usr/local/bin \
+    uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_REF}" \
+    && holmes --version
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
@@ -245,7 +214,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, Poetry, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
