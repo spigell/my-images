@@ -14,8 +14,6 @@ ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_REF=0.19.1
 ARG ARGOCD_VERSION=3.2.1
-ARG ARGOCD_ARM_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-arm64
-ARG ARGOCD_AMD_URL=https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-amd64
 
 FROM robustadev/holmes:${HOLMES_REF} AS holmes-src
 
@@ -34,8 +32,6 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG HOLMES_REF
 ARG ARGOCD_VERSION
-ARG ARGOCD_ARM_URL
-ARG ARGOCD_AMD_URL
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git tar xz-utils \
@@ -51,12 +47,14 @@ RUN curl -fsSL -o pyproject.toml "https://raw.githubusercontent.com/HolmesGPT/ho
     wait "$pid1" "$pid2"
 
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
-      curl -fsSL -o argocd "${ARGOCD_ARM_URL}"; \
+      argocd_arch="arm64"; \
     elif [ "${TARGETARCH}" = "amd64" ]; then \
-      curl -fsSL -o argocd "${ARGOCD_AMD_URL}"; \
+      argocd_arch="amd64"; \
     else \
       echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
     fi \
+    && curl -fsSL -o argocd \
+      "https://github.com/argoproj/argo-cd/releases/download/v${ARGOCD_VERSION}/argocd-linux-${argocd_arch}" \
     && chmod +x argocd
 
 RUN curl -fsSL -o k9s.deb \
