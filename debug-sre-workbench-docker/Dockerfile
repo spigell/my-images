@@ -174,8 +174,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
 RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
     XDG_DATA_HOME=/usr/local/share/uv-data \
     XDG_BIN_HOME=/usr/local/bin \
-    uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_REF}" \
-    && holmes --help
+    uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_REF}"
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
