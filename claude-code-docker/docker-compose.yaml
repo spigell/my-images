@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        CLAUDE_CODE_VERSION: 2.1.37
+        CLAUDE_CODE_VERSION: 2.1.42
     image: claude-code:test
     container_name: claude-mini
     command: ["sleep infinity"]

@@ -1,8 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG CLAUDE_CODE_VERSION=2.1.37
-ARG SPLITRAIL_VERSION=3.2.2
+ARG CLAUDE_CODE_VERSION=2.1.42
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -11,7 +10,6 @@ USER root
 ENV HOME=/root
 
 ARG CLAUDE_CODE_VERSION
-ARG SPLITRAIL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
@@ -20,13 +18,6 @@ RUN yarn config set prefix /usr/local \
  && yarn global add @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} \
  && (npm cache clean --force || true) \
  && (yarn cache clean || true)
-
-RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
- && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
- && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
- && tar -xvf "/tmp/${ARCHIVE}" -C /tmp \
- && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
- && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
 USER ubuntu
 ENV HOME=/home/ubuntu

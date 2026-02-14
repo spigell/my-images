@@ -7,8 +7,8 @@ This directory provides a Dockerfile for the Claude Code Workbench.
 ```bash
 docker build \
   -f Dockerfile \
-  --build-arg CLAUDE_CODE_VERSION=2.1.37 \
-  -t ghcr.io/example/claude-code:v2.1.37 \
+  --build-arg CLAUDE_CODE_VERSION=2.1.42 \
+  -t ghcr.io/example/claude-code:v2.1.42 \
   .
 ```
 
