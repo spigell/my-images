@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  claude:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CLAUDE_CODE_VERSION: 2.1.42
+    image: claude-code:test
+    container_name: claude-mini
+    command: ["sleep infinity"]
+    entrypoint: ["/bin/bash", "-c"]
+    stdin_open: true
+    tty: true
