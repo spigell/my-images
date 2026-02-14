@@ -42,9 +42,9 @@ jobs:
     with:
       image-name: codex-binary
       context: ./openai-codex-docker/codex-binary
-      version: v0.99.0
+      version: v0.101.0
       build-args: |
-        CODEX_VERSION=rust-v0.99.0
+        CODEX_VERSION=rust-v0.101.0
 
   build-codex:
     needs:
