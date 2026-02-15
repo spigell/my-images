@@ -3,8 +3,6 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG CLAUDE_CODE_VERSION=2.1.42
 ARG SANDBOX_RUNTIME_VERSION=0.0.37
-ARG BUBBLEWRAP_VERSION=0.9.0-1ubuntu0.1
-ARG SOCAT_VERSION=1.8.0.0-4build3
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -15,15 +13,13 @@ ENV HOME=/root
 ARG CLAUDE_CODE_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 ARG SANDBOX_RUNTIME_VERSION
-ARG BUBBLEWRAP_VERSION
-ARG SOCAT_VERSION
 
 WORKDIR /project
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    bubblewrap=${BUBBLEWRAP_VERSION} \
-    socat=${SOCAT_VERSION} \
+    bubblewrap=0.9.0-1ubuntu0.1 \
+    socat=1.8.0.0-4build3 \
  && rm -rf /var/lib/apt/lists/*
 
 RUN yarn config set prefix /usr/local \
