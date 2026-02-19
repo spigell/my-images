@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        CLAUDE_CODE_VERSION: 2.1.42
+        CLAUDE_CODE_VERSION: 2.1.47
         SANDBOX_RUNTIME_VERSION: 0.0.37
     image: claude-code:test
     container_name: claude-mini
