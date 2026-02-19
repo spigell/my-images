@@ -44,10 +44,10 @@ jobs:
     with:
       image-name: claude-code-workbench
       context: ./claude-code-docker
-      version: v2.1.42
+      version: v2.1.47
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        CLAUDE_CODE_VERSION=2.1.42
+        CLAUDE_CODE_VERSION=2.1.47
         SANDBOX_RUNTIME_VERSION=0.0.37
 
   trigger-downstreams:
