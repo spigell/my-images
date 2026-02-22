@@ -22,7 +22,7 @@ jobs:
       context: ./zmx-binary
       version: 0.4.0
       build-args: |
-        ZMX_REF=5ae3cfb6c989d792f2695ba933e6c8e038e05dd4
+        ZMX_REF=v0.4.0
         ZIG_VERSION=0.15.2
 
   trigger-downstreams:
