@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-ARG ZMX_REF=0dae6cf3a761236b2e5c75fda43d612cf9f679c4
+ARG ZMX_REF=5ae3cfb6c989d792f2695ba933e6c8e038e05dd4
 ARG ZIG_VERSION=0.15.2
 ARG TARGETARCH=amd64
 
