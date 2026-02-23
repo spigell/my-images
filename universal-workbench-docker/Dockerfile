@@ -4,8 +4,31 @@ ARG ZMX_BINARY_REF=0.1.0
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG MCP_PROXY_VERSION=v0.10.0
 ARG MCP_SHELL_SERVER_VERSION=fd7863bf397494e15d3184fcb2e2d09e34f37920
+ARG YQ_VERSION=v4.44.6
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_REF} AS zmx-binary
+
+FROM debian:bookworm-slim AS fetch
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+ARG TARGETARCH=amd64
+ARG YQ_VERSION
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN arch="${TARGETARCH:-amd64}"; \
+    case "${arch}" in \
+      amd64|arm64) ;; \
+      *) echo "Unsupported yq architecture: ${arch}" >&2; exit 1 ;; \
+    esac; \
+    install -d /tmp/fetch; \
+    curl -fsSL -o /tmp/fetch/yq \
+      "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${arch}"; \
+    chmod +x /tmp/fetch/yq; \
+    /tmp/fetch/yq --version
 
 FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -18,7 +41,6 @@ ARG GOLANGCI_LINT_VERSION=2.7.1
 ARG DELVE_VERSION=1.25.2
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22
-ARG YQ_VERSION=v4.44.6
 ARG SPECIFY_VERSION=v0.0.90
 ARG ZMX_BINARY_REF
 ARG MCP_PROXY_VERSION
@@ -106,15 +128,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install mikefarah/yq v4 as a pinned binary (do not use distro yq variants).
-RUN arch="${TARGETARCH:-amd64}"; \
-    case "${arch}" in \
-      amd64|arm64) ;; \
-      *) echo "Unsupported yq architecture: ${arch}" >&2; exit 1 ;; \
-    esac; \
-    curl -fsSL -o /usr/local/bin/yq \
-      "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${arch}"; \
-    chmod +x /usr/local/bin/yq; \
-    yq --version
+COPY --from=fetch /tmp/fetch/yq /usr/local/bin/yq
+RUN chmod +x /usr/local/bin/yq && yq --version
 
 # Install .NET SDKs for LTS (8) and current (9) channels
 RUN curl -fsSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0 --install-dir /usr/local/share/dotnet \
