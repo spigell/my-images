@@ -18,6 +18,7 @@ ARG GOLANGCI_LINT_VERSION=2.7.1
 ARG DELVE_VERSION=1.25.2
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22
+ARG YQ_VERSION=v4.44.6
 ARG SPECIFY_VERSION=v0.0.90
 ARG ZMX_BINARY_REF
 ARG MCP_PROXY_VERSION
@@ -103,6 +104,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         tmux=3.4-* \
         tree \
     && rm -rf /var/lib/apt/lists/*
+
+# Install mikefarah/yq v4 as a pinned binary (do not use distro yq variants).
+RUN arch="${TARGETARCH:-amd64}"; \
+    case "${arch}" in \
+      amd64|arm64) ;; \
+      *) echo "Unsupported yq architecture: ${arch}" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL -o /usr/local/bin/yq \
+      "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${arch}"; \
+    chmod +x /usr/local/bin/yq; \
+    yq --version
 
 # Install .NET SDKs for LTS (8) and current (9) channels
 RUN curl -fsSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0 --install-dir /usr/local/share/dotnet \
