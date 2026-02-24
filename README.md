@@ -34,9 +34,3 @@ Omit any flags to be prompted interactively for missing values. The script defau
 matching the editor bundled with each image.
 
 The canonical script source lives at `shared/setup-git-workbench.sh` and is copied into each workbench image during the build.
-
-## Universal Workbench MCP Shell Server
-
-The universal workbench image includes shell MCP server tooling (`mcp-proxy` + `sonirico/mcp-shell`).
-
-See `universal-workbench-docker/README.md` for build instructions, runtime examples, security configuration (`allowed_executables` / `blocked_patterns`), and wrapper environment variables.
