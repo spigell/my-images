@@ -6,7 +6,7 @@
 
 | Image directory | Base image | Extends with | Browse |
 | --- | --- | --- | --- |
-| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench) |
+| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes, shared tooling, and shell MCP server tooling (`mcp-proxy` + `mcp-shell`) | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench) |
 | `openai-codex-docker/codex-binary/` | Scratch | Slim Codex binary artifact image | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-binary) |
 | `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench) |
 | `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench) |
@@ -34,3 +34,20 @@ Omit any flags to be prompted interactively for missing values. The script defau
 matching the editor bundled with each image.
 
 The canonical script source lives at `shared/setup-git-workbench.sh` and is copied into each workbench image during the build.
+
+## Universal Workbench MCP Shell Server
+
+The universal workbench image also ships a shell MCP server stack for HTTP exposure:
+
+- `sonirico/mcp-shell` (Go-based shell MCP server)
+- `mcp-proxy` (HTTP proxy wrapper)
+- `start-shell-mcp` (wrapper script at `/usr/local/bin/start-shell-mcp`)
+
+Common configuration notes:
+
+- Use `MCP_SHELL_SEC_CONFIG_FILE` to point to a mounted `mcp-shell` security YAML.
+- Prefer `allowed_executables` plus optional `blocked_patterns` in the YAML.
+- `MCP_PROXY_ALLOW_ORIGIN` controls CORS behavior for the HTTP endpoint (default `*`).
+- `MCP_SHELL_LOG_FORMAT` defaults to `json`.
+
+See `universal-workbench-docker/README.md` for build, runtime examples, env vars, and sample security configs.
