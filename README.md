@@ -6,7 +6,7 @@
 
 | Image directory | Base image | Extends with | Browse |
 | --- | --- | --- | --- |
-| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes plus shared tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench) |
+| `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes, shared tooling, and shell MCP server tooling (`mcp-proxy` + `mcp-shell`) | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench) |
 | `openai-codex-docker/codex-binary/` | Scratch | Slim Codex binary artifact image | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-binary) |
 | `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench) |
 | `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench) |
