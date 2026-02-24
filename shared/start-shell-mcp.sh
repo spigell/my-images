@@ -6,7 +6,7 @@ set -euo pipefail
 # If not provided, generate a sane default config with a minimal allowlist.
 
 # Hardcoded defaults for generated fallback config.
-MCP_SHELL_DEFAULT_ALLOWED_COMMANDS=(
+MCP_SHELL_DEFAULT_ALLOWED_EXECUTABLES=(
   ls
   cat
   pwd
@@ -15,13 +15,15 @@ MCP_SHELL_DEFAULT_ALLOWED_COMMANDS=(
   touch
   find
 )
+MCP_SHELL_DEFAULT_BLOCKED_PATTERNS=()
 MCP_SHELL_DEFAULT_MAX_EXECUTION_TIME="30s"
 MCP_SHELL_DEFAULT_WORKING_DIRECTORY="/project"
 MCP_SHELL_DEFAULT_MAX_OUTPUT_SIZE="1048576"
 MCP_SHELL_DEFAULT_AUDIT_LOG="true"
 
 # Effective values (defaults overridden via env when fallback config is generated).
-MCP_SHELL_ALLOWED_COMMANDS_CSV="${MCP_SHELL_ALLOWED_COMMANDS_CSV:-}"
+MCP_SHELL_ALLOWED_EXECUTABLES_CSV="${MCP_SHELL_ALLOWED_EXECUTABLES_CSV:-}"
+MCP_SHELL_BLOCKED_PATTERNS_CSV="${MCP_SHELL_BLOCKED_PATTERNS_CSV:-}"
 MCP_SHELL_MAX_EXECUTION_TIME="${MCP_SHELL_MAX_EXECUTION_TIME:-${MCP_SHELL_DEFAULT_MAX_EXECUTION_TIME}}"
 MCP_SHELL_WORKING_DIRECTORY="${MCP_SHELL_WORKING_DIRECTORY:-${MCP_SHELL_DEFAULT_WORKING_DIRECTORY}}"
 MCP_SHELL_MAX_OUTPUT_SIZE="${MCP_SHELL_MAX_OUTPUT_SIZE:-${MCP_SHELL_DEFAULT_MAX_OUTPUT_SIZE}}"
@@ -49,18 +51,33 @@ if [[ -z "${MCP_SHELL_SEC_CONFIG_FILE:-}" ]]; then
   {
     echo "security:"
     echo "  enabled: true"
-    echo "  allowed_commands:"
-    if [[ -n "${MCP_SHELL_ALLOWED_COMMANDS_CSV}" ]]; then
-      IFS=',' read -r -a _mcp_allowed_cmds <<< "${MCP_SHELL_ALLOWED_COMMANDS_CSV}"
-      for raw_cmd in "${_mcp_allowed_cmds[@]}"; do
-        cmd="${raw_cmd#"${raw_cmd%%[![:space:]]*}"}"
-        cmd="${cmd%"${cmd##*[![:space:]]}"}"
-        [[ -n "${cmd}" ]] || continue
-        printf '    - "%s"\n' "${cmd//\"/\\\"}"
+    echo "  allowed_executables:"
+    if [[ -n "${MCP_SHELL_ALLOWED_EXECUTABLES_CSV}" ]]; then
+      IFS=',' read -r -a _mcp_allowed_execs <<< "${MCP_SHELL_ALLOWED_EXECUTABLES_CSV}"
+      for raw_exec in "${_mcp_allowed_execs[@]}"; do
+        exec_name="${raw_exec#"${raw_exec%%[![:space:]]*}"}"
+        exec_name="${exec_name%"${exec_name##*[![:space:]]}"}"
+        [[ -n "${exec_name}" ]] || continue
+        printf '    - "%s"\n' "${exec_name//\"/\\\"}"
       done
     else
-      for cmd in "${MCP_SHELL_DEFAULT_ALLOWED_COMMANDS[@]}"; do
-        printf '    - "%s"\n' "${cmd}"
+      for exec_name in "${MCP_SHELL_DEFAULT_ALLOWED_EXECUTABLES[@]}"; do
+        printf '    - "%s"\n' "${exec_name}"
+      done
+    fi
+    if [[ -n "${MCP_SHELL_BLOCKED_PATTERNS_CSV}" ]]; then
+      echo "  blocked_patterns:"
+      IFS=',' read -r -a _mcp_blocked_patterns <<< "${MCP_SHELL_BLOCKED_PATTERNS_CSV}"
+      for raw_pattern in "${_mcp_blocked_patterns[@]}"; do
+        pattern="${raw_pattern#"${raw_pattern%%[![:space:]]*}"}"
+        pattern="${pattern%"${pattern##*[![:space:]]}"}"
+        [[ -n "${pattern}" ]] || continue
+        printf "    - '%s'\n" "${pattern//\'/''}"
+      done
+    elif ((${#MCP_SHELL_DEFAULT_BLOCKED_PATTERNS[@]} > 0)); then
+      echo "  blocked_patterns:"
+      for pattern in "${MCP_SHELL_DEFAULT_BLOCKED_PATTERNS[@]}"; do
+        printf "    - '%s'\n" "${pattern//\'/''}"
       done
     fi
     echo "  max_execution_time: ${MCP_SHELL_MAX_EXECUTION_TIME}"
