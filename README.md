@@ -37,17 +37,6 @@ The canonical script source lives at `shared/setup-git-workbench.sh` and is copi
 
 ## Universal Workbench MCP Shell Server
 
-The universal workbench image also ships a shell MCP server stack for HTTP exposure:
+The universal workbench image includes shell MCP server tooling (`mcp-proxy` + `sonirico/mcp-shell`).
 
-- `sonirico/mcp-shell` (Go-based shell MCP server)
-- `mcp-proxy` (HTTP proxy wrapper)
-- `start-shell-mcp` (wrapper script at `/usr/local/bin/start-shell-mcp`)
-
-Common configuration notes:
-
-- Use `MCP_SHELL_SEC_CONFIG_FILE` to point to a mounted `mcp-shell` security YAML.
-- Prefer `allowed_executables` plus optional `blocked_patterns` in the YAML.
-- `MCP_PROXY_ALLOW_ORIGIN` controls CORS behavior for the HTTP endpoint (default `*`).
-- `MCP_SHELL_LOG_FORMAT` defaults to `json`.
-
-See `universal-workbench-docker/README.md` for build, runtime examples, env vars, and sample security configs.
+See `universal-workbench-docker/README.md` for build instructions, runtime examples, security configuration (`allowed_executables` / `blocked_patterns`), and wrapper environment variables.
