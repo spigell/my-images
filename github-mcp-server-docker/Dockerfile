@@ -2,7 +2,7 @@
 FROM alpine:3.20 AS downloader
 
 # Set environment variables for the server version and architecture
-ENV GITHUB_MCP_SERVER_VERSION=v0.26.3
+ENV GITHUB_MCP_SERVER_VERSION=v0.31.0
 ENV ARCH=x86_64
 ENV DIST=Linux
 
@@ -15,7 +15,7 @@ RUN apk add --no-cache curl \
     && chmod +x /usr/local/bin/github-mcp-server
 
 # Use the proxy image as the base for the final image
-FROM ghcr.io/sparfenyuk/mcp-proxy:v0.9.0
+FROM ghcr.io/sparfenyuk/mcp-proxy:v0.11.0
 
 # Create a non-root user
 RUN addgroup -S app && adduser -S -G app app
