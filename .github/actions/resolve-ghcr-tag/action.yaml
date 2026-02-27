@@ -52,12 +52,28 @@ runs:
 
         async function fetchLatestTag() {
           const bearer = await fetchBearer();
-          const url = `https://ghcr.io/v2/${owner}/${image}/tags/list`;
-          const { data } = await get(url, { headers: { Authorization: `Bearer ${bearer}` } });
-          const json = JSON.parse(data);
-          const tags = Array.isArray(json.tags) ? json.tags.filter(t => t !== 'latest') : [];
-          if (!tags.length) throw new Error(`No tags found for ${image}`);
-          const sorted = tags.sort((a, b) => {
+          const tags = [];
+          let url = `https://ghcr.io/v2/${owner}/${image}/tags/list?n=1000`;
+
+          while (url) {
+            const { res, data } = await get(url, { headers: { Authorization: `Bearer ${bearer}` } });
+            const json = JSON.parse(data);
+            if (Array.isArray(json.tags)) tags.push(...json.tags);
+
+            const link = res.headers.link || '';
+            const next = link.match(/<([^>]+)>;\s*rel="next"/);
+            if (next && next[1]) {
+              const nextUrl = next[1];
+              url = nextUrl.startsWith('http') ? nextUrl : `https://ghcr.io${nextUrl}`;
+            } else {
+              url = '';
+            }
+          }
+
+          const deduped = [...new Set(tags)];
+          const filtered = deduped.filter(t => t !== 'latest');
+          if (!filtered.length) throw new Error(`No tags found for ${image}`);
+          const sorted = filtered.sort((a, b) => {
             const pa = a.split('.').map(Number);
             const pb = b.split('.').map(Number);
             const len = Math.max(pa.length, pb.length);
