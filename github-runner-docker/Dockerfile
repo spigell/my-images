@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1.4
+# Trigger marker: keep this line to force workflow rebuilds when needed.
 
 ARG BASE_IMAGE_NAME=change_me
 ARG BASE_IMAGE_TAG=change_me
