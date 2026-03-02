@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1.4
 
-ARG CODEX_VERSION=rust-v0.107.0-alpha.4
+ARG CODEX_VERSION=rust-v0.107.0
 ARG CODEX_TARBALL=codex-x86_64-unknown-linux-gnu.tar.gz
 ARG CODEX_BINARY_NAME=codex-x86_64-unknown-linux-gnu
 ARG CODEX_BASE_URL=https://github.com/openai/codex/releases/download
 
-FROM ubuntu:24.04 AS downloader
+FROM debian:12 AS downloader
 
 ARG CODEX_VERSION
 ARG CODEX_TARBALL
