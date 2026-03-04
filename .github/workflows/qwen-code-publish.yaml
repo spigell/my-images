@@ -44,10 +44,10 @@ jobs:
     with:
       image-name: qwen-workbench
       context: ./qwen-code-docker
-      version: v0.10.6
+      version: v0.11.1
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        QWEN_CODE_VERSION=0.10.6
+        QWEN_CODE_VERSION=0.11.1
       build-contexts: |
         shared=./shared
 
