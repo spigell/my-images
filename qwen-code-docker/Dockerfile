@@ -7,9 +7,8 @@ ARG SPLITRAIL_VERSION=3.2.2
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-USER ubuntu
-ENV HOME=/home/ubuntu
-ENV PATH="/home/ubuntu/.local/bin:${PATH}"
+USER root
+ENV HOME=/root
 
 ARG QWEN_CODE_VERSION
 ARG SPLITRAIL_VERSION
@@ -17,8 +16,7 @@ ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
-RUN mkdir -p /home/ubuntu/.local/bin \
- && yarn config set prefix /home/ubuntu/.local \
+RUN yarn config set prefix /usr/local \
  && yarn global add @qwen-code/qwen-code@${QWEN_CODE_VERSION} \
  && npm cache clean --force || true \
  && yarn cache clean || true
@@ -27,8 +25,11 @@ RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
  && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
  && tar -xvf "/tmp/${ARCHIVE}" -C /tmp \
- && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /home/ubuntu/.local/bin/splitrail \
+ && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
  && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
+
+USER ubuntu
+ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Qwen Code Workbench" \
       org.opencontainers.image.description="Qwen Code CLI workbench built on the universal base image" \
