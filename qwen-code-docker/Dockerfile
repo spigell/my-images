@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG QWEN_CODE_VERSION=0.10.6
+ARG QWEN_CODE_VERSION=0.11.1
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
