@@ -11,7 +11,7 @@
     "theme": "Dracula",
     "useFullWidth": true,
     "hideBanner": true,
-    "hideTips": false,
+    "hideTips": true,
     "showMemoryUsage": true
   },
   "tools": {
