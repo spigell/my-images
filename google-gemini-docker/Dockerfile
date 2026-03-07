@@ -27,8 +27,8 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && yarn global add "${GEMINI_CLI_PACKAGE_SPEC}" \
- && npm cache clean --force || true \
- && yarn cache clean || true
+ && (npm cache clean --force || true) \
+ && (yarn cache clean || true)
 
 RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
