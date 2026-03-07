@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_PACKAGE_SPEC=https://github.com/cc-fuyu/gemini-cli#db24f98ca54f166b7a9aa729c07f8d77dd26b03d
-ARG GEMINI_CLI_VERSION_LABEL=0.32.1-pr20572-db24f98
+ARG GEMINI_CLI_PACKAGE_SPEC=@google/gemini-cli@0.32.1
+ARG GEMINI_CLI_VERSION_LABEL=0.32.1-pr20572-patched
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM golang:1.25.5-alpine AS builder
@@ -27,6 +27,9 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && yarn global add "${GEMINI_CLI_PACKAGE_SPEC}" \
+ && GEMINI_COMPOSER_JS="$(yarn global dir)/node_modules/@google/gemini-cli/dist/ui/components/Composer.js" \
+ && grep -q "loadingPhrases === 'off'" "${GEMINI_COMPOSER_JS}" \
+ && perl -0pi -e "s/ \\|\\| settings\\.merged\\.ui\\.loadingPhrases === 'off'//g" "${GEMINI_COMPOSER_JS}" \
  && (npm cache clean --force || true) \
  && (yarn cache clean || true)
 
