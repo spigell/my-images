@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.32.1
+ARG GEMINI_CLI_PACKAGE_SPEC=https://github.com/cc-fuyu/gemini-cli#db24f98ca54f166b7a9aa729c07f8d77dd26b03d
+ARG GEMINI_CLI_VERSION_LABEL=0.32.1-pr20572-db24f98
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM golang:1.25.5-alpine AS builder
@@ -17,14 +18,15 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 USER root
 ENV HOME=/root
 
-ARG GEMINI_CLI_VERSION
+ARG GEMINI_CLI_PACKAGE_SPEC
+ARG GEMINI_CLI_VERSION_LABEL
 ARG SPLITRAIL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
- && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && yarn global add "${GEMINI_CLI_PACKAGE_SPEC}" \
  && npm cache clean --force || true \
  && yarn cache clean || true
 
@@ -45,11 +47,11 @@ ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Google Gemini Workbench" \
       org.opencontainers.image.description="Google Gemini CLI workbench built on the universal base image" \
-      org.opencontainers.image.version="${GEMINI_CLI_VERSION}" \
+      org.opencontainers.image.version="${GEMINI_CLI_VERSION_LABEL}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
-      com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}"
+      com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION_LABEL}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["gemini --help || true"]

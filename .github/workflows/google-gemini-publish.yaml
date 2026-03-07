@@ -44,10 +44,11 @@ jobs:
     with:
       image-name: google-gemini-workbench
       context: ./google-gemini-docker
-      version: v0.32.1
+      version: v0.32.1-pr20572-db24f98
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        GEMINI_CLI_VERSION=0.32.1
+        GEMINI_CLI_PACKAGE_SPEC=https://github.com/cc-fuyu/gemini-cli#db24f98ca54f166b7a9aa729c07f8d77dd26b03d
+        GEMINI_CLI_VERSION_LABEL=0.32.1-pr20572-db24f98
       build-contexts: |
         shared=./shared
 

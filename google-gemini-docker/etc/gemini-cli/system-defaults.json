@@ -10,6 +10,7 @@
   "ui": {
     "theme": "Dracula",
     "useFullWidth": true,
+    "loadingPhrases": "off",
     "hideBanner": true,
     "hideTips": true,
     "showMemoryUsage": true
