@@ -27,7 +27,8 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && yarn global add "${GEMINI_CLI_PACKAGE_SPEC}" \
- && GEMINI_COMPOSER_JS="$(yarn global dir)/node_modules/@google/gemini-cli/dist/ui/components/Composer.js" \
+ && GEMINI_COMPOSER_JS="$(find "$(yarn global dir)/node_modules/@google/gemini-cli" -path '*/dist/src/ui/components/Composer.js' -print -quit)" \
+ && test -n "${GEMINI_COMPOSER_JS}" \
  && grep -q "loadingPhrases === 'off'" "${GEMINI_COMPOSER_JS}" \
  && perl -0pi -e "s/ \\|\\| settings\\.merged\\.ui\\.loadingPhrases === 'off'//g" "${GEMINI_COMPOSER_JS}" \
  && (npm cache clean --force || true) \
