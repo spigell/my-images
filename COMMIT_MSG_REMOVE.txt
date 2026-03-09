@@ -1,3 +1,0 @@
-Remove temporary commit message file
-
-Drop the local helper file used for git-mcp commits so the PR only contains the intended Codex image version update.
