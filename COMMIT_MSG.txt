@@ -1,3 +1,0 @@
-Update Codex image to 0.112.0
-
-Bump the Codex binary and publish workflow inputs so the workbench builds and releases the 0.112.0 image series consistently.
