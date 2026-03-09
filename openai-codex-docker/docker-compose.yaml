@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        CODEX_BINARY_REF: rust-v0.110.0
+        CODEX_BINARY_REF: rust-v0.112.0
     image: codex:test
     container_name: codex-mini
     command: ["sleep infinity"]
