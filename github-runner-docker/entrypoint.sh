@@ -44,31 +44,24 @@ fetch_token() {
   jq -r '.token' <<<"${payload}"
 }
 
-cleanup() {
-  if [[ -f ".runner" ]]; then
-    local token="${ACTIVE_TOKEN}"
-    if [[ -z "${token}" || "${token}" == "null" ]]; then
-      set +e
-      local payload
-      payload=$(GITHUB_URL="${GITHUB_URL}" \
+fetch_cleanup_token() {
+  local payload
+  if payload=$(GITHUB_URL="${GITHUB_URL}" \
                 GITHUB_PAT="${_PAT_VALUE}" \
                 GITHUB_HOST="${_GITHUB_HOST}" \
                 RUNNER_SCOPE="${_RUNNER_SCOPE}" \
                 GITHUB_ORG="${_GITHUB_ORG}" \
                 GITHUB_ENTERPRISE="${_GITHUB_ENTERPRISE}" \
-                /usr/local/bin/fetch-runner-token.sh 2>/dev/null)
-      local status=$?
-      set -e
-      if [[ ${status} -eq 0 ]]; then
-        set +e
-        local maybe_token
-        maybe_token=$(jq -r '.token' <<<"${payload}")
-        local jq_status=$?
-        set -e
-        if [[ ${jq_status} -eq 0 ]]; then
-          token="${maybe_token}"
-        fi
-      fi
+                /usr/local/bin/fetch-runner-token.sh 2>/dev/null); then
+    jq -r '.token' <<<"${payload}" 2>/dev/null || true
+  fi
+}
+
+cleanup() {
+  if [[ -f ".runner" ]]; then
+    local token="${ACTIVE_TOKEN}"
+    if [[ -z "${token}" || "${token}" == "null" ]]; then
+      token=$(fetch_cleanup_token)
     fi
     if [[ -n "${token}" && "${token}" != "null" ]]; then
       ./config.sh remove --token "${token}" || true
