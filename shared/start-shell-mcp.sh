@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+trim() {
+  # Trim leading and trailing whitespace using parameter expansion.
+  # ${var%%[![:space:]]*} - finds the longest suffix of whitespace from the start.
+  # ${var#"..."} - removes that whitespace prefix from the start of the string.
+  # A similar pattern is then applied from the end of the string.
+  local var="${1:-}"
+  var="${var#"${var%%[![:space:]]*}"}"
+  var="${var%"${var##*[![:space:]]}"}"
+  printf '%s' "${var}"
+}
+
 # Wrapper to expose the shell MCP server over HTTP via mcp-proxy.
 # `sonirico/mcp-shell` is configured via `MCP_SHELL_SEC_CONFIG_FILE`.
 # If not provided, generate a sane default config with a minimal allowlist.
@@ -55,8 +66,7 @@ if [[ -z "${MCP_SHELL_SEC_CONFIG_FILE:-}" ]]; then
     if [[ -n "${MCP_SHELL_ALLOWED_EXECUTABLES_CSV}" ]]; then
       IFS=',' read -r -a _mcp_allowed_execs <<< "${MCP_SHELL_ALLOWED_EXECUTABLES_CSV}"
       for raw_exec in "${_mcp_allowed_execs[@]}"; do
-        exec_name="${raw_exec#"${raw_exec%%[![:space:]]*}"}"
-        exec_name="${exec_name%"${exec_name##*[![:space:]]}"}"
+        exec_name="$(trim "${raw_exec}")"
         [[ -n "${exec_name}" ]] || continue
         printf '    - "%s"\n' "${exec_name//\"/\\\"}"
       done
@@ -69,8 +79,7 @@ if [[ -z "${MCP_SHELL_SEC_CONFIG_FILE:-}" ]]; then
       echo "  blocked_patterns:"
       IFS=',' read -r -a _mcp_blocked_patterns <<< "${MCP_SHELL_BLOCKED_PATTERNS_CSV}"
       for raw_pattern in "${_mcp_blocked_patterns[@]}"; do
-        pattern="${raw_pattern#"${raw_pattern%%[![:space:]]*}"}"
-        pattern="${pattern%"${pattern##*[![:space:]]}"}"
+        pattern="$(trim "${raw_pattern}")"
         [[ -n "${pattern}" ]] || continue
         printf "    - '%s'\n" "${pattern//\'/''}"
       done
