@@ -2,7 +2,11 @@
 set -euo pipefail
 
 trim() {
-  local var="$*"
+  # Trim leading and trailing whitespace using parameter expansion.
+  # ${var%%[![:space:]]*} - finds the longest suffix of whitespace from the start.
+  # ${var#"..."} - removes that whitespace prefix from the start of the string.
+  # A similar pattern is then applied from the end of the string.
+  local var="${1:-}"
   var="${var#"${var%%[![:space:]]*}"}"
   var="${var%"${var##*[![:space:]]}"}"
   printf '%s' "${var}"
