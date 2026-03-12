@@ -117,6 +117,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         netcat-openbsd=1.226-* \
         openssh-client=1:9.6p1-* \
         pkg-config=1.8.* \
+        psmisc \
         protobuf-compiler=3.21.* \
         ripgrep=14.1.* \
         rsync=3.2.* \
@@ -130,6 +131,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip=6.0-* \
         uuid-dev=2.39.* \
         vim=2:9.* \
+        lsof \
         wget=1.21.* \
         xz-utils=5.6.* \
         zip=3.0-* \
