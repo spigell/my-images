@@ -10,8 +10,8 @@ This directory provides two Dockerfiles:
 ```bash
 docker build \
   -f codex-binary/Dockerfile \
-  --build-arg CODEX_VERSION=rust-v0.114.0 \
-  -t ghcr.io/example/codex-binary:rust-v0.114.0 \
+  --build-arg CODEX_VERSION=rust-v0.115.0-alpha.26 \
+  -t ghcr.io/example/codex-binary:rust-v0.115.0-alpha.26 \
   .
 ```
 
@@ -25,8 +25,8 @@ Build the primary image by referencing the binary image.  The `CODEX_BINARY_IMAG
 docker build \
   -f Dockerfile \
   --build-arg CODEX_BINARY_IMAGE=ghcr.io/example/codex-binary \
-  --build-arg CODEX_BINARY_REF=rust-v0.114.0@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
-  -t ghcr.io/example/codex:rust-v0.114.0 \
+  --build-arg CODEX_BINARY_REF=rust-v0.115.0-alpha.26@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
+  -t ghcr.io/example/codex:rust-v0.115.0-alpha.26 \
   .
 ```
 
