@@ -14,8 +14,10 @@ ARG NOTEBOOKLM_MCP_CLI_VERSION
 
 WORKDIR /opt/notebooklm-mcp
 
-RUN python3 -m pip install --no-cache-dir "notebooklm-mcp-cli==${NOTEBOOKLM_MCP_CLI_VERSION}" \
- && rm -rf /root/.cache/pip
+RUN XDG_BIN_HOME=/usr/local/bin \
+    UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
+    XDG_DATA_HOME=/usr/local/share/uv-data \
+    uv tool install "notebooklm-mcp-cli==${NOTEBOOKLM_MCP_CLI_VERSION}"
 
 EXPOSE 8000
 
