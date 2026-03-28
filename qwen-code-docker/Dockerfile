@@ -28,6 +28,9 @@ RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && install -m 0755 "/tmp/${ARCHDIR}/splitrail" /usr/local/bin/splitrail \
  && rm -rf "/tmp/${ARCHIVE}" "/tmp/${ARCHDIR}"
 
+RUN install -d -m 0755 /etc/qwen-code
+COPY etc/qwen-code/system-defaults.json /etc/qwen-code/system-defaults.json
+
 USER ubuntu
 ENV HOME=/home/ubuntu
 

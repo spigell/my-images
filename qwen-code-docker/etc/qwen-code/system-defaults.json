@@ -1,0 +1,26 @@
+{
+  "general": {
+    "enableAutoUpdate": false,
+    "vimMode": true,
+    "preferredEditor": "vim",
+    "checkpointing": {
+      "enabled": true
+    }
+  },
+  "ui": {
+    "hideBanner": true,
+    "hideTips": true,
+    "showMemoryUsage": true
+  },
+  "tools": {
+    "sandbox": false
+  },
+  "telemetry": {
+    "enabled": false,
+    "target": "local",
+    "outfile": "/tmp/qwen.log"
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  }
+}
