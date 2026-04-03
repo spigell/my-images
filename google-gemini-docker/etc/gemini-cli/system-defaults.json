@@ -17,11 +17,6 @@
   "tools": {
     "sandbox": false
   },
-  "telemetry": {
-    "enabled": false,
-    "target": "local",
-    "outfile": "/tmp/gemini.log"
-  },
   "privacy": {
     "usageStatisticsEnabled": false
   }
