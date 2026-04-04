@@ -23,6 +23,10 @@ ENV HOME=/root
 
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
 
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends bubblewrap=0.9.0-1ubuntu0.1 \
+ && rm -rf /var/lib/apt/lists/*
+
 RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
  && curl -fsSL "https://github.com/Piebald-AI/splitrail/releases/download/v${SPLITRAIL_VERSION}/${ARCHIVE}" -o "/tmp/${ARCHIVE}" \
