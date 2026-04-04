@@ -55,7 +55,7 @@ jobs:
         GCLOUD_VERSION=563.0.0
         ETCD_VERSION=3.6.8
         KREW_VERSION=v0.5.0
-        HOLMES_REF=0.19.1
+        HOLMES_REF=0.23.0
         ARGOCD_VERSION=3.3.3
       build-contexts: |
         shared=./shared

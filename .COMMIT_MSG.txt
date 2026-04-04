@@ -1,0 +1,3 @@
+Update HolmesGPT for debug SRE build
+
+Move the HolmesGPT pin to the latest release so the debug SRE workbench can build against the current universal image without immediately falling back to the older broken dependency set.
