@@ -1,3 +1,0 @@
-Remove temporary commit message file
-
-Clean up the repository-root commit message helper file so the PR does not leave workflow-specific commit metadata tracked in git.
