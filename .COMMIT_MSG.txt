@@ -1,3 +1,3 @@
-Update HolmesGPT for debug SRE build
+Downgrade Python for debug SRE compatibility
 
-Move the HolmesGPT pin to the latest release so the debug SRE workbench can build against the current universal image without immediately falling back to the older broken dependency set.
+Restore the universal workbench Python version to 3.13.7 after the HolmesGPT update still failed under Python 3.14 due to Pillow source-build dependencies in the debug SRE image.
