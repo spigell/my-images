@@ -1,0 +1,3 @@
+Align pinned image versions to new-ver
+
+Update the overlapping Dockerfile and workflow version pins to match the new-ver baseline and add bubblewrap to the Codex workbench image.
