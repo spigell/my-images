@@ -1,3 +1,3 @@
-Align pinned image versions to new-ver
+Remove temporary commit message file
 
-Update the overlapping Dockerfile and workflow version pins to match the new-ver baseline and add bubblewrap to the Codex workbench image.
+Clean up the repository-root commit message helper file so the PR does not leave workflow-specific commit metadata tracked in git.
