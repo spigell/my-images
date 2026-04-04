@@ -4,13 +4,6 @@ ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.35.3
 ARG SPLITRAIL_VERSION=3.2.2
 
-FROM golang:1.26.1-alpine AS builder
-# COPY gemini-telemetry/go.mod gemini-telemetry/go.sum ./
-COPY gemini-telemetry/go.mod ./
-RUN go mod download
-COPY gemini-telemetry ./
-RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-w -s" -o /gemini-telemetry .
-
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -38,8 +31,6 @@ RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
 RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
 COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
-COPY --from=builder /gemini-telemetry /usr/local/bin/gemini-telemetry
-
 USER ubuntu
 ENV HOME=/home/ubuntu
 

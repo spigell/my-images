@@ -13,7 +13,7 @@ This Docker image provides a headless-capable Anki desktop installation, designe
 docker run -d \
   --name anki \
   -p 8765:8765 \
-  pull ghcr.io/spigell/anki-desktop-docker:25.09.2-latest
+  pull ghcr.io/spigell/anki-desktop-docker:25.02.5-latest
 
 This starts the Anki desktop in the background and exposes AnkiConnect on http://localhost:8765.
 ```
