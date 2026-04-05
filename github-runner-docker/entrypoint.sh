@@ -19,6 +19,24 @@ readonly _GITHUB_ENTERPRISE="${GITHUB_ENTERPRISE:-}"
 readonly _PAT_VALUE="${GITHUB_PAT}"
 unset GITHUB_PAT
 
+readonly _XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+readonly _CONTAINERS_CONFIG_DIR="${HOME}/.config/containers"
+readonly _CONTAINERS_STORAGE_DIR="${HOME}/.local/share/containers"
+
+mkdir -p "${_XDG_RUNTIME_DIR}" \
+         "${_CONTAINERS_CONFIG_DIR}" \
+         "${_CONTAINERS_STORAGE_DIR}/storage" \
+         "${_CONTAINERS_STORAGE_DIR}/runroot"
+chmod 700 "${_XDG_RUNTIME_DIR}"
+
+if [[ -f /usr/local/share/github-runner/containers.conf ]] && [[ ! -f "${_CONTAINERS_CONFIG_DIR}/containers.conf" ]]; then
+  cp /usr/local/share/github-runner/containers.conf "${_CONTAINERS_CONFIG_DIR}/containers.conf"
+fi
+
+if [[ -f /usr/local/share/github-runner/storage.conf ]] && [[ ! -f "${_CONTAINERS_CONFIG_DIR}/storage.conf" ]]; then
+  cp /usr/local/share/github-runner/storage.conf "${_CONTAINERS_CONFIG_DIR}/storage.conf"
+fi
+
 RUNNER_NAME="${RUNNER_NAME:-$(hostname)}"
 RUNNER_WORKDIR="${RUNNER_WORKDIR:-_work}"
 RUNNER_LABELS="${RUNNER_LABELS:-}"
@@ -80,6 +98,12 @@ trap cleanup EXIT
 
 mkdir -p "${RUNNER_WORKDIR}"
 
+if command -v podman >/dev/null 2>&1; then
+  if ! podman info >/dev/null 2>&1; then
+    echo "Podman is installed but not fully available in the current runtime yet." >&2
+  fi
+fi
+
 token="$(fetch_token)"
 ACTIVE_TOKEN="${token}"
 
@@ -124,4 +148,3 @@ trap 'kill -TERM "$child_pid" 2>/dev/null || true' TERM
 wait "$child_pid"
 trap 'kill -INT  "$child_pid" 2>/dev/null || true' INT
 exit $?
-

@@ -11,8 +11,8 @@
 | `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench) |
 | `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench) |
 | `qwen-code-docker/` | Universal workbench | Qwen Code CLI and supporting tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/qwen-workbench) |
-| `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via a dedicated workflow | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner) |
-| `github-runner-docker/` | Codex workbench | GitHub Actions runner dependencies for Codex | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-github-runner) |
+| `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies plus rootless Podman support for isolated agent containers | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner) |
+| `github-runner-docker/` | Codex workbench | GitHub Actions runner dependencies plus rootless Podman support for isolated agent containers | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-github-runner) |
 | `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-workbench) |
 | `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench) |
 | `debug-sre-workbench-docker/` | Universal workbench | Docker CLI, kubectl, Helm, kube-lineage, Talosctl, K9s, ArgoCD, etcdctl, HolmesGPT runtime, Poetry, uv | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/debug-sre-workbench) |

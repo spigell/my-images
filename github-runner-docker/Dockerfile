@@ -18,7 +18,10 @@ ENV HOME=/root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
+        containernetworking-plugins \
         curl \
+        dbus-user-session \
+        fuse-overlayfs \
         jq \
         git \
         iproute2 \
@@ -29,17 +32,25 @@ RUN apt-get update \
         liblttng-ust1 \
         libssl3t64 \
         libstdc++6 \
+        podman \
+        slirp4netns \
         unzip \
+        uidmap \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY fetch-runner-token.sh /usr/local/bin/fetch-runner-token.sh
+COPY containers.conf /usr/local/share/github-runner/containers.conf
+COPY storage.conf /usr/local/share/github-runner/storage.conf
 
 RUN groupadd --gid 1001 "${RUNNER_USER}" \
     && useradd --home "${RUNNER_HOME}" --create-home --uid 1001 --gid 1001 --shell /bin/bash "${RUNNER_USER}" \
+    && echo "${RUNNER_USER}:100000:65536" >> /etc/subuid \
+    && echo "${RUNNER_USER}:100000:65536" >> /etc/subgid \
     && mkdir -p "${ACTIONS_RUNNER_DIR}" \
-    && chown "${RUNNER_USER}:${RUNNER_USER}" "${ACTIONS_RUNNER_DIR}"
+    && mkdir -p /run/user/1001 \
+    && chown "${RUNNER_USER}:${RUNNER_USER}" "${ACTIONS_RUNNER_DIR}" /run/user/1001
 
 WORKDIR ${ACTIONS_RUNNER_DIR}
 
@@ -51,7 +62,11 @@ RUN curl -fsSL "https://github.com/actions/runner/releases/download/v${RUNNER_VE
     && chown -R "${RUNNER_USER}:${RUNNER_USER}" "${ACTIONS_RUNNER_DIR}"
 
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/fetch-runner-token.sh \
-    && chown "${RUNNER_USER}:${RUNNER_USER}" /usr/local/bin/entrypoint.sh /usr/local/bin/fetch-runner-token.sh
+    && chown "${RUNNER_USER}:${RUNNER_USER}" \
+      /usr/local/bin/entrypoint.sh \
+      /usr/local/bin/fetch-runner-token.sh \
+      /usr/local/share/github-runner/containers.conf \
+      /usr/local/share/github-runner/storage.conf
 
 LABEL org.opencontainers.image.title="GitHub Actions Runner" \
       org.opencontainers.image.description="GitHub Actions runner layered on the ${BASE_IMAGE_NAME} workbench image" \
@@ -62,5 +77,9 @@ LABEL org.opencontainers.image.title="GitHub Actions Runner" \
 
 USER ${RUNNER_USER}
 ENV HOME=${RUNNER_HOME}
+ENV XDG_RUNTIME_DIR=/run/user/1001
+ENV DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus
+ENV CONTAINERS_CONF=${RUNNER_HOME}/.config/containers/containers.conf
+ENV CONTAINERS_STORAGE_CONF=${RUNNER_HOME}/.config/containers/storage.conf
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
