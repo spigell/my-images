@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.36.0
+ARG GEMINI_CLI_VERSION=0.37.1
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
