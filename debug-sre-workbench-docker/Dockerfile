@@ -14,6 +14,8 @@ ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_REF=0.23.0
 ARG ARGOCD_VERSION=3.3.3
+ARG OPENTOFU_VERSION=1.11.6
+ARG TERRAGRUNT_VERSION=1.0.0
 
 FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -29,6 +31,8 @@ ARG KREW_VERSION
 ARG TARGETOS
 ARG TARGETARCH
 ARG ARGOCD_VERSION
+ARG OPENTOFU_VERSION
+ARG TERRAGRUNT_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git tar xz-utils \
@@ -53,6 +57,16 @@ RUN curl -fsSL -o k9s.deb \
 RUN curl -fsSL -o talosctl \
       "https://github.com/siderolabs/talos/releases/download/v${TALOSCTL_VERSION}/talosctl-${TARGETOS}-${TARGETARCH}" \
     && chmod +x talosctl
+
+RUN curl -fsSL -o terragrunt \
+      "https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_${TARGETOS}_${TARGETARCH}" \
+    && chmod +x terragrunt
+
+RUN curl -fsSL -o "tofu_${OPENTOFU_VERSION}_${TARGETOS}_${TARGETARCH}.tar.gz" \
+      "https://github.com/opentofu/opentofu/releases/download/v${OPENTOFU_VERSION}/tofu_${OPENTOFU_VERSION}_${TARGETOS}_${TARGETARCH}.tar.gz" \
+    && tar -xzf "tofu_${OPENTOFU_VERSION}_${TARGETOS}_${TARGETARCH}.tar.gz" tofu \
+    && chmod +x tofu \
+    && rm -f "tofu_${OPENTOFU_VERSION}_${TARGETOS}_${TARGETARCH}.tar.gz"
 
 RUN curl -fsSL -o kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
@@ -138,11 +152,15 @@ ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 ARG HOLMES_REF
 ARG ARGOCD_VERSION
+ARG OPENTOFU_VERSION
+ARG TERRAGRUNT_VERSION
 
 ENV PYTHONUNBUFFERED=1
 
 COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
+COPY --from=fetch /tmp/fetch/terragrunt /usr/local/bin/terragrunt
+COPY --from=fetch /tmp/fetch/tofu /usr/local/bin/tofu
 COPY --from=fetch /tmp/fetch/kubectl /usr/local/bin/kubectl
 COPY --from=fetch /tmp/fetch/helm /usr/local/bin/helm
 COPY --from=fetch /tmp/fetch/argocd /usr/local/bin/argocd
@@ -213,7 +231,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, OpenTofu, Terragrunt, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
@@ -226,8 +244,10 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
+      com.spigell.workbench.opentofu.version="${OPENTOFU_VERSION}" \
+      com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}" \
       com.spigell.holmes_ref="${HOLMES_REF}" \
       com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && k9s version --short && talosctl version --short && etcdctl version && tofu version && terragrunt --version || true"]
