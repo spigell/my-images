@@ -1,3 +1,0 @@
-Add OpenTofu and Terragrunt to Debug SRE workbench
-
-This installs pinned OpenTofu and Terragrunt binaries in the debug SRE image so infrastructure troubleshooting and terragrunt-based workflows can run directly in the workbench.
