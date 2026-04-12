@@ -1,3 +1,0 @@
-Ignore the temporary commit message file
-
-Prevent the repository-root helper file used for secure git-mcp commits from being tracked in future changes.
