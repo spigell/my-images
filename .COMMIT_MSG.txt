@@ -1,3 +1,3 @@
-Ignore the temporary commit message file
+Add OpenTofu and Terragrunt to Debug SRE workbench
 
-Prevent the repository-root helper file used for secure git-mcp commits from being tracked in future changes.
+This installs pinned OpenTofu and Terragrunt binaries in the debug SRE image so infrastructure troubleshooting and terragrunt-based workflows can run directly in the workbench.

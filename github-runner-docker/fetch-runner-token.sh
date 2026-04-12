@@ -2,10 +2,10 @@
 set -euo pipefail
 
 github_url="${GITHUB_URL:?GITHUB_URL is required}"
-pat="${GITHUB_PAT:?GITHUB_PAT is required}"
 github_host="${GITHUB_HOST:-github.com}"
 scope="${RUNNER_SCOPE:-repo}"
 scope="${scope,,}"
+pat="${GITHUB_PAT:?GITHUB_PAT is required}"
 
 if [[ "${github_host}" == "github.com" ]]; then
   api_base="https://api.${github_host}"

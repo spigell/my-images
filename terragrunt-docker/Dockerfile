@@ -1,0 +1,48 @@
+# syntax=docker/dockerfile:1.18
+
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG TERRAGRUNT_VERSION=1.0.0
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+
+FROM debian:bookworm-slim AS fetch
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+ARG TERRAGRUNT_VERSION
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp/fetch
+
+RUN curl -fsSL -o terragrunt \
+      "https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_${TARGETOS}_${TARGETARCH}" \
+    && chmod +x terragrunt
+
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+USER root
+ENV HOME=/root
+
+ARG TERRAGRUNT_VERSION
+ARG UNIVERSAL_WORKBENCH_TAG
+
+COPY --from=fetch /tmp/fetch/terragrunt /usr/local/bin/terragrunt
+
+USER ubuntu
+ENV HOME=/home/ubuntu
+
+LABEL org.opencontainers.image.title="Terragrunt Workbench" \
+      org.opencontainers.image.description="Universal workbench derivative with Terragrunt CLI" \
+      org.opencontainers.image.version="${TERRAGRUNT_VERSION}" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/terragrunt-docker" \
+      com.spigell.workbench.base-image="universal-workbench" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}"
+
+ENTRYPOINT ["/bin/bash","-lc"]
+CMD ["terragrunt --version"]
