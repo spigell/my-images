@@ -31,24 +31,45 @@ const newSnippet =
   '          chain2 = config2.modelConfigService.resolveChain(chainKey, context2);\n' +
   '        }';
 
-let replacements = 0;
+const fallbackOldSnippet = 'const chain2 = resolvePolicyChain(config2);';
+const fallbackNewSnippet =
+  "const chain2 = resolvePolicyChain(config2, failedModel, true);";
+
+let routingReplacements = 0;
+let fallbackReplacements = 0;
 
 for (const file of files) {
   const fullPath = path.join(bundleDir, file);
   const source = fs.readFileSync(fullPath, 'utf8');
-  if (source.includes(newSnippet)) {
-    continue;
+  let nextSource = source;
+
+  if (!nextSource.includes(newSnippet) && nextSource.includes(oldSnippet)) {
+    nextSource = nextSource.replace(oldSnippet, newSnippet);
+    routingReplacements += 1;
   }
-  if (!source.includes(oldSnippet)) {
-    continue;
+
+  if (
+    !nextSource.includes(fallbackNewSnippet) &&
+    nextSource.includes(fallbackOldSnippet)
+  ) {
+    nextSource = nextSource.replace(fallbackOldSnippet, fallbackNewSnippet);
+    fallbackReplacements += 1;
   }
-  fs.writeFileSync(fullPath, source.replace(oldSnippet, newSnippet), 'utf8');
-  replacements += 1;
+
+  if (nextSource !== source) {
+    fs.writeFileSync(fullPath, nextSource, 'utf8');
+  }
 }
 
-if (replacements === 0) {
+if (routingReplacements === 0) {
   throw new Error('No routing chunks were patched');
 }
 
-console.log(`Patched ${replacements} gemini-cli chunk file(s)`);
+if (fallbackReplacements === 0) {
+  throw new Error('No fallback chunks were patched');
+}
+
+console.log(
+  `Patched routing in ${routingReplacements} chunk file(s) and fallback in ${fallbackReplacements} chunk file(s)`,
+);
 NODE
