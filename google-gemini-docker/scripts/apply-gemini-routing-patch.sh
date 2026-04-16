@@ -32,8 +32,11 @@ const newSnippet =
   '        }';
 
 const fallbackOldSnippet = 'const chain2 = resolvePolicyChain(config2);';
-const fallbackNewSnippet =
+const fallbackMidSnippet =
   "const chain2 = resolvePolicyChain(config2, failedModel, true);";
+const fallbackNewSnippet =
+  'const chainHint = failedModel.includes("flash") ? "flash" : failedModel.includes("pro") ? "pro" : failedModel;\n' +
+  "  const chain2 = resolvePolicyChain(config2, chainHint, true);";
 
 let routingReplacements = 0;
 let fallbackReplacements = 0;
@@ -48,12 +51,14 @@ for (const file of files) {
     routingReplacements += 1;
   }
 
-  if (
-    !nextSource.includes(fallbackNewSnippet) &&
-    nextSource.includes(fallbackOldSnippet)
-  ) {
-    nextSource = nextSource.replace(fallbackOldSnippet, fallbackNewSnippet);
-    fallbackReplacements += 1;
+  if (!nextSource.includes(fallbackNewSnippet)) {
+    if (nextSource.includes(fallbackMidSnippet)) {
+      nextSource = nextSource.replace(fallbackMidSnippet, fallbackNewSnippet);
+      fallbackReplacements += 1;
+    } else if (nextSource.includes(fallbackOldSnippet)) {
+      nextSource = nextSource.replace(fallbackOldSnippet, fallbackNewSnippet);
+      fallbackReplacements += 1;
+    }
   }
 
   if (nextSource !== source) {
