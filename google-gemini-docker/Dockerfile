@@ -16,8 +16,12 @@ ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
+COPY scripts/apply-gemini-routing-patch.sh /usr/local/bin/apply-gemini-routing-patch.sh
+
 RUN yarn config set prefix /usr/local \
  && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && chmod +x /usr/local/bin/apply-gemini-routing-patch.sh \
+ && /usr/local/bin/apply-gemini-routing-patch.sh \
  && npm cache clean --force || true \
  && yarn cache clean || true
 
