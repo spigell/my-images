@@ -23,9 +23,8 @@ WORKDIR /project
 RUN yarn config set prefix /usr/local \
  && if [[ -n "${GEMINI_CLI_GIT_URL}" ]]; then \
       WORKDIR_TMP="$(mktemp -d)" \
-      && git clone --depth 1 "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
+      && git clone --depth 1 --branch "${GEMINI_CLI_GIT_REF}" "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
       && pushd "${WORKDIR_TMP}/gemini-cli" \
-      && git checkout "${GEMINI_CLI_GIT_REF}" \
       && npm ci \
       && npm run bundle \
       && npm install -g . \
@@ -41,8 +40,8 @@ RUN yarn config set prefix /usr/local \
       fi; \
     fi \
  && /usr/local/bin/gemini --version >/dev/null \
- && npm cache clean --force || true \
- && yarn cache clean || true
+ && (npm cache clean --force || true) \
+ && (yarn cache clean || true)
 
 RUN ARCHIVE="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
  && ARCHDIR="splitrail-v${SPLITRAIL_VERSION}-x86_64-unknown-linux-gnu" \
