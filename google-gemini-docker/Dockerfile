@@ -27,19 +27,17 @@ RUN yarn config set prefix /usr/local \
       && pushd "${WORKDIR_TMP}/gemini-cli" \
       && npm ci \
       && npm run bundle \
-      && npm install -g --ignore-scripts . \
+      && install -d -m 0755 /opt/gemini-cli \
+      && cp -a bundle /opt/gemini-cli/ \
+      && printf '#!/usr/bin/env bash\nexec node /opt/gemini-cli/bundle/gemini.js "$@"\n' > /usr/local/bin/gemini \
+      && chmod 0755 /usr/local/bin/gemini \
       && popd \
       && rm -rf "${WORKDIR_TMP}"; \
     else \
       yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}; \
     fi \
- && if [[ ! -x /usr/local/bin/gemini ]]; then \
-      if [[ -x /usr/local/lib/node_modules/@google/gemini-cli/bundle/gemini.js ]]; then \
-        printf '#!/usr/bin/env bash\nexec node /usr/local/lib/node_modules/@google/gemini-cli/bundle/gemini.js "$@"\n' > /usr/local/bin/gemini; \
-        chmod 0755 /usr/local/bin/gemini; \
-      fi; \
-    fi \
- && /usr/local/bin/gemini --version >/dev/null \
+ && command -v gemini >/dev/null \
+ && gemini --version >/dev/null \
  && (npm cache clean --force || true) \
  && (yarn cache clean || true)
 
