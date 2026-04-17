@@ -22,10 +22,20 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && if [[ -n "${GEMINI_CLI_GIT_URL}" ]]; then \
-      yarn global add "${GEMINI_CLI_GIT_URL}#${GEMINI_CLI_GIT_REF}"; \
+      WORKDIR_TMP="$(mktemp -d)" \
+      && git clone --depth 1 --branch "${GEMINI_CLI_GIT_REF}" "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
+      && pushd "${WORKDIR_TMP}/gemini-cli" \
+      && npm ci \
+      && npm run bundle \
+      && npm pack \
+      && yarn global add "${WORKDIR_TMP}/gemini-cli"/google-gemini-cli-*.tgz \
+      && popd \
+      && rm -rf "${WORKDIR_TMP}"; \
     else \
       yarn global add "@google/gemini-cli@${GEMINI_CLI_VERSION}"; \
     fi \
+ && command -v gemini \
+ && gemini --version >/dev/null \
  && npm cache clean --force || true \
  && yarn cache clean || true
 
