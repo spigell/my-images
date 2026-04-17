@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'google-gemini-docker/**'
+      - 'my-gemini-cli-docker/**'
       - '.github/workflows/google-gemini-publish.yaml'
   workflow_dispatch:
     inputs:
@@ -59,7 +60,7 @@ jobs:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: my-gemini-cli
-      context: ./google-gemini-docker
+      context: ./my-gemini-cli-docker
       version: v0.38.1
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}

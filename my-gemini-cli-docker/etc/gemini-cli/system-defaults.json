@@ -1,0 +1,23 @@
+{
+  "general": {
+    "enableAutoUpdate": false,
+    "vimMode": true,
+    "preferredEditor": "vim",
+    "checkpointing": {
+      "enabled": true
+    }
+  },
+  "ui": {
+    "theme": "Dracula",
+    "useFullWidth": true,
+    "hideBanner": true,
+    "hideTips": true,
+    "showMemoryUsage": true
+  },
+  "tools": {
+    "sandbox": false
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  }
+}
