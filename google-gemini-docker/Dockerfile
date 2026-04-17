@@ -2,6 +2,8 @@
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.38.1
+ARG GEMINI_CLI_GIT_URL=
+ARG GEMINI_CLI_GIT_REF=
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
@@ -11,6 +13,8 @@ USER root
 ENV HOME=/root
 
 ARG GEMINI_CLI_VERSION
+ARG GEMINI_CLI_GIT_URL
+ARG GEMINI_CLI_GIT_REF
 ARG SPLITRAIL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
@@ -19,7 +23,11 @@ WORKDIR /project
 COPY scripts/apply-gemini-routing-patch.sh /usr/local/bin/apply-gemini-routing-patch.sh
 
 RUN yarn config set prefix /usr/local \
- && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && if [[ -n "${GEMINI_CLI_GIT_URL}" ]]; then \
+      yarn global add "${GEMINI_CLI_GIT_URL}#${GEMINI_CLI_GIT_REF}"; \
+    else \
+      yarn global add "@google/gemini-cli@${GEMINI_CLI_VERSION}"; \
+    fi \
  && chmod +x /usr/local/bin/apply-gemini-routing-patch.sh \
  && /usr/local/bin/apply-gemini-routing-patch.sh \
  && npm cache clean --force || true \

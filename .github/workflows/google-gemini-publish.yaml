@@ -48,6 +48,8 @@ jobs:
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         GEMINI_CLI_VERSION=0.38.1
+        GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
+        GEMINI_CLI_GIT_REF=spigell/fix/fallback-family-wrap
       build-contexts: |
         shared=./shared
 
