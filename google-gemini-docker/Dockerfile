@@ -2,6 +2,8 @@
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.38.1
+ARG GEMINI_CLI_GIT_URL=
+ARG GEMINI_CLI_GIT_REF=
 ARG SPLITRAIL_VERSION=3.2.2
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
@@ -11,13 +13,34 @@ USER root
 ENV HOME=/root
 
 ARG GEMINI_CLI_VERSION
+ARG GEMINI_CLI_GIT_URL
+ARG GEMINI_CLI_GIT_REF
 ARG SPLITRAIL_VERSION
 ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
- && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && if [[ -n "${GEMINI_CLI_GIT_URL}" ]]; then \
+      WORKDIR_TMP="$(mktemp -d)" \
+      && git clone --depth 1 "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
+      && pushd "${WORKDIR_TMP}/gemini-cli" \
+      && git checkout "${GEMINI_CLI_GIT_REF}" \
+      && npm ci \
+      && npm run bundle \
+      && npm install -g . \
+      && popd \
+      && rm -rf "${WORKDIR_TMP}"; \
+    else \
+      yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION}; \
+    fi \
+ && if [[ ! -x /usr/local/bin/gemini ]]; then \
+      if [[ -x /usr/local/lib/node_modules/@google/gemini-cli/bundle/gemini.js ]]; then \
+        printf '#!/usr/bin/env bash\nexec node /usr/local/lib/node_modules/@google/gemini-cli/bundle/gemini.js "$@"\n' > /usr/local/bin/gemini; \
+        chmod 0755 /usr/local/bin/gemini; \
+      fi; \
+    fi \
+ && /usr/local/bin/gemini --version >/dev/null \
  && npm cache clean --force || true \
  && yarn cache clean || true
 

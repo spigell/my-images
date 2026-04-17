@@ -48,6 +48,8 @@ jobs:
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
         GEMINI_CLI_VERSION=0.38.1
+        GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
+        GEMINI_CLI_GIT_REF=978fc02ea16870669a1df62e4c3c0f444c82a4b1
       build-contexts: |
         shared=./shared
 
