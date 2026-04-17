@@ -27,8 +27,7 @@ RUN yarn config set prefix /usr/local \
       && pushd "${WORKDIR_TMP}/gemini-cli" \
       && npm ci \
       && npm run bundle \
-      && npm pack \
-      && yarn global add "${WORKDIR_TMP}/gemini-cli"/google-gemini-cli-*.tgz \
+      && npm install -g . \
       && popd \
       && rm -rf "${WORKDIR_TMP}"; \
     else \
