@@ -27,7 +27,7 @@ RUN yarn config set prefix /usr/local \
       && pushd "${WORKDIR_TMP}/gemini-cli" \
       && npm ci \
       && npm run bundle \
-      && npm install -g . \
+      && npm install -g --ignore-scripts . \
       && popd \
       && rm -rf "${WORKDIR_TMP}"; \
     else \
