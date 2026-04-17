@@ -33,6 +33,22 @@ RUN yarn config set prefix /usr/local \
     else \
       yarn global add "@google/gemini-cli@${GEMINI_CLI_VERSION}"; \
     fi \
+ && if ! command -v gemini >/dev/null 2>&1; then \
+      NPM_ROOT="$(npm root -g)"; \
+      GEMINI_JS=""; \
+      for CANDIDATE in \
+        "${NPM_ROOT}/@google/gemini-cli/bundle/gemini.js" \
+        "${NPM_ROOT}/@google/gemini-cli/dist/index.js"; do \
+        if [[ -f "${CANDIDATE}" ]]; then \
+          GEMINI_JS="${CANDIDATE}"; \
+          break; \
+        fi; \
+      done; \
+      if [[ -n "${GEMINI_JS}" ]]; then \
+        printf '#!/usr/bin/env bash\nexec node "%s" "$@"\n' "${GEMINI_JS}" >/usr/local/bin/gemini; \
+        chmod 0755 /usr/local/bin/gemini; \
+      fi; \
+    fi \
  && command -v gemini \
  && gemini --version >/dev/null \
  && npm cache clean --force || true \
