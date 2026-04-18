@@ -9,9 +9,11 @@
 | `universal-workbench-docker/` | Ubuntu 24.04 | Go, Python, Node.js runtimes, shared tooling, and shell MCP server tooling (`mcp-proxy` + `mcp-shell`) | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/universal-workbench) |
 | `openai-codex-docker/codex-binary/` | Scratch | Slim Codex binary artifact image | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-binary) |
 | `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench) |
-| `google-gemini-docker/` | Universal workbench | Gemini CLI stack and fnm aliases | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench) |
+| `google-gemini-docker/google/` | Universal workbench | Gemini CLI stack | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench) |
+| `google-gemini-docker/spigell/` | Universal workbench | Custom Gemini CLI workbench (built from source) | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/spigell-gemini-workbench) |
 | `qwen-code-docker/` | Universal workbench | Qwen Code CLI and supporting tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/qwen-workbench) |
 | `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via a dedicated workflow | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner) |
+| `github-runner-docker/` | Spigell Gemini workbench | GitHub Actions runner dependencies for forked Gemini; built via a dedicated workflow | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/spigell-gemini-github-runner) |
 | `github-runner-docker/` | Codex workbench | GitHub Actions runner dependencies for Codex | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-github-runner) |
 | `pulumi-workbench-docker/` | Debug SRE workbench | Pulumi CLI, pulumictl, kubectl, `@pulumi/mcp-server` | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-workbench) |
 | `pulumi-talos-cluster-workbench-docker/` | Pulumi workbench | Talosctl, K9s, and Talos tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/pulumi-talos-cluster-workbench) |
