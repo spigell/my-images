@@ -26,6 +26,9 @@ RUN yarn config set prefix /usr/local \
  && npm run bundle \
  && install -d -m 0755 /opt/gemini-cli \
  && cp -a bundle /opt/gemini-cli/ \
+ && pushd /opt/gemini-cli/bundle \
+ && npm install ws --no-save \
+ && popd \
  && printf '#!/usr/bin/env bash\nexec node /opt/gemini-cli/bundle/gemini.js "$@"\n' > /usr/local/bin/gemini \
  && chmod 0755 /usr/local/bin/gemini \
  && popd \
