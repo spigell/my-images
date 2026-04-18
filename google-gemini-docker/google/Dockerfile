@@ -14,11 +14,11 @@ ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
-RUN yarn config set prefix /usr/local 
- && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} 
- && command -v gemini >/dev/null 
- && gemini --version >/dev/null 
- && (npm cache clean --force || true) 
+RUN yarn config set prefix /usr/local \
+ && yarn global add @google/gemini-cli@${GEMINI_CLI_VERSION} \
+ && command -v gemini >/dev/null \
+ && gemini --version >/dev/null \
+ && (npm cache clean --force || true) \
  && (yarn cache clean || true)
 
 RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
@@ -27,12 +27,12 @@ COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-a
 USER ubuntu
 ENV HOME=/home/ubuntu
 
-LABEL org.opencontainers.image.title="Google Gemini Workbench" 
-      org.opencontainers.image.description="Google Gemini CLI workbench built on the universal base image" 
-      org.opencontainers.image.version="${GEMINI_CLI_VERSION}" 
-      org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker" 
-      com.spigell.workbench.base-image="universal-workbench" 
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" 
+LABEL org.opencontainers.image.title="Google Gemini Workbench" \
+      org.opencontainers.image.description="Google Gemini CLI workbench built on the universal base image" \
+      org.opencontainers.image.version="${GEMINI_CLI_VERSION}" \
+      org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker" \
+      com.spigell.workbench.base-image="universal-workbench" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
       com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
