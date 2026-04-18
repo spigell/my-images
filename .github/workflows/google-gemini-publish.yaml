@@ -7,7 +7,6 @@ on:
   push:
     paths:
       - 'google-gemini-docker/**'
-      - 'my-gemini-cli-docker/**'
       - '.github/workflows/google-gemini-publish.yaml'
   workflow_dispatch:
     inputs:
@@ -44,7 +43,7 @@ jobs:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: google-gemini-workbench
-      context: ./google-gemini-docker
+      context: ./google-gemini-docker/google
       version: v0.38.1
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
@@ -52,15 +51,15 @@ jobs:
       build-contexts: |
         shared=./shared
 
-  build-my-gemini-cli:
+  build-spigell-gemini-workbench:
     needs:
       - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
-      image-name: my-gemini-cli
-      context: ./my-gemini-cli-docker
+      image-name: spigell-gemini-workbench
+      context: ./google-gemini-docker/spigell
       version: v0.38.1
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
@@ -73,7 +72,7 @@ jobs:
   trigger-downstreams:
     needs:
       - build-gemini-workbench
-      - build-my-gemini-cli
+      - build-spigell-gemini-workbench
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch Gemini Workbench Update
@@ -81,4 +80,4 @@ jobs:
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: gemini-workbench-updated
-          client-payload: '{"gemini_tag":"${{ needs.build-gemini-workbench.outputs.sha-tag }}","my_gemini_cli_tag":"${{ needs.build-my-gemini-cli.outputs.sha-tag }}"}'
+          client-payload: '{"gemini_tag":"${{ needs.build-gemini-workbench.outputs.sha-tag }}","spigell_gemini_workbench_tag":"${{ needs.build-spigell-gemini-workbench.outputs.sha-tag }}"}'
