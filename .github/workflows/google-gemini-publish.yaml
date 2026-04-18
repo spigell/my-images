@@ -60,12 +60,12 @@ jobs:
     with:
       image-name: spigell-gemini-workbench
       context: ./google-gemini-docker/spigell
-      version: v0.38.1
+      version: v0.38.1-spigell.20260418.2de532564
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        GEMINI_CLI_VERSION=0.38.1
+        GEMINI_CLI_VERSION=0.38.1-spigell.20260418.2de532564
         GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
-        GEMINI_CLI_GIT_REF=spigell/fix/fallback-family-wrap-v0381-restart
+        GEMINI_CLI_GIT_REF=0.38.1-spigell.20260418.2de532564
       build-contexts: |
         shared=./shared
 
