@@ -35,9 +35,8 @@ RUN yarn config set prefix /usr/local \
  && (npm cache clean --force || true) \
  && (yarn cache clean || true)
 
-RUN install -d -m 0755 /etc/gemini-cli /etc/profile.d
+RUN install -d -m 0755 /etc/gemini-cli
 COPY etc/gemini-cli/system-defaults.json /etc/gemini-cli/system-defaults.json
-COPY etc/profile.d/gemini-workbench-aliases.sh /etc/profile.d/gemini-workbench-aliases.sh
 USER ubuntu
 ENV HOME=/home/ubuntu
 
