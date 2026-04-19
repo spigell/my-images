@@ -14,40 +14,70 @@ on:
         description: Gemini Workbench tag to consume
         required: false
         type: string
+      spigell_gemini_tag:
+        description: Spigell Gemini Workbench tag to consume
+        required: false
+        type: string
 
 permissions:
   contents: write
   packages: write
 
 jobs:
-  resolve-base-tag:
+  resolve-base-tags:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.final-tag.outputs.tag }}
+      google_tag: ${{ steps.google-tag.outputs.tag }}
+      spigell_tag: ${{ steps.spigell-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/resolve-ghcr-tag
-        id: final-tag
+        id: google-tag
         with:
           owner: ${{ github.repository_owner }}
           image: google-gemini-workbench
           payload_tag: ${{ github.event.client_payload.gemini_tag }}
           input_tag: ${{ inputs.gemini_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: spigell-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: spigell-gemini-workbench
+          payload_tag: ${{ github.event.client_payload.spigell_gemini_workbench_tag }}
+          input_tag: ${{ inputs.spigell_gemini_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
-  build-github-runner:
+  build-google-github-runner:
     needs:
-      - resolve-base-tag
+      - resolve-base-tags
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: google-gemini-github-runner
       context: ./github-runner-docker
-      version: 2.332.0
+      version: ${{ needs.resolve-base-tags.outputs.google_tag }}
       build-args: |
         RUNNER_VERSION=2.332.0
         BASE_IMAGE_NAME=google-gemini-workbench
-        BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
+        BASE_IMAGE_TAG=${{ needs.resolve-base-tags.outputs.google_tag }}
+      build-contexts: |
+        shared=./shared
+
+  build-spigell-github-runner:
+    needs:
+      - resolve-base-tags
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: spigell-gemini-github-runner
+      context: ./github-runner-docker
+      version: ${{ needs.resolve-base-tags.outputs.spigell_tag }}
+      build-args: |
+        RUNNER_VERSION=2.332.0
+        BASE_IMAGE_NAME=spigell-gemini-workbench
+        BASE_IMAGE_TAG=${{ needs.resolve-base-tags.outputs.spigell_tag }}
       build-contexts: |
         shared=./shared
