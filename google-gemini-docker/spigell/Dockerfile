@@ -20,7 +20,7 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && WORKDIR_TMP="$(mktemp -d)" \
- && git clone --depth 1 --single-branch "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
+ && git clone "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
  && pushd "${WORKDIR_TMP}/gemini-cli" \
  && git checkout "${GEMINI_CLI_GIT_REF}" \
  && npm ci \
