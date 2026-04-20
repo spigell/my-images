@@ -60,12 +60,12 @@ jobs:
     with:
       image-name: spigell-gemini-workbench
       context: ./google-gemini-docker/spigell
-      version: v0.38.1-spigell.20260420.39e5959
+      version: v0.38.1-spigell.20260420
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        GEMINI_CLI_VERSION=0.38.1-spigell.20260420.39e5959
+        GEMINI_CLI_VERSION=v0.38.1-spigell.20260420
         GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
-        GEMINI_CLI_GIT_REF=39e59597235b4d1a354d12aed9f7518e9267335f
+        GEMINI_CLI_GIT_REF=v0.38.1-spigell.20260420
       build-contexts: |
         shared=./shared
 
