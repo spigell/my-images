@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.38.1
+ARG GEMINI_CLI_VERSION=0.38.1-spigell.20260420.39e5959
 ARG GEMINI_CLI_GIT_URL=
 ARG GEMINI_CLI_GIT_REF=
 
@@ -20,8 +20,9 @@ WORKDIR /project
 
 RUN yarn config set prefix /usr/local \
  && WORKDIR_TMP="$(mktemp -d)" \
- && git clone --depth 1 --branch "${GEMINI_CLI_GIT_REF}" "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
+ && git clone --depth 1 --single-branch "${GEMINI_CLI_GIT_URL}" "${WORKDIR_TMP}/gemini-cli" \
  && pushd "${WORKDIR_TMP}/gemini-cli" \
+ && git checkout "${GEMINI_CLI_GIT_REF}" \
  && npm ci \
  && npm run bundle \
  && install -d -m 0755 /opt/gemini-cli \
