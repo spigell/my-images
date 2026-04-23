@@ -76,20 +76,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         sudo=1.9.* \
         build-essential=12.10* \
         bzr=2.7.* \
-        curl=8.5.0-2ubuntu10.8 \
+        curl=8.5.0-* \
         default-libmysqlclient-dev=1.1.* \
         dnsutils=1:9.18.* \
         gettext=0.21-* \
-        git=1:2.43.0-1ubuntu7.3 \
+        git=1:2.43.0-* \
         git-lfs=3.4.* \
         gnupg=2.4.* \
         inotify-tools=3.22.* \
         iputils-ping=3:20240117-* \
-        jq=1.7.1-3ubuntu0.24.04.1 \
+        jq=1.7.1-* \
         libbz2-dev=1.0.* \
         libc6=2.39-* \
         libc6-dev=2.39-* \
-        libcurl4-openssl-dev=8.5.0-2ubuntu10.8 \
+        libcurl4-openssl-dev=8.5.0-* \
         libdb-dev=1:5.3.* \
         libedit2=3.1-* \
         libffi-dev=3.4.* \
@@ -105,7 +105,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpsl-dev=0.21.* \
         libpython3-dev=3.12.* \
         libreadline-dev=8.2-* \
-        libsqlite3-dev=3.45.1-1ubuntu2.5 \
+        libsqlite3-dev=3.45.1-* \
         libssl-dev=3.0.* \
         libstdc++-13-dev=13.3.* \
         libunwind8=1.6.* \
@@ -123,10 +123,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         rsync=3.2.* \
         dpkg \
         software-properties-common=0.99.* \
-        sqlite3=3.45.1-1ubuntu2.5 \
+        sqlite3=3.45.1-* \
         swig3.0=3.0.* \
         tk-dev=8.6.* \
-        tzdata=2026a-0ubuntu0.24.04.1 \
+        tzdata=2026a-* \
         unixodbc-dev=2.3.* \
         unzip=6.0-* \
         uuid-dev=2.39.* \
@@ -141,7 +141,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-pip \
         file \
         less \
-        tmux=3.4-1ubuntu0.1 \
+        tmux=3.4-* \
         tree \
     && rm -rf /var/lib/apt/lists/*
 
