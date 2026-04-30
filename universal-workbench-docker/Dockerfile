@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.18
 
-ARG ZMX_BINARY_REF=0.1.0
+ARG ZMX_BINARY_REF=v0.5.0
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG GOLANG_VERSION=1.26.1
 ARG MCP_PROXY_VERSION=v0.10.0
