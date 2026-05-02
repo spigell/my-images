@@ -158,9 +158,9 @@ RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/docker-credential-gcloud /usr/local/bin/docker-credential-gcloud \
  && ln -sf /opt/google-cloud-cli/bin/git-credential-gcloud.sh /usr/local/bin/git-credential-gcloud.sh
 
-# Docker CLI comes from apt since the universal base keeps the system lean
+# Docker CLI and PostgreSQL client come from apt since the universal base keeps the system lean
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends docker.io \
+    && apt-get install -y --no-install-recommends docker.io postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Install K9s
@@ -213,7 +213,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, psql, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
@@ -230,4 +230,5 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+
