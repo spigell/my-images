@@ -36,8 +36,8 @@
       "customType": "regex",
       "fileMatch": ["(^|/)Dockerfile$"],
       "matchStrings": [
-        "ARG\\\\s+(?<depName>[^\\\\s=]+)_VERSION=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<packageName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n",
-        "ARG\\\\s+(?<depName>[^\\\\s=]+)_REF=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<packageName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n"
+        "ARG\\s+(?<depName>[^\\s=]+)_VERSION=(?<currentValue>[^\\s]+)\\s+#\\s+renovate:\\s+datasource=(?<datasource>[^\\s]+)\\s+depName=(?<packageName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\n",
+        "ARG\\s+(?<depName>[^\\s=]+)_REF=(?<currentValue>[^\\s]+)\\s+#\\s+renovate:\\s+datasource=(?<datasource>[^\\s]+)\\s+depName=(?<packageName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\n"
       ]
     }
   ]
