@@ -43,7 +43,7 @@ jobs:
     with:
       image-name: notebooklm-mcp
       context: ./notebooklm-mcp-docker
-      version: v0.5.4
+      version: v0.6.4
       build-args: |
         UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        NOTEBOOKLM_MCP_CLI_VERSION=0.5.4
+        NOTEBOOKLM_MCP_CLI_VERSION=0.6.4
