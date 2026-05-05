@@ -1,8 +1,8 @@
 # Repository Guidelines
 
 ## Skills index
-- `image-creator` (`.ai-skills/image-creator/SKILL.md`): Add or extend image directories, publish workflows, dispatch wiring, and shared reusable workflow usage.
-- `mcp-tooling-maintainer` (`.ai-skills/mcp-tooling-maintainer/SKILL.md`): Maintain shell MCP tooling, dedicated MCP server images, and related MCP-facing documentation/configuration.
+- `image-creator` (`.agents/skills/image-creator/SKILL.md`): Add or extend image directories, publish workflows, dispatch wiring, and shared reusable workflow usage.
+- `mcp-tooling-maintainer` (`.agents/skills/mcp-tooling-maintainer/SKILL.md`): Maintain shell MCP tooling, dedicated MCP server images, and related MCP-facing documentation/configuration.
 
 ## MCP and tool inventory
 - `universal-workbench-docker/` plus `shared/start-shell-mcp.sh`: shared base image with `mcp-proxy`, `mcp-shell`, and the `start-shell-mcp` wrapper for exposing a constrained shell over HTTP.
