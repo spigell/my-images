@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG TERRAGRUNT_VERSION=1.0.0
-ARG TENV_VERSION=v4.10.1
+ARG TERRAGRUNT_VERSION=1.0.0 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
+ARG TENV_VERSION=v4.10.1 # renovate: datasource=github-releases depName=tofuutils/tenv
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 

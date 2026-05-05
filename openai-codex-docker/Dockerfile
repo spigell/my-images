@@ -3,7 +3,7 @@
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG CODEX_BINARY_IMAGE=ghcr.io/spigell/codex-binary
 ARG CODEX_BINARY_REF=rust-v0.124.0
-ARG SPLITRAIL_VERSION=3.2.2
+ARG SPLITRAIL_VERSION=3.2.2 # renovate: datasource=github-releases depName=Piebald-AI/splitrail
 
 FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_REF} AS codex
 
