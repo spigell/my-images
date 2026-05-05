@@ -1,5 +1,5 @@
 # Use a specific version of alpine for reproducibility
-FROM alpine:3.20 AS downloader
+FROM alpine:3.23 AS downloader
 
 # Set environment variables for the server version and architecture
 ENV GITHUB_MCP_SERVER_VERSION=v0.31.0
