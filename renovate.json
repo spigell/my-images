@@ -9,6 +9,7 @@
   ],
   "dependencyDashboard": true,
   "labels": ["dependencies", "renovate"],
+  "gitAuthor": "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>",
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
@@ -22,14 +23,21 @@
     {
       "matchPackagePatterns": ["ghcr.io/spigell/*"],
       "enabled": false
+    },
+    {
+      "description": "Don't update golang in FROM lines, we use ARG instead",
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["golang"],
+      "enabled": false
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": ["(^|/)Dockerfile$"],
       "matchStrings": [
-        "ARG\\\\s+(?<depName>[^\\\\s=]+)_VERSION=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<lookupName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n",
-        "ARG\\\\s+(?<depName>[^\\\\s=]+)_REF=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<lookupName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n"
+        "ARG\\\\s+(?<depName>[^\\\\s=]+)_VERSION=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<packageName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n",
+        "ARG\\\\s+(?<depName>[^\\\\s=]+)_REF=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<packageName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n"
       ]
     }
   ]
