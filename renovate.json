@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":separateMajorReleases",
+    ":combinePatchMinorReleases",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "dependencyDashboard": true,
+  "labels": ["dependencies", "renovate"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions updates"
+    },
+    {
+      "matchPackagePatterns": ["ghcr.io/spigell/*"],
+      "enabled": false
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["(^|/)Dockerfile$"],
+      "matchStrings": [
+        "ARG\\\\s+(?<depName>[^\\\\s=]+)_VERSION=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<lookupName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n",
+        "ARG\\\\s+(?<depName>[^\\\\s=]+)_REF=(?<currentValue>[^\\\\s]+)\\\\s+#\\\\s+renovate:\\\\s+datasource=(?<datasource>[^\\\\s]+)\\\\s+depName=(?<lookupName>[^\\\\s]+)(?:\\\\s+versioning=(?<versioning>[^\\\\s]+))?\\\\n"
+      ]
+    }
+  ]
+}

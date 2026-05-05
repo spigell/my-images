@@ -2,10 +2,10 @@
 
 ARG ZMX_BINARY_REF=latest
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
-ARG GOLANG_VERSION=1.26.1
-ARG MCP_PROXY_VERSION=v0.10.0
-ARG MCP_SHELL_SERVER_VERSION=v0.5.0
-ARG YQ_VERSION=v4.44.6
+ARG GOLANG_VERSION=1.26.1 # renovate: datasource=golang-version depName=go
+ARG MCP_PROXY_VERSION=v0.10.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
+ARG MCP_SHELL_SERVER_VERSION=v0.5.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
+ARG YQ_VERSION=v4.44.6 # renovate: datasource=github-releases depName=mikefarah/yq
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_REF} AS zmx-binary
 
@@ -50,14 +50,14 @@ FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.0.6
-ARG PYTHON_VERSION=3.13.7
-ARG NODE_VERSION=22.21.1
+ARG PYTHON_VERSION=3.13.7 # renovate: datasource=python-version depName=python
+ARG NODE_VERSION=22.21.1 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
-ARG GOLANGCI_LINT_VERSION=2.7.1
-ARG DELVE_VERSION=1.26.1
+ARG GOLANGCI_LINT_VERSION=2.7.1 # renovate: datasource=github-releases depName=golangci/golangci-lint
+ARG DELVE_VERSION=1.26.1 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
-ARG YARN_VERSION=1.22.22
-ARG SPECIFY_VERSION=v0.0.90
+ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
+ARG SPECIFY_VERSION=v0.0.90 # renovate: datasource=github-tags depName=github/spec-kit
 ARG ZMX_BINARY_REF
 ARG MCP_PROXY_VERSION
 ARG MCP_SHELL_SERVER_VERSION
