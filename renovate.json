@@ -1,5 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "branchPrefix": "renovate/chore/",
   "extends": [
     "config:recommended",
     ":separateMajorReleases",
@@ -34,6 +35,7 @@
   ],
   "customManagers": [
     {
+      "customManagerName": "Custom Dockerfile Manager",
       "customType": "regex",
       "fileMatch": ["(^|/)Dockerfile$"],
       "matchStrings": [
