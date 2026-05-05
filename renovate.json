@@ -35,7 +35,7 @@
   ],
   "customManagers": [
     {
-      "customManagerName": "Custom Dockerfile Manager",
+      "description": "Custom Dockerfile Manager",
       "customType": "regex",
       "fileMatch": ["(^|/)Dockerfile$"],
       "matchStrings": [
