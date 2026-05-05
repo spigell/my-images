@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.18
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG NOTEBOOKLM_MCP_CLI_VERSION=0.5.4
+ARG NOTEBOOKLM_MCP_CLI_VERSION=0.6.4
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
