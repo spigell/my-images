@@ -30,7 +30,7 @@ jobs:
       google_tag: ${{ steps.google-tag.outputs.tag }}
       spigell_tag: ${{ steps.spigell-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/resolve-ghcr-tag
         id: google-tag
         with:

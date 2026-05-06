@@ -34,7 +34,7 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/resolve-ghcr-tag
         id: final-tag
         with:
@@ -49,7 +49,7 @@ jobs:
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/resolve-ghcr-tag
         id: final-tag
         with:
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch SSHD Workbench Update
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
           event-type: sshd-workbench-updated
