@@ -6,4 +6,3 @@ Container image that layers `@qwen-code/qwen-code` on top of `ghcr.io/spigell/un
 
 - `UNIVERSAL_WORKBENCH_TAG` (default: `sha-dev`)
 - `QWEN_CODE_VERSION` (default: `0.12.6`)
-- `SPLITRAIL_VERSION` (default: `3.2.2`)
