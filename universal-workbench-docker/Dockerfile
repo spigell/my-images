@@ -50,7 +50,7 @@ FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.0.6
-ARG PYTHON_VERSION=3.14.4 # renovate: datasource=python-version depName=python
+ARG PYTHON_VERSION=3.13.7 # renovate: datasource=python-version depName=python
 ARG NODE_VERSION=22.22.2 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
 ARG GOLANGCI_LINT_VERSION=2.12.1 # renovate: datasource=github-releases depName=golangci/golangci-lint
