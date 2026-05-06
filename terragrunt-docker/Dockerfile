@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.18
+# syntax=docker/dockerfile:1.23
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG TERRAGRUNT_VERSION=1.0.3 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
