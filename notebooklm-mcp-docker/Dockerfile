@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.18
+# syntax=docker/dockerfile:1.23
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG NOTEBOOKLM_MCP_CLI_VERSION=0.6.4

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.18
+# syntax=docker/dockerfile:1.23
 
 ARG OPENSSH_SERVER_TAG=version-10.2_p1-r0
 ARG ZMX_BINARY_REF=sha-dev

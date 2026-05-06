@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1.23
 
 ARG CODEX_VERSION=rust-v0.124.0
 ARG CODEX_TARBALL=codex-x86_64-unknown-linux-gnu.tar.gz

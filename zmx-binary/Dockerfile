@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1.23
 
 ARG ZMX_REF=v0.5.0
 ARG ZIG_VERSION=0.15.2

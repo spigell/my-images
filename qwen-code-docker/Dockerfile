@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.18
+# syntax=docker/dockerfile:1.23
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG QWEN_CODE_VERSION=0.12.6
