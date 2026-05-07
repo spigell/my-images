@@ -1,6 +1,12 @@
 name: Build and Publish Pulumi images
 run-name: "${{ github.event.client_payload.message || (github.event_name == 'repository_dispatch' && format('{0}: repository_dispatch by {1}', github.event.action, github.actor)) || format('{0} by {1}', github.event_name, github.actor) }}"
 
+env:
+  PULUMI_VERSION: 3.223.0 # renovate: datasource=github-releases depName=pulumi/pulumi
+  PULUMICTL_VERSION: 0.0.50 # renovate: datasource=github-releases depName=pulumi/pulumictl
+  KUBECTL_VERSION: 1.35.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
+  PULUMI_MCP_VERSION: 0.2.0 # renovate: datasource=github-tags depName=pulumi/pulumi-mcp-server
+
 on:
   repository_dispatch:
     types: [debug-sre-workbench-updated]
@@ -47,10 +53,10 @@ jobs:
       version: 3.223.0 # renovate: datasource=github-releases depName=pulumi/pulumi
       build-args: |
         DEBUG_SRE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
-        PULUMI_VERSION=3.223.0 # renovate: datasource=github-releases depName=pulumi/pulumi
-        PULUMICTL_VERSION=0.0.50 # renovate: datasource=github-releases depName=pulumi/pulumictl
-        KUBECTL_VERSION=1.35.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
-        PULUMI_MCP_VERSION=0.2.0 # renovate: datasource=github-tags depName=pulumi/pulumi-mcp-server
+        PULUMI_VERSION=${{ env.PULUMI_VERSION }}
+        PULUMICTL_VERSION=${{ env.PULUMICTL_VERSION }}
+        KUBECTL_VERSION=${{ env.KUBECTL_VERSION }}
+        PULUMI_MCP_VERSION=${{ env.PULUMI_MCP_VERSION }}
       build-contexts: |
         shared=./shared
 
