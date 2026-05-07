@@ -3,11 +3,11 @@
 ############################
 # Global, configurable args
 ############################
-ARG PULUMI_VERSION=3.223.0
-ARG PULUMICTL_VERSION=0.0.50
-ARG KUBECTL_VERSION=1.35.3
+ARG PULUMI_VERSION=3.223.0 # renovate: datasource=github-releases depName=pulumi/pulumi
+ARG PULUMICTL_VERSION=0.0.50 # renovate: datasource=github-releases depName=pulumi/pulumictl
+ARG KUBECTL_VERSION=1.35.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
 ARG DEBUG_SRE_TAG=sha-dev
-ARG PULUMI_MCP_VERSION=0.2.0
+ARG PULUMI_MCP_VERSION=0.2.0 # renovate: datasource=github-tags depName=pulumi/pulumi-mcp-server
 
 # Docker/buildx usually set these; provide safe defaults
 ARG TARGETOS=linux
