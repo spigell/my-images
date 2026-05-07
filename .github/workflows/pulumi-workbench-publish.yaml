@@ -4,7 +4,7 @@ run-name: "${{ github.event.client_payload.message || (github.event_name == 'rep
 env:
   PULUMI_VERSION: 3.223.0 # renovate: datasource=github-releases depName=pulumi/pulumi
   PULUMICTL_VERSION: 0.0.50 # renovate: datasource=github-releases depName=pulumi/pulumictl
-  KUBECTL_VERSION: 1.35.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
+  KUBECTL_VERSION: 1.36.0 # renovate: datasource=github-releases depName=kubernetes/kubernetes
   PULUMI_MCP_VERSION: 0.2.0 # renovate: datasource=github-tags depName=pulumi/pulumi-mcp-server
 
 on:
