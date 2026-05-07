@@ -5,9 +5,12 @@ description: Create new container images in the my-images repo and wire them int
 
 # Image Creator
 
+## Purpose
 Use this skill when adding a brand-new image directory or wiring a new publish workflow. It focuses on build flows, remote reusable workflows, and dispatch wiring.
 
-## Build/publish model (context)
+## Instructions
+
+### Build/publish model (context)
 - Universal workbench (`universal-workbench-docker/`) is the base; downstream images layer on top.
 - Event-driven via `repository_dispatch`:
   - `universal-workbench-publish` → `universal-workbench-updated`.
@@ -17,7 +20,7 @@ Use this skill when adding a brand-new image directory or wiring a new publish w
 - Keep downstream dispatch jobs named `trigger-downstreams`.
 - Include the `shared/` build context when the Dockerfile copies repo helper scripts from `shared/` or the workflow already uses `build-contexts: shared=./shared`.
 
-## Remote reusable workflow (shared)
+### Remote reusable workflow (shared)
 - Most builds call `spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main`.
 - Required `secrets`: `gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}` (push to GHCR).
 - Key inputs:
@@ -27,7 +30,7 @@ Use this skill when adding a brand-new image directory or wiring a new publish w
   - `build-args`: newline list of `KEY=VALUE`.
 - Outputs: `version`, `sha-tag`, `digest` (commonly reused by dependent builds and dispatch payloads).
 
-## Creating a new image
+### Creating a new image
 1. **Scaffold directory**: Create `<image-name>-docker/` (or similar). Add a `Dockerfile`, supporting files, and `README.md`. Base off an existing sibling if similar. Only copy from `shared/` when the image needs repo helper scripts such as `setup-git-workbench` or `start-shell-mcp`.
 2. **Update root README**: Add the image to the table with base and description.
 3. **Add publish workflow** in `.github/workflows/<image>-publish.yaml`:
@@ -40,5 +43,5 @@ Use this skill when adding a brand-new image directory or wiring a new publish w
 5. **Dispatch wiring**: Choose an event name that downstream workflows will watch (pattern: `<image>-updated`) only when this image has downstream consumers. If this image depends on another, add a `repository_dispatch` trigger to listen to that upstream event.
 6. **Versioning**: Prefer dynamic tag resolution and avoid static manifest JSON. When bumping tools in the new image, also update the workflow `version`, relevant build args, and any matching Dockerfile ARG/default.
 
-## Git remote and approvals
+### Git remote and approvals
 - Keep PR summaries noting new workflows, dispatch events, and any version bump rationale.
