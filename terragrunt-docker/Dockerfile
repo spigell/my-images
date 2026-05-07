@@ -2,7 +2,7 @@
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG TERRAGRUNT_VERSION=1.0.3 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
-ARG TENV_VERSION=v4.12.1 # renovate: datasource=github-releases depName=tofuutils/tenv
+ARG TENV_VERSION=v4.12.2 # renovate: datasource=github-releases depName=tofuutils/tenv
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
