@@ -2,7 +2,7 @@
 
 ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG CODEX_BINARY_IMAGE=ghcr.io/spigell/codex-binary
-ARG CODEX_BINARY_REF=rust-v0.125.0 # renovate: datasource=github-tags depName=openai/codex
+ARG CODEX_BINARY_REF=v0.125.0 # renovate: datasource=github-tags depName=spigell-codex-binary packageName=openai/codex
 
 FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_REF} AS codex
 
