@@ -10,35 +10,53 @@
     "mergeConfidence:all-badges"
   ],
   "dependencyDashboard": true,
-  "labels": ["dependencies", "renovate"],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "gitAuthor": "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>",
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
     },
     {
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "github-actions updates"
     },
     {
-      "matchPackagePatterns": ["ghcr.io/spigell/*"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/ghcr.io/spigell/*/"
+      ]
     },
     {
       "description": "Don't update golang in FROM lines, we use ARG instead",
-      "matchManagers": ["dockerfile"],
-      "matchPackageNames": ["golang"],
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchPackageNames": [
+        "golang"
+      ],
       "enabled": false
     },
     {
-      "matchPackageNames": ["python"],
+      "matchPackageNames": [
+        "python"
+      ],
       "allowedVersions": "< 3.14.0",
       "automerge": false
     },
     {
-      "matchPackageNames": ["spigell-codex-binary"],
+      "matchPackageNames": [
+        "spigell-codex-binary"
+      ],
       "extractVersion": "^rust-(?<version>.*)$"
     }
   ],
@@ -46,7 +64,9 @@
     {
       "description": "Custom Dockerfile Manager",
       "customType": "regex",
-      "fileMatch": ["(^|/)Dockerfile$"],
+      "fileMatch": [
+        "(^|/)Dockerfile$"
+      ],
       "matchStrings": [
         "ARG\\s+[^\\s=]+_(?:VERSION|REF)=(?<currentValue>[^\\s]+)\\s+#\\s+renovate:\\s+datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*(?:\\n|$)"
       ]
@@ -54,7 +74,9 @@
     {
       "description": "Custom Workflow Manager",
       "customType": "regex",
-      "fileMatch": ["^\\.github/workflows/.*\\.ya?ml$"],
+      "fileMatch": [
+        "^\\.github/workflows/.*\\.ya?ml$"
+      ],
       "matchStrings": [
         "\\s+version:\\s*['\"]?(?<currentValue>[^\\s'\"]+)['\"]?\\s+#\\s+renovate:\\s+datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*(?:\\n|$)"
       ]
