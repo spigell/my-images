@@ -19,7 +19,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /opt/codex \
-    && wget -qO /tmp/${CODEX_TARBALL} "${CODEX_BASE_URL}/${CODEX_VERSION}/${CODEX_TARBALL}" \
+    && wget -qO /tmp/${CODEX_TARBALL} "${CODEX_BASE_URL}/rust-${CODEX_VERSION}/${CODEX_TARBALL}" \
     && tar -xzf /tmp/${CODEX_TARBALL} -C /tmp \
     && install -m 0755 /tmp/${CODEX_BINARY_NAME} /opt/codex/codex \
     && rm -rf /tmp/${CODEX_TARBALL} /tmp/${CODEX_BINARY_NAME}
