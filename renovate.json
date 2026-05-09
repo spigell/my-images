@@ -58,7 +58,6 @@
       "matchPackageNames": [
         "spigell-codex-binary"
       ],
-      "datasource": "github-releases",
       "extractVersion": "^(?:rust-)?(?<version>v\\d+\\.\\d+\\.\\d+)$",
       "versioning": "semver-coerced"
     }
