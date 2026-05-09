@@ -68,7 +68,7 @@
         "(^|/)Dockerfile$"
       ],
       "matchStrings": [
-        "ARG\\s+[^\\s=]+_(?:VERSION|REF)=(?<currentValue>[^\\s]+)\\s+#\\s+renovate:\\s+datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*(?:\\n|$)"
+        "ARG\\s+(.+?)_(?:VERSION|REF)=(?<currentValue>[^\\s]+)\\s+#\\s+renovate:\\s+datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*(?:\\n|$)"
       ]
     },
     {
