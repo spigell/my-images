@@ -10,6 +10,7 @@
     "mergeConfidence:all-badges"
   ],
   "dependencyDashboard": true,
+  "prConcurrentLimit": 20,
   "labels": [
     "dependencies",
     "renovate"
@@ -57,7 +58,9 @@
       "matchPackageNames": [
         "spigell-codex-binary"
       ],
-      "extractVersion": "^rust-(?<version>.*)$"
+      "datasource": "github-releases",
+      "extractVersion": "^(?:rust-)?(?<version>v\\d+\\.\\d+\\.\\d+)$",
+      "versioning": "semver-coerced"
     }
   ],
   "customManagers": [
