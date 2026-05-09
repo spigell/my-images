@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.23
 
-ARG CODEX_VERSION=v0.125.0 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
-ARG CODEX_TARBALL=codex-x86_64-unknown-linux-gnu.tar.gz
-ARG CODEX_BINARY_NAME=codex-x86_64-unknown-linux-gnu
+ARG CODEX_VERSION=v0.130.0 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
+ARG CODEX_TARBALL=codex-x86_64-unknown-linux-musl.tar.gz
+ARG CODEX_BINARY_NAME=codex-x86_64-unknown-linux-musl
 ARG CODEX_BASE_URL=https://github.com/openai/codex/releases/download
 
 FROM debian:bookworm-20260421 AS downloader
