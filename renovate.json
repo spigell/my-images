@@ -56,6 +56,12 @@
       "automerge": false
     },
     {
+      "matchPackageNames": [
+        "ubuntu"
+      ],
+      "allowedVersions": "<25"
+    },
+    {
       "matchDepNames": [
         "spigell-codex-binary"
       ],
