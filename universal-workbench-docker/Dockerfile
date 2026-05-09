@@ -2,7 +2,7 @@
 
 ARG ZMX_BINARY_REF=latest
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
-ARG GOLANG_VERSION=1.26.2 # renovate: datasource=golang-version depName=go
+ARG GOLANG_VERSION=1.26.3 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.11.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.5.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.2 # renovate: datasource=github-releases depName=mikefarah/yq
