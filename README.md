@@ -2,6 +2,9 @@
 
 > This repository is maintained for personal use. Contributions are welcome, but no official support is provided.
 
+Renovate is now run centrally from `my-renovate`; this repository no longer owns
+the scheduled Renovate workflow or the shared Renovate configuration file.
+
 ## Available images
 
 | Image directory | Base image | Extends with | Browse |
