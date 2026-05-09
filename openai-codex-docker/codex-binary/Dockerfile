@@ -5,7 +5,7 @@ ARG CODEX_TARBALL=codex-x86_64-unknown-linux-musl.tar.gz
 ARG CODEX_BINARY_NAME=codex-x86_64-unknown-linux-musl
 ARG CODEX_BASE_URL=https://github.com/openai/codex/releases/download
 
-FROM debian:bookworm-20260421 AS downloader
+FROM debian:trixie-20260505 AS downloader
 
 ARG CODEX_VERSION
 ARG CODEX_TARBALL
