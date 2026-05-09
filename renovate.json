@@ -55,10 +55,10 @@
       "automerge": false
     },
     {
-      "matchPackageNames": [
+      "matchDepNames": [
         "spigell-codex-binary"
       ],
-      "extractVersion": "^(?:rust-)?(?<version>v\\d+\\.\\d+\\.\\d+)$",
+      "extractVersion": "^rust-(?<version>v\\d+\\.\\d+\\.\\d+)$",
       "versioning": "semver-coerced"
     }
   ],
