@@ -46,7 +46,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 RUN install -d /tmp/fetch && \
     cp /go/bin/mcp-shell /tmp/fetch/mcp-shell
 
-FROM ubuntu:24.04 AS universal-base
+FROM ubuntu:26.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.0.6
