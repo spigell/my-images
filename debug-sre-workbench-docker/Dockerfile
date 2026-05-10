@@ -14,7 +14,7 @@ ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=spigell
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_GIT_REF=0.23.0 # renovate: datasource=github-releases depName=paloaltonetworks/holmes
-ARG ARGOCD_VERSION=3.3.3 # renovate: datasource=github-releases depName=argoproj/argo-cd
+ARG ARGOCD_VERSION=3.4.1 # renovate: datasource=github-releases depName=argoproj/argo-cd
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
