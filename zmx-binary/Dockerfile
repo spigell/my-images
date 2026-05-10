@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1.23
 
-ARG ZMX_REF=v0.5.0
-ARG ZIG_VERSION=0.15.2
+ARG ZMX_GIT_REF=v0.5.0 # renovate: datasource=github-tags depName=neurosnap/zmx
+ARG ZIG_VERSION=0.15.2 # renovate: datasource=github-releases depName=ziglang/zig
+ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
 ARG TARGETARCH=amd64
 
-FROM ubuntu:24.04 AS builder
+FROM ubuntu:${UBUNTU_IMAGE_TAG} AS builder
 
-ARG ZMX_REF
+ARG ZMX_GIT_REF
 ARG ZIG_VERSION
 ARG TARGETARCH
 
@@ -39,8 +40,8 @@ WORKDIR /src
 
 RUN git clone --filter=blob:none --no-checkout https://github.com/neurosnap/zmx.git \
  && cd zmx \
- && git fetch --depth 1 origin "${ZMX_REF}" \
- && git checkout --detach "${ZMX_REF}"
+ && git fetch --depth 1 origin "${ZMX_GIT_REF}" \
+ && git checkout --detach "${ZMX_GIT_REF}"
 
 WORKDIR /src/zmx
 
@@ -49,10 +50,10 @@ RUN ZIG_TARGET="$(cat /tmp/zig-target)"; \
 
 FROM scratch
 
-ARG ZMX_REF
+ARG ZMX_GIT_REF
 LABEL org.opencontainers.image.title="zmx Binary" \
       org.opencontainers.image.description="Scratch container image that packages the static zmx session persistence binary for reuse" \
-      org.opencontainers.image.version="${ZMX_REF}" \
+      org.opencontainers.image.version="${ZMX_GIT_REF}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images" \
       org.opencontainers.image.url="https://github.com/spigell/my-images" \
       org.opencontainers.image.documentation="https://github.com/spigell/my-images/blob/main/zmx-binary/Dockerfile" \
