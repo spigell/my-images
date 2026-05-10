@@ -56,8 +56,8 @@ jobs:
       context: ./openai-codex-docker
       version: ${{ needs.build-codex-binary.outputs.version }}
       build-args: |
-        CODEX_BINARY_REF=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
-        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        CODEX_BINARY_IMAGE_TAG=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
 
   trigger-downstreams:
     needs: build-codex

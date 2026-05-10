@@ -41,7 +41,14 @@ Use this skill when adding a brand-new image directory or wiring a new publish w
    - If another image depends on this one, add `trigger-downstreams` using `peter-evans/repository-dispatch@v3` to emit an update event (keep the job name `trigger-downstreams`).
 4. **Secrets**: The workflow expects `IMAGES_PUBLISH_TOKEN` for GHCR pushes and any dispatch jobs.
 5. **Dispatch wiring**: Choose an event name that downstream workflows will watch (pattern: `<image>-updated`) only when this image has downstream consumers. If this image depends on another, add a `repository_dispatch` trigger to listen to that upstream event.
-6. **Versioning**: Prefer dynamic tag resolution and avoid static manifest JSON. When bumping tools in the new image, also update the workflow `version`, relevant build args, and any matching Dockerfile ARG/default.
+6. **Renovate & Versioning**:
+   - **External Dependencies**: (e.g., `debian`, `kubectl`, `linuxserver/*`).
+     - **Truth**: Managed exclusively in the Dockerfile via `ARG` with `# renovate:` annotations.
+     - **Workflow**: No dynamic resolution. Workflows use the Dockerfile value.
+   - **Internal Dependencies**: (e.g., `spigell/*` images).
+     - **Truth**: Managed dynamically in Workflows via `resolve-ghcr-tag` (to support event-driven dispatches).
+     - **Dockerfile**: The `ARG` (e.g., `UNIVERSAL_WORKBENCH_IMAGE_TAG`) is a local fallback only. Do not annotate for Renovate.
+   - **Naming**: Use `_IMAGE_TAG` for images and `_GIT_REF` for Git.
 
 ### Git remote and approvals
 - Keep PR summaries noting new workflows, dispatch events, and any version bump rationale.

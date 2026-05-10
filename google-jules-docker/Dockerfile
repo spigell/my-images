@@ -1,16 +1,16 @@
 # syntax=docker/dockerfile:1
 
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG JULES_VERSION=0.1.42
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
+ARG JULES_VERSION=0.1.42 # renovate: datasource=npm depName=@google/jules
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
 ENV HOME=/root
 
 ARG JULES_VERSION
-ARG UNIVERSAL_WORKBENCH_TAG
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
 WORKDIR /project
 
@@ -27,7 +27,7 @@ LABEL org.opencontainers.image.title="Google Jules Workbench" \
       org.opencontainers.image.version="${JULES_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/google-jules-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.jules.version="${JULES_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]

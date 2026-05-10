@@ -1,17 +1,17 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG CLAUDE_CODE_VERSION=2.1.47
-ARG SANDBOX_RUNTIME_VERSION=0.0.37
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
+ARG CLAUDE_CODE_VERSION=2.1.47 # renovate: datasource=npm depName=@anthropic-ai/claude-code
+ARG SANDBOX_RUNTIME_VERSION=0.0.37 # renovate: datasource=npm depName=@anthropic-ai/sandbox-runtime
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
 ENV HOME=/root
 
 ARG CLAUDE_CODE_VERSION
-ARG UNIVERSAL_WORKBENCH_TAG
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 ARG SANDBOX_RUNTIME_VERSION
 
 WORKDIR /project
@@ -36,7 +36,7 @@ LABEL org.opencontainers.image.title="Claude Code Workbench" \
       org.opencontainers.image.version="${CLAUDE_CODE_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/claude-code-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.claude-code.version="${CLAUDE_CODE_VERSION}" \
       com.spigell.workbench.sandbox-runtime.version="${SANDBOX_RUNTIME_VERSION}"
 

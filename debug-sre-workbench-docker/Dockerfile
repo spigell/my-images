@@ -1,21 +1,22 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
-ARG KUBECTL_VERSION=1.35.3
-ARG HELM_VERSION=4.1.3
-ARG K9S_VERSION=0.50.18
-ARG TALOSCTL_VERSION=1.12.6
-ARG GKE_AUTH_PLUGIN_VERSION=542.0.0
-ARG GCLOUD_VERSION=563.0.0
-ARG ETCD_VERSION=3.6.8
-ARG KREW_VERSION=v0.5.0
-ARG LINEAGE_VERSION=0.5.0
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
+ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
+ARG KUBECTL_VERSION=1.35.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
+ARG HELM_VERSION=4.1.3 # renovate: datasource=github-releases depName=helm/helm
+ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/k9s
+ARG TALOSCTL_VERSION=1.12.6 # renovate: datasource=github-releases depName=siderolabs/talos
+ARG GKE_AUTH_PLUGIN_VERSION=542.0.0 # renovate: datasource=github-releases depName=google-cloud-sdk packageName=google/cloud-sdk
+ARG GCLOUD_VERSION=563.0.0 # renovate: datasource=github-releases depName=google-cloud-sdk packageName=google/cloud-sdk
+ARG ETCD_VERSION=3.6.8 # renovate: datasource=github-releases depName=etcd-io/etcd
+ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
+ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=spigell/lineage
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_REF=0.23.0
-ARG ARGOCD_VERSION=3.3.3
+ARG HOLMES_GIT_REF=0.23.0 # renovate: datasource=github-releases depName=paloaltonetworks/holmes
+ARG ARGOCD_VERSION=3.3.3 # renovate: datasource=github-releases depName=argoproj/argo-cd
 
-FROM debian:bookworm-slim AS fetch
+FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG K9S_VERSION
@@ -118,7 +119,7 @@ RUN tmpdir="$(mktemp -d)" \
     && chmod +x /tmp/fetch/krew-installer \
     && rm -rf "${tmpdir}"
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
@@ -135,8 +136,8 @@ ARG GCLOUD_VERSION
 ARG ETCD_VERSION
 ARG KREW_VERSION
 ARG LINEAGE_VERSION
-ARG UNIVERSAL_WORKBENCH_TAG
-ARG HOLMES_REF
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
+ARG HOLMES_GIT_REF
 ARG ARGOCD_VERSION
 
 ENV PYTHONUNBUFFERED=1
@@ -181,7 +182,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
 RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
     XDG_DATA_HOME=/usr/local/share/uv-data \
     XDG_BIN_HOME=/usr/local/bin \
-    uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_REF}"
+    uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_GIT_REF}"
 
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
@@ -223,7 +224,7 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, psql, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.kubectl.version="${KUBECTL_VERSION}" \
       com.spigell.workbench.helm.version="${HELM_VERSION}" \
       com.spigell.workbench.k9s.version="${K9S_VERSION}" \
@@ -233,9 +234,8 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
-      com.spigell.holmes_ref="${HOLMES_REF}" \
+      com.spigell.holmes_ref="${HOLMES_GIT_REF}" \
       com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
 CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
-

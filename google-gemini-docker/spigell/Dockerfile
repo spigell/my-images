@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=v0.39.0-spigell.0
-ARG GEMINI_CLI_GIT_URL=
-ARG GEMINI_CLI_GIT_REF=
+ARG GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
+ARG GEMINI_CLI_GIT_REF=v0.39.0-spigell.0
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
@@ -14,7 +14,7 @@ ENV HOME=/root
 ARG GEMINI_CLI_VERSION
 ARG GEMINI_CLI_GIT_URL
 ARG GEMINI_CLI_GIT_REF
-ARG UNIVERSAL_WORKBENCH_TAG
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
 WORKDIR /project
 
@@ -49,7 +49,7 @@ LABEL org.opencontainers.image.title="Google Gemini Workbench (Custom)" \
       org.opencontainers.image.version="${GEMINI_CLI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker/spigell" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}" \
       com.spigell.workbench.gemini-cli.git-url="${GEMINI_CLI_GIT_URL}" \
       com.spigell.workbench.gemini-cli.git-ref="${GEMINI_CLI_GIT_REF}"

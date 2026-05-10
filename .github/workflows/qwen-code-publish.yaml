@@ -44,10 +44,9 @@ jobs:
     with:
       image-name: qwen-workbench
       context: ./qwen-code-docker
-      version: v0.12.6
+      version: v0.12.6 # renovate: datasource=npm depName=@qwen-code/qwen-code
       build-args: |
-        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        QWEN_CODE_VERSION=0.12.6
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 
