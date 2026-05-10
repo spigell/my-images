@@ -2,7 +2,7 @@
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG KUBECTL_VERSION=1.35.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
+ARG KUBECTL_VERSION=1.36.0 # renovate: datasource=github-releases depName=kubernetes/kubernetes
 ARG HELM_VERSION=4.1.4 # renovate: datasource=github-releases depName=helm/helm
 ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/k9s
 ARG TALOSCTL_VERSION=1.12.6 # renovate: datasource=github-releases depName=siderolabs/talos
