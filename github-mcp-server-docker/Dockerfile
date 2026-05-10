@@ -1,13 +1,10 @@
-ARG ALPINE_IMAGE_TAG=3.23 # renovate: datasource=docker depName=alpine
-ARG MCP_PROXY_IMAGE_TAG=v0.11.0 # renovate: datasource=docker depName=ghcr.io/sparfenyuk/mcp-proxy
-ARG GITHUB_MCP_SERVER_VERSION=v0.31.0 # renovate: datasource=github-releases depName=github/github-mcp-server
-
-FROM alpine:${ALPINE_IMAGE_TAG} AS downloader
+# Use a specific version of alpine for reproducibility
+FROM alpine:3.23 AS downloader
 
 # Set environment variables for the server version and architecture
+ENV GITHUB_MCP_SERVER_VERSION=v0.31.0
 ENV ARCH=x86_64
 ENV DIST=Linux
-ARG GITHUB_MCP_SERVER_VERSION
 
 # Download and extract the github-mcp-server binary
 RUN apk add --no-cache curl \
@@ -17,7 +14,8 @@ RUN apk add --no-cache curl \
     && tar -xzf /tmp/github-mcp-server.tar.gz -C /usr/local/bin \
     && chmod +x /usr/local/bin/github-mcp-server
 
-FROM ghcr.io/sparfenyuk/mcp-proxy:${MCP_PROXY_IMAGE_TAG}
+# Use the proxy image as the base for the final image
+FROM ghcr.io/sparfenyuk/mcp-proxy:v0.11.0
 
 # Create a non-root user
 RUN addgroup -S app && adduser -S -G app app

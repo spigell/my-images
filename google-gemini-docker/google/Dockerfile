@@ -1,16 +1,16 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.41.2 # renovate: datasource=npm depName=@google/gemini-cli
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
 ENV HOME=/root
 
 ARG GEMINI_CLI_VERSION
-ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
+ARG UNIVERSAL_WORKBENCH_TAG
 
 WORKDIR /project
 
@@ -31,7 +31,7 @@ LABEL org.opencontainers.image.title="Google Gemini Workbench" \
       org.opencontainers.image.version="${GEMINI_CLI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/google-gemini-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
       com.spigell.workbench.gemini-cli.version="${GEMINI_CLI_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]

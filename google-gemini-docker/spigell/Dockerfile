@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1.23
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=v0.39.0-spigell.0 # renovate: datasource=github-tags depName=spigell/gemini-cli
+ARG GEMINI_CLI_VERSION=v0.39.0-spigell.0
 ARG GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
-ARG GEMINI_CLI_GIT_REF=v0.39.0-spigell.0 # renovate: datasource=github-tags depName=spigell/gemini-cli
+ARG GEMINI_CLI_GIT_REF=v0.39.0-spigell.0
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

@@ -46,7 +46,7 @@ jobs:
       context: ./pulumi-workbench-docker
       version: 3.237.0 # renovate: datasource=github-releases depName=pulumi/pulumi
       build-args: |
-        DEBUG_SRE_IMAGE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
+        DEBUG_SRE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 
@@ -60,7 +60,7 @@ jobs:
       context: ./pulumi-talos-cluster-workbench-docker
       version: ${{ needs.build-pulumi-workbench.outputs.version }}
       build-args: |
-        PULUMI_WORKBENCH_IMAGE_TAG=${{ needs.build-pulumi-workbench.outputs.sha-tag }}
+        PULUMI_WORKBENCH_TAG=${{ needs.build-pulumi-workbench.outputs.sha-tag }}
       build-contexts: |
         shared=./shared
 

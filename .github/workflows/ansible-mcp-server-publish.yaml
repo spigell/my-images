@@ -41,6 +41,7 @@ jobs:
     with:
       image-name: ansible-mcp-server
       context: ./ansible-mcp-server-docker
-      version: v26.1.1 # renovate: datasource=github-tags depName=ansible/vscode-ansible
+      version: v26.1.1
       build-args: |
-        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        VSCODE_ANSIBLE_REF=v26.1.1
+        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}

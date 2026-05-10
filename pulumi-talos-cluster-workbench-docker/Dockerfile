@@ -2,10 +2,9 @@
 ############################
 # Configurable args
 ############################
-ARG PULUMI_WORKBENCH_IMAGE_TAG=3.223.0
-ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/k9s
-ARG PACKER_VERSION=1.15.1 # renovate: datasource=github-releases depName=hashicorp/packer
+ARG PULUMI_WORKBENCH_TAG=3.223.0
+ARG K9S_VERSION=0.50.18
+ARG PACKER_VERSION=1.15.1
 
 # Set by buildx/BuildKit (defaults for classic docker build)
 ARG TARGETOS=linux
@@ -14,7 +13,7 @@ ARG TARGETARCH=amd64
 ############################
 # Stage 1: fetch artifacts
 ############################
-FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
+FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG K9S_VERSION
@@ -41,7 +40,7 @@ RUN curl -fsSL -o packer.zip \
 ############################
 # Stage 2: final image
 ############################
-FROM ghcr.io/spigell/pulumi-workbench:${PULUMI_WORKBENCH_IMAGE_TAG}
+FROM ghcr.io/spigell/pulumi-workbench:${PULUMI_WORKBENCH_TAG}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
@@ -65,10 +64,10 @@ ENV HOME=/home/ubuntu
 
 LABEL org.opencontainers.image.title="Pulumi Talos Cluster Workbench" \
       org.opencontainers.image.description="Pulumi Talos environment built on the universal workbench stack with K9s and Packer tooling" \
-      org.opencontainers.image.version="${PULUMI_WORKBENCH_IMAGE_TAG}" \
+      org.opencontainers.image.version="${PULUMI_WORKBENCH_TAG}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-talos-cluster-workbench-docker" \
       com.spigell.workbench.base-image="pulumi-workbench" \
-      com.spigell.workbench.base-image-tag="${PULUMI_WORKBENCH_IMAGE_TAG}" \
+      com.spigell.workbench.base-image-tag="${PULUMI_WORKBENCH_TAG}" \
       com.spigell.workbench.k9s.version="${K9S_VERSION}" \
       com.spigell.workbench.packer.version="${PACKER_VERSION}"
 

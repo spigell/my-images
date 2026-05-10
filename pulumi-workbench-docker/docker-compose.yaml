@@ -9,7 +9,7 @@ services:
         PULUMI_VERSION: 3.223.0
         PULUMICTL_VERSION: 0.0.50
         KUBECTL_VERSION: 1.35.3
-        DEBUG_SRE_IMAGE_TAG: sha-dev
+        DEBUG_SRE_TAG: sha-dev
         PULUMI_MCP_VERSION: 0.2.0
       additional_contexts:
         shared: ../shared

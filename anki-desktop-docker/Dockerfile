@@ -1,7 +1,7 @@
 ARG KASMVNC_IMAGE_TAG=ubuntujammy # renovate: datasource=docker depName=lsiobase/kasmvnc
 FROM lsiobase/kasmvnc:${KASMVNC_IMAGE_TAG}
 
-ARG ANKI_VERSION=25.02.5 # renovate: datasource=github-releases depName=ankitects/anki
+ARG ANKI_VERSION=25.02.5
 ENV ANKI_HOME=/tmp/Anki2
 ARG ANKI_CONNECT_VERSION=25.2.25.0 # renovate: datasource=git-tags depName=https://git.sr.ht/~foosoft/anki-connect
 

@@ -1,18 +1,15 @@
 # syntax=docker/dockerfile:1.23
 
-ARG ZMX_BINARY_IMAGE_TAG=latest
+ARG ZMX_BINARY_REF=latest
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
-ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG GOLANG_IMAGE_TAG=1.26.3-bookworm # renovate: datasource=docker depName=golang
-ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
 ARG GOLANG_VERSION=1.26.3 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.11.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.5.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.2 # renovate: datasource=github-releases depName=mikefarah/yq
 
-FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_IMAGE_TAG} AS zmx-binary
+FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_REF} AS zmx-binary
 
-FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
+FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG TARGETARCH=amd64
@@ -34,7 +31,7 @@ RUN arch="${TARGETARCH:-amd64}"; \
     chmod +x /tmp/fetch/yq; \
     /tmp/fetch/yq --version
 
-FROM golang:${GOLANG_IMAGE_TAG} AS mcp-shell-fetch
+FROM golang:${GOLANG_VERSION}-bookworm AS mcp-shell-fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG TARGETOS=linux
@@ -49,7 +46,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 RUN install -d /tmp/fetch && \
     cp /go/bin/mcp-shell /tmp/fetch/mcp-shell
 
-FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
+FROM ubuntu:24.04 AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.0.6
@@ -61,7 +58,7 @@ ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/del
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
 ARG SPECIFY_VERSION=v0.8.7 # renovate: datasource=github-tags depName=github/spec-kit
-ARG ZMX_BINARY_IMAGE_TAG
+ARG ZMX_BINARY_REF
 ARG MCP_PROXY_VERSION
 ARG MCP_SHELL_SERVER_VERSION
 
@@ -278,7 +275,7 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       com.spigell.workbench.go.delve-version="${DELVE_VERSION}" \
       com.spigell.workbench.specify.version="${SPECIFY_VERSION}" \
       com.spigell.workbench.golangci-lint.version="${GOLANGCI_LINT_VERSION}" \
-      com.spigell.workbench.zmx.version="${ZMX_BINARY_IMAGE_TAG}" \
+      com.spigell.workbench.zmx.version="${ZMX_BINARY_REF}" \
       com.spigell.workbench.package-manager="apt"
 
 ENTRYPOINT ["/bin/bash", "-lc"]

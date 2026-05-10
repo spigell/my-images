@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG NOTEBOOKLM_MCP_CLI_VERSION=0.6.4 # renovate: datasource=pypi depName=notebooklm-mcp-cli
+ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG NOTEBOOKLM_MCP_CLI_VERSION=0.6.4
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
 ENV HOME=/root
 
-ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
+ARG UNIVERSAL_WORKBENCH_TAG
 ARG NOTEBOOKLM_MCP_CLI_VERSION
 
 WORKDIR /opt/notebooklm-mcp
@@ -26,7 +26,7 @@ LABEL org.opencontainers.image.title="NotebookLM MCP Server" \
       org.opencontainers.image.version="${NOTEBOOKLM_MCP_CLI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/notebooklm-mcp-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
       com.spigell.workbench.notebooklm-mcp-cli.version="${NOTEBOOKLM_MCP_CLI_VERSION}"
 
 ENTRYPOINT ["notebooklm-mcp"]

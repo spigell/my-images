@@ -6,9 +6,8 @@
 ARG PULUMI_VERSION=3.237.0 # renovate: datasource=github-releases depName=pulumi/pulumi
 ARG PULUMICTL_VERSION=0.0.50 # renovate: datasource=github-releases depName=pulumi/pulumictl
 ARG KUBECTL_VERSION=1.36.0 # renovate: datasource=github-releases depName=kubernetes/kubernetes
-ARG DEBUG_SRE_IMAGE_TAG=sha-dev
-ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG PULUMI_MCP_VERSION=0.2.0 # renovate: datasource=npm depName=@pulumi/mcp-server
+ARG DEBUG_SRE_TAG=sha-dev
+ARG PULUMI_MCP_VERSION=0.2.0
 
 # Docker/buildx usually set these; provide safe defaults
 ARG TARGETOS=linux
@@ -17,7 +16,7 @@ ARG TARGETARCH=amd64
 ############################
 # Stage 1: fetch artifacts
 ############################
-FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
+FROM debian:bookworm-slim AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG PULUMI_VERSION
@@ -50,7 +49,7 @@ RUN curl -fsSL -o pulumictl.tar.gz \
 ############################
 # Stage 2: final image
 ############################
-FROM ghcr.io/spigell/debug-sre-workbench:${DEBUG_SRE_IMAGE_TAG}
+FROM ghcr.io/spigell/debug-sre-workbench:${DEBUG_SRE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
@@ -59,7 +58,7 @@ ENV HOME=/root
 ARG TARGETOS
 ARG TARGETARCH
 ARG KUBECTL_VERSION
-ARG DEBUG_SRE_IMAGE_TAG
+ARG DEBUG_SRE_TAG
 ARG PULUMI_VERSION
 ARG PULUMI_MCP_VERSION
 
@@ -105,7 +104,7 @@ LABEL org.opencontainers.image.title="Pulumi Workbench" \
       org.opencontainers.image.version="${PULUMI_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/pulumi-workbench-docker" \
       com.spigell.workbench.base-image="debug-sre-workbench" \
-      com.spigell.workbench.base-image-tag="${DEBUG_SRE_IMAGE_TAG}" \
+      com.spigell.workbench.base-image-tag="${DEBUG_SRE_TAG}" \
       com.spigell.workbench.mcp.version="${PULUMI_MCP_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
