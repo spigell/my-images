@@ -59,7 +59,6 @@ jobs:
       context: ./github-runner-docker
       version: ${{ needs.resolve-base-tags.outputs.google_tag }}
       build-args: |
-        RUNNER_VERSION=2.332.0
         BASE_IMAGE_NAME=google-gemini-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tags.outputs.google_tag }}
       build-contexts: |
@@ -76,7 +75,6 @@ jobs:
       context: ./github-runner-docker
       version: ${{ needs.resolve-base-tags.outputs.spigell_tag }}
       build-args: |
-        RUNNER_VERSION=2.332.0
         BASE_IMAGE_NAME=spigell-gemini-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tags.outputs.spigell_tag }}
       build-contexts: |

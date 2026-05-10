@@ -1,18 +1,18 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG CODEX_BINARY_IMAGE=ghcr.io/spigell/codex-binary
-ARG CODEX_BINARY_REF=sha-dev
+ARG CODEX_BINARY_IMAGE_TAG=sha-dev
 
-FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_REF} AS codex
+FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_IMAGE_TAG} AS codex
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
-LABEL codex.binary.ref="${CODEX_BINARY_REF}"
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
+LABEL codex.binary.ref="${CODEX_BINARY_IMAGE_TAG}"
 LABEL org.opencontainers.image.title="OpenAI Codex Workbench" \
       org.opencontainers.image.description="Codex runtime layered on the universal workbench base image" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/openai-codex-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}"
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}"
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root

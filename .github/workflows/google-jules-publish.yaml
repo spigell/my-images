@@ -44,10 +44,9 @@ jobs:
     with:
       image-name: google-jules-workbench
       context: ./google-jules-docker
-      version: v0.1.42
+      version: v0.1.42 # renovate: datasource=npm depName=@google/jules
       build-args: |
-        UNIVERSAL_WORKBENCH_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        JULES_VERSION=0.1.42
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 

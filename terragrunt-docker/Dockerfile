@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1.23
 
-ARG UNIVERSAL_WORKBENCH_TAG=sha-dev
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
+ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG TERRAGRUNT_VERSION=1.0.4 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
 ARG TENV_VERSION=v4.12.1 # renovate: datasource=github-releases depName=tofuutils/tenv
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
-FROM debian:bookworm-slim AS fetch
+FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG TERRAGRUNT_VERSION
@@ -36,7 +37,7 @@ RUN arch="${TARGETARCH:-amd64}"; \
     chmod +x tenv; \
     rm -f tenv.tar.gz
 
-FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_TAG}
+FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 USER root
@@ -44,7 +45,7 @@ ENV HOME=/root
 
 ARG TERRAGRUNT_VERSION
 ARG TENV_VERSION
-ARG UNIVERSAL_WORKBENCH_TAG
+ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
 COPY --from=fetch /tmp/fetch/terragrunt /usr/local/bin/terragrunt
 COPY --from=fetch /tmp/fetch/tenv /usr/local/bin/tenv
@@ -57,7 +58,7 @@ LABEL org.opencontainers.image.title="Terragrunt Workbench" \
       org.opencontainers.image.version="${TERRAGRUNT_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/terragrunt-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
-      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_TAG}" \
+      com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}" \
       com.spigell.workbench.tenv.version="${TENV_VERSION}"
 

@@ -44,9 +44,8 @@ jobs:
     with:
       image-name: codex-github-runner
       context: ./github-runner-docker
-      version: 2.332.0
+      version: 2.332.0 # renovate: datasource=github-releases depName=actions/runner
       build-args: |
-        RUNNER_VERSION=2.332.0
         BASE_IMAGE_NAME=codex-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
       build-contexts: |
