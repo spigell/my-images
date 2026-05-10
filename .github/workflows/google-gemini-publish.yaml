@@ -14,6 +14,14 @@ on:
         description: Universal Workbench tag (optional; falls back to GHCR latest)
         required: false
         type: string
+      gemini_cli_git_ref:
+        description: Gemini CLI git ref for spigell fork (optional)
+        required: false
+        type: string
+      gemini_cli_version:
+        description: Gemini CLI version for spigell fork (optional)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -59,9 +67,12 @@ jobs:
     with:
       image-name: spigell-gemini-workbench
       context: ./google-gemini-docker/spigell
-      version: v0.39.0-spigell.0 # renovate: datasource=github-tags depName=spigell/gemini-cli
+      version: ${{ inputs.gemini_cli_version || 'v0.39.0-spigell.0' }}
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        GEMINI_CLI_VERSION=${{ inputs.gemini_cli_version || 'v0.39.0-spigell.0' }}
+        GEMINI_CLI_GIT_URL=https://github.com/spigell/gemini-cli.git
+        GEMINI_CLI_GIT_REF=${{ inputs.gemini_cli_git_ref || 'v0.39.0-spigell.0' }}
       build-contexts: |
         shared=./shared
 

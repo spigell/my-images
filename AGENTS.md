@@ -4,7 +4,6 @@
 - `image-creator` (`.agents/skills/image-creator/SKILL.md`): Add or extend image directories, publish workflows, dispatch wiring, and shared reusable workflow usage.
 - `mcp-tooling-maintainer` (`.agents/skills/mcp-tooling-maintainer/SKILL.md`): Maintain shell MCP tooling, dedicated MCP server images, and related MCP-facing documentation/configuration.
 - `agent-workbench-updater` (`.agents/skills/agent-workbench-updater/SKILL.md`): Maintain agent-facing CLI workbench images, their defaults, and downstream publish wiring.
-- `workbench-stack-updater` (`.agents/skills/workbench-stack-updater/SKILL.md`): Maintain the shared base/tooling image stack and helper images outside the agent-CLI and MCP-specific domains.
 
 ## Agent and workbench inventory
 - `universal-workbench-docker/`: shared Ubuntu-based workbench with language runtimes, `setup-git-workbench`, `zmx`, and the shell MCP toolchain used by most downstream images.
