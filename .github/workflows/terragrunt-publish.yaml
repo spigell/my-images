@@ -44,7 +44,7 @@ jobs:
     with:
       image-name: terragrunt-workbench
       context: ./terragrunt-docker
-      version: v1.0.0 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
+      version: v1.0.4 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
       build-contexts: |
