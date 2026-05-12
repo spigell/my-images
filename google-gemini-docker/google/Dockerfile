@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.23
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG GEMINI_CLI_VERSION=0.41.2 # renovate: datasource=npm depName=@google/gemini-cli
+ARG GEMINI_CLI_VERSION=0.42.0 # renovate: datasource=npm depName=@google/gemini-cli
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
