@@ -60,7 +60,7 @@ ARG GOLANGCI_LINT_VERSION=2.12.2 # renovate: datasource=github-releases depName=
 ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
-ARG SPECIFY_VERSION=v0.8.8 # renovate: datasource=github-tags depName=github/spec-kit
+ARG SPECIFY_VERSION=v0.8.9 # renovate: datasource=github-tags depName=github/spec-kit
 ARG ZMX_BINARY_IMAGE_TAG
 ARG MCP_PROXY_VERSION
 ARG MCP_SHELL_SERVER_VERSION
