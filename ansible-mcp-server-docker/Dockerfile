@@ -5,7 +5,7 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG} AS builder
-ARG VSCODE_ANSIBLE_GIT_REF=v26.4.7 # renovate: datasource=github-tags depName=ansible/vscode-ansible
+ARG VSCODE_ANSIBLE_GIT_REF=v26.5.0 # renovate: datasource=github-tags depName=ansible/vscode-ansible
 WORKDIR /src
 
 # universal base already includes Python, yarn/corepack, and build tooling
