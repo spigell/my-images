@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.23
+# syntax=docker/dockerfile:1.24
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG NOTEBOOKLM_MCP_CLI_VERSION=0.6.4 # renovate: datasource=pypi depName=notebooklm-mcp-cli
