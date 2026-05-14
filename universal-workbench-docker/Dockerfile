@@ -6,7 +6,7 @@ ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG GOLANG_IMAGE_TAG=1.26.3-bookworm # renovate: datasource=docker depName=golang
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
 ARG GOLANG_VERSION=1.26.3 # renovate: datasource=golang-version depName=go
-ARG MCP_PROXY_VERSION=v0.11.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
+ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.5.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.2 # renovate: datasource=github-releases depName=mikefarah/yq
 
