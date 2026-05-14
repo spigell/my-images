@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.23
+# syntax=docker/dockerfile:1.24
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=0.41.2 # renovate: datasource=npm depName=@google/gemini-cli
