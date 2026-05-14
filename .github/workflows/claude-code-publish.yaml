@@ -44,7 +44,7 @@ jobs:
     with:
       image-name: claude-code-workbench
       context: ./claude-code-docker
-      version: 2.1.140 # renovate: datasource=npm depName=@anthropic-ai/claude-code
+      version: 2.1.141 # renovate: datasource=npm depName=@anthropic-ai/claude-code
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
 
