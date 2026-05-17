@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.24
 
-ARG ZMX_GIT_REF=v0.5.0 # renovate: datasource=github-tags depName=neurosnap/zmx
+ARG ZMX_GIT_REF=v0.6.0 # renovate: datasource=github-tags depName=neurosnap/zmx
 ARG ZIG_VERSION=0.15.2 # renovate: datasource=github-releases depName=ziglang/zig
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
 ARG TARGETARCH=amd64
