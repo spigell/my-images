@@ -1,8 +1,19 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>spigell/my-renovate//presets/dockerfile-managers",
-    "local>spigell/my-renovate//presets/workflow-managers",
-    "local>spigell/my-renovate//presets/pulumi-version-pinning"
+    "github>spigell/my-renovate//presets/dockerfile-managers",
+    "github>spigell/my-renovate//presets/workflow-managers",
+    "github>spigell/my-renovate//presets/pulumi-version-pinning"
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": ["spigell-codex-binary"],
+      "extractVersion": "^rust-(?<version>v\\d+\\.\\d+\\.\\d+)$",
+      "versioning": "semver-coerced"
+    },
+    {
+      "matchPackageNames": ["linuxserver/openssh-server"],
+      "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)_p(?<patch>\\d+)-r(?<build>\\d+)$"
+    }
   ]
 }
