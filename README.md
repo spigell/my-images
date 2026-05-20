@@ -14,6 +14,7 @@ the scheduled Renovate workflow or the shared Renovate configuration file.
 | `openai-codex-docker/` | Universal workbench | Codex CLI/binary and related tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/codex-workbench) |
 | `google-gemini-docker/google/` | Universal workbench | Gemini CLI stack | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-workbench) |
 | `google-gemini-docker/spigell/` | Universal workbench | Custom Gemini CLI workbench (built from source) | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/spigell-gemini-workbench) |
+| `agy-docker/` | Universal workbench | Antigravity CLI (`agy`) with upstream artifact checksum verification | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/agy-workbench) |
 | `qwen-code-docker/` | Universal workbench | Qwen Code CLI and supporting tooling | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/qwen-workbench) |
 | `github-runner-docker/` | Google Gemini workbench | GitHub Actions runner dependencies; built via a dedicated workflow | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/google-gemini-github-runner) |
 | `github-runner-docker/` | Spigell Gemini workbench | GitHub Actions runner dependencies for forked Gemini; built via a dedicated workflow | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/spigell-gemini-github-runner) |

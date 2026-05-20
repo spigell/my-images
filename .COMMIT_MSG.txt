@@ -1,0 +1,3 @@
+Add Antigravity agy workbench image
+
+Create a universal-based agy image and publish workflow so the Antigravity CLI can be built, versioned, and consumed like the other workbench images.
