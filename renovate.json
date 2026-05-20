@@ -2,8 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>spigell/my-renovate//presets/dockerfile-managers",
-    "github>spigell/my-renovate//presets/workflow-managers",
-    "github>spigell/my-renovate//presets/pulumi-version-pinning"
+    "github>spigell/my-renovate//presets/workflow-managers"
   ],
   "packageRules": [
     {
