@@ -2,5 +2,71 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>spigell/my-renovate"
+  ],
+  "customDatasources": {
+    "agy-version": {
+      "defaultRegistryUrlTemplate": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/{{{packageName}}}.json",
+      "transformTemplates": [
+        "{ \"releases\": [ { \"version\": version } ] }"
+      ]
+    },
+    "agy-url": {
+      "defaultRegistryUrlTemplate": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/{{{packageName}}}.json",
+      "transformTemplates": [
+        "{ \"releases\": [ { \"version\": url } ] }"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update agy version in Dockerfile",
+      "fileMatch": [
+        "(^|/)agy-docker/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG AGY_VERSION=(?<currentValue>.*)"
+      ],
+      "depNameTemplate": "antigravity-cli-version",
+      "packageNameTemplate": "linux_amd64",
+      "datasourceTemplate": "custom.agy-version",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Update agy amd64 url in Dockerfile",
+      "fileMatch": [
+        "(^|/)agy-docker/Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG AGY_LINUX_AMD64_URL=(?<currentValue>.*)"
+      ],
+      "depNameTemplate": "antigravity-cli-amd64-url",
+      "packageNameTemplate": "linux_amd64",
+      "datasourceTemplate": "custom.agy-url",
+      "versioningTemplate": "regex:^(?<major>.*)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Update agy version in publish workflow",
+      "fileMatch": [
+        "^\\.github/workflows/agy-publish\\.yaml$"
+      ],
+      "matchStrings": [
+        "version: v(?<currentValue>.*)"
+      ],
+      "depNameTemplate": "antigravity-cli-version",
+      "packageNameTemplate": "linux_amd64",
+      "datasourceTemplate": "custom.agy-version",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": [
+        "/^antigravity-cli-/"
+      ],
+      "groupName": "antigravity-cli"
+    }
   ]
 }
