@@ -1,7 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>spigell/my-renovate"
+    "github>spigell/my-renovate",
+    "github>spigell/my-renovate//presets/dockerfile-managers",
+    "github>spigell/my-renovate//presets/workflow-managers"
   ],
   "customDatasources": {
     "agy-version": {
@@ -67,6 +69,15 @@
         "/^antigravity-cli-/"
       ],
       "groupName": "antigravity-cli"
+    },
+    {
+      "matchDepNames": ["spigell-codex-binary"],
+      "extractVersion": "^rust-(?<version>v\\d+\\.\\d+\\.\\d+)$",
+      "versioning": "semver-coerced"
+    },
+    {
+      "matchPackageNames": ["linuxserver/openssh-server"],
+      "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)_p(?<patch>\\d+)-r(?<build>\\d+)$"
     }
   ]
 }
