@@ -17,10 +17,6 @@ ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
 WORKDIR /project
 
-RUN apt-get update \
- && apt-get install -y dbus-x11 gnome-keyring python3-dbus libsecret-tools \
- && rm -rf /var/lib/apt/lists/*
-
 RUN tmpdir="$(mktemp -d)" \
  && curl -fsSL "${AGY_LINUX_AMD64_URL}" -o "${tmpdir}/agy.tar.gz" \
  && tar -xzf "${tmpdir}/agy.tar.gz" -C "${tmpdir}" antigravity \
