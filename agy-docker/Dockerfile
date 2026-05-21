@@ -18,7 +18,7 @@ ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 WORKDIR /project
 
 RUN apt-get update \
- && apt-get install -y dbus-x11 gnome-keyring \
+ && apt-get install -y dbus-x11 gnome-keyring python3-dbus \
  && rm -rf /var/lib/apt/lists/*
 
 RUN tmpdir="$(mktemp -d)" \
