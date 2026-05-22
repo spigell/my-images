@@ -43,6 +43,6 @@ jobs:
     with:
       image-name: notebooklm-mcp
       context: ./notebooklm-mcp-docker
-      version: v0.6.10 # renovate: datasource=pypi depName=notebooklm-mcp-cli
+      version: v0.6.11 # renovate: datasource=pypi depName=notebooklm-mcp-cli
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
