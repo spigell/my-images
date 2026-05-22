@@ -52,7 +52,7 @@ jobs:
     with:
       image-name: google-gemini-workbench
       context: ./google-gemini-docker/google
-      version: 0.42.0 # renovate: datasource=npm depName=@google/gemini-cli
+      version: 0.43.0 # renovate: datasource=npm depName=@google/gemini-cli
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
       build-contexts: |
