@@ -3,3 +3,5 @@ docker-compose.yml
 *.sublime-workspace
 zmx/
 .COMMIT_MSG.txt
+
+.antigravitycli/
