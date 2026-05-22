@@ -65,6 +65,10 @@
   ],
   "packageRules": [
     {
+      "enabled": false,
+      "matchPackageNames": ["/ghcr.io/spigell/*/"]
+    },
+    {
       "matchDepNames": [
         "/^antigravity-cli-/"
       ],
