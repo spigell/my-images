@@ -23,8 +23,8 @@
     {
       "customType": "regex",
       "description": "Update agy version in Dockerfile",
-      "fileMatch": [
-        "(^|/)agy-docker/Dockerfile$"
+      "managerFilePatterns": [
+        "/(^|/)agy-docker/Dockerfile$/"
       ],
       "matchStrings": [
         "ARG AGY_VERSION=(?<currentValue>.*)"
@@ -37,8 +37,8 @@
     {
       "customType": "regex",
       "description": "Update agy amd64 url in Dockerfile",
-      "fileMatch": [
-        "(^|/)agy-docker/Dockerfile$"
+      "managerFilePatterns": [
+        "/(^|/)agy-docker/Dockerfile$/"
       ],
       "matchStrings": [
         "ARG AGY_LINUX_AMD64_URL=(?<currentValue>[^\\s'\"]+)"
@@ -51,8 +51,8 @@
     {
       "customType": "regex",
       "description": "Update agy version in publish workflow",
-      "fileMatch": [
-        "^\\.github/workflows/agy-publish\\.yaml$"
+      "managerFilePatterns": [
+        "/^\\.github/workflows/agy-publish\\.yaml$/"
       ],
       "matchStrings": [
         "version: v(?<currentValue>.*)"
