@@ -13,7 +13,7 @@ ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernete
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_GIT_REF=0.23.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
+ARG HOLMES_GIT_REF=0.30.1 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
 ARG ARGOCD_VERSION=3.4.2 # renovate: datasource=github-releases depName=argoproj/argo-cd
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
