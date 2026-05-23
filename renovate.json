@@ -41,12 +41,12 @@
         "(^|/)agy-docker/Dockerfile$"
       ],
       "matchStrings": [
-        "ARG AGY_LINUX_AMD64_URL=(?<currentValue>.*)"
+        "ARG AGY_LINUX_AMD64_URL=(?<currentValue>[^\\s'\"]+)"
       ],
       "depNameTemplate": "antigravity-cli-amd64-url",
       "packageNameTemplate": "linux_amd64",
       "datasourceTemplate": "custom.agy-url",
-      "versioningTemplate": "regex:^(?<major>.*)$"
+      "versioningTemplate": "regex:^https://[^/]+/antigravity-public/antigravity-cli/(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<build>\\d+)/.*$"
     },
     {
       "customType": "regex",
