@@ -5,7 +5,7 @@ ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG KUBECTL_VERSION=1.36.1 # renovate: datasource=github-releases depName=kubernetes/kubernetes
 ARG HELM_VERSION=4.2.0 # renovate: datasource=github-releases depName=helm/helm
 ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/k9s
-ARG TALOSCTL_VERSION=1.13.2 # renovate: datasource=github-releases depName=siderolabs/talos
+ARG TALOSCTL_VERSION=1.13.3 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=542.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG GCLOUD_VERSION=563.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG ETCD_VERSION=3.6.11 # renovate: datasource=github-releases depName=etcd-io/etcd
