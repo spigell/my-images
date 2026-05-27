@@ -1,0 +1,50 @@
+name: Build and Publish Tavily MCP image
+
+on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
+  push:
+    branches-ignore:
+      - 'renovate/**'
+    paths:
+      - 'tavily-mcp-docker/**'
+      - '.github/workflows/tavily-mcp-publish.yaml'
+  workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
+  build-tavily-mcp:
+    needs:
+      - resolve-universal-tag
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: tavily-mcp
+      context: ./tavily-mcp-docker
+      version: v0.2.19 # renovate: datasource=npm depName=tavily-mcp
+      build-args: |
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}

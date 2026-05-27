@@ -28,6 +28,7 @@ the scheduled Renovate workflow or the shared Renovate configuration file.
 | `zmx-binary/` | - | zmx binary image used by workbench builds | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/zmx-binary) |
 | `github-mcp-server-docker/` | Universal workbench | GitHub MCP server | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/github-mcp-server) |
 | `ansible-mcp-server-docker/` | MCP proxy base | Ansible MCP server exposed over HTTP | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/ansible-mcp-server) |
+| `tavily-mcp-docker/` | Universal workbench | Tavily MCP server exposed over HTTP via mcp-proxy | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/tavily-mcp) |
 
 ## Git setup helper
 
