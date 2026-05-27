@@ -2,6 +2,8 @@ name: Build and Publish zmx binary image
 
 on:
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'zmx-binary/**'
       - 'zmx/**'

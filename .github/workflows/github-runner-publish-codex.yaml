@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [openai-codex-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'github-runner-docker/**'
       - '.github/workflows/github-runner-publish-codex.yaml'

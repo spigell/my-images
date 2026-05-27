@@ -4,6 +4,8 @@ on:
   repository_dispatch:
     types: [universal-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'notebooklm-mcp-docker/**'
       - '.github/workflows/notebooklm-mcp-publish.yaml'

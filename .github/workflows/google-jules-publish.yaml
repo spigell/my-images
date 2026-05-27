@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [universal-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'google-jules-docker/**'
       - '.github/workflows/google-jules-publish.yaml'

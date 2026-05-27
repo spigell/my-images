@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [debug-sre-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'pulumi-workbench-docker/**'
       - 'pulumi-talos-cluster-workbench-docker/**'

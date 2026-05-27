@@ -2,6 +2,8 @@ name: Build and Publish Ansible MCP Server image
 
 on:
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'ansible-mcp-server-docker/**'
       - '.github/workflows/ansible-mcp-server-publish.yaml'

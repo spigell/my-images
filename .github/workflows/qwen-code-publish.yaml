@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [universal-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'qwen-code-docker/**'
       - '.github/workflows/qwen-code-publish.yaml'

@@ -2,6 +2,8 @@ name: Build and Publish Github MCP Server image
 
 on:
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'github-mcp-server-docker/**'
       - '.github/workflows/github-mcp-server-publish.yaml'

@@ -2,6 +2,8 @@ name: Build and Publish Anki Desktop Docker image
 
 on:
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'anki-desktop-docker/**'
       - '.github/workflows/anki-docker-publish.yaml'

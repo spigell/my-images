@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [zmx-binary-updated, debug-sre-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'sshd-docker/**'
       - '.github/workflows/sshd-publish.yaml'

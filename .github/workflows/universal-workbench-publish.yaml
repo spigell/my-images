@@ -4,6 +4,8 @@ on:
   repository_dispatch:
     types: [zmx-binary-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'universal-workbench-docker/**'
       - '.github/workflows/universal-workbench-publish.yaml'

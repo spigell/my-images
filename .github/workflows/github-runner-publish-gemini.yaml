@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [gemini-workbench-updated]
   push:
+    branches-ignore:
+      - 'renovate/**'
     paths:
       - 'github-runner-docker/**'
       - '.github/workflows/github-runner-publish-gemini.yaml'
