@@ -82,6 +82,19 @@
     {
       "matchPackageNames": ["linuxserver/openssh-server"],
       "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)_p(?<patch>\\d+)-r(?<build>\\d+)$"
+    },
+    {
+      "matchDepNames": [
+        "github/spec-kit",
+        "@anthropic-ai/claude-code",
+        "@qwen-code/qwen-code",
+        "@google/gemini-cli",
+        "notebooklm-mcp-cli",
+        "@anthropic-ai/sandbox-runtime",
+        "google-cloud-sdk"
+      ],
+      "groupName": "workbench-and-sdks",
+      "schedule": ["before 4am on Monday"]
     }
   ]
 }
