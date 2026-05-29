@@ -45,6 +45,6 @@ jobs:
     with:
       image-name: tavily-mcp
       context: ./tavily-mcp-docker
-      version: v0.2.19 # renovate: datasource=npm depName=tavily-mcp
+      version: 0.2.20 # renovate: datasource=npm depName=tavily-mcp
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}

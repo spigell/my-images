@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.24
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG TAVILY_MCP_VERSION=0.2.19 # renovate: datasource=npm depName=tavily-mcp
+ARG TAVILY_MCP_VERSION=0.2.20 # renovate: datasource=npm depName=tavily-mcp
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
