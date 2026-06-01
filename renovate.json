@@ -162,9 +162,9 @@
         "@google/jules",
         "spigell-codex-binary"
       ],
-      "groupName": "workbench-and-sdks",
+      "groupName": "agent-workbenches",
       "branchPrefix": "renovate/",
-      "branchTopic": "workbench-and-sdks-deps",
+      "branchTopic": "agent-workbenches-deps",
       "schedule": ["before 4am on Saturday"]
     }
   ]
