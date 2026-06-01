@@ -110,7 +110,8 @@
         "kubernetes-sigs/krew",
         "tohjustin/kube-lineage",
         "HolmesGPT/holmesgpt",
-        "argoproj/argo-cd"
+        "argoproj/argo-cd",
+        "google-cloud-sdk"
       ],
       "groupName": "debug-sre-workbench",
       "branchPrefix": "renovate/",
@@ -159,7 +160,6 @@
         "@qwen-code/qwen-code",
         "@google/gemini-cli",
         "@google/jules",
-        "google-cloud-sdk",
         "spigell-codex-binary"
       ],
       "groupName": "workbench-and-sdks",
