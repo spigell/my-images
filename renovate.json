@@ -77,7 +77,8 @@
     {
       "matchDepNames": ["spigell-codex-binary"],
       "extractVersion": "^rust-(?<version>v\\d+\\.\\d+\\.\\d+)$",
-      "versioning": "semver-coerced"
+      "versioning": "semver-coerced",
+      "schedule": ["before 4am on Saturday"]
     },
     {
       "matchPackageNames": ["linuxserver/openssh-server"],
@@ -85,16 +86,86 @@
     },
     {
       "matchDepNames": [
-        "github/spec-kit",
-        "@anthropic-ai/claude-code",
-        "@qwen-code/qwen-code",
-        "@google/gemini-cli",
-        "notebooklm-mcp-cli",
-        "@anthropic-ai/sandbox-runtime",
+        "python",
+        "node",
+        "go",
+        "golangci/golangci-lint",
+        "go-delve/delve",
+        "yarnpkg/yarn",
+        "mikefarah/yq",
+        "sparfenyuk/mcp-proxy",
+        "sonirico/mcp-shell"
+      ],
+      "groupName": "universal-workbench",
+      "branchPrefix": "renovate/",
+      "branchTopic": "universal-workbench-deps",
+      "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": [
+        "kubernetes/kubernetes",
+        "helm/helm",
+        "derailed/k9s",
+        "siderolabs/talos",
+        "etcd-io/etcd",
+        "kubernetes-sigs/krew",
+        "tohjustin/kube-lineage",
+        "HolmesGPT/holmesgpt",
+        "argoproj/argo-cd",
         "google-cloud-sdk"
       ],
-      "groupName": "workbench-and-sdks",
-      "schedule": ["before 4am on Monday"]
+      "groupName": "debug-sre-workbench",
+      "branchPrefix": "renovate/",
+      "branchTopic": "debug-sre-workbench-deps",
+      "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": [
+        "pulumi/pulumi",
+        "pulumi/pulumictl",
+        "@pulumi/mcp-server",
+        "hashicorp/packer",
+        "gruntwork-io/terragrunt",
+        "tofuutils/tenv"
+      ],
+      "groupName": "infra-workbenches",
+      "branchPrefix": "renovate/",
+      "branchTopic": "infra-workbenches-deps",
+      "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": ["debian", "ubuntu", "golang", "alpine", "lsiobase/kasmvnc"],
+      "matchDatasources": ["docker"],
+      "groupName": "base-os-images",
+      "branchPrefix": "renovate/",
+      "branchTopic": "base-os-images",
+      "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": [
+        "github/github-mcp-server",
+        "ansible/vscode-ansible",
+        "tavily-mcp",
+        "notebooklm-mcp-cli"
+      ],
+      "groupName": "mcp-servers",
+      "branchPrefix": "renovate/",
+      "branchTopic": "mcp-servers-deps",
+      "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": [
+        "github/spec-kit",
+        "@anthropic-ai/claude-code",
+        "@anthropic-ai/sandbox-runtime",
+        "@qwen-code/qwen-code",
+        "@google/gemini-cli",
+        "@google/jules"
+      ],
+      "groupName": "agent-workbenches",
+      "branchPrefix": "renovate/",
+      "branchTopic": "agent-workbenches-deps",
+      "schedule": ["before 4am on Saturday"]
     }
   ]
 }
