@@ -159,7 +159,8 @@
         "@qwen-code/qwen-code",
         "@google/gemini-cli",
         "@google/jules",
-        "google-cloud-sdk"
+        "google-cloud-sdk",
+        "spigell-codex-binary"
       ],
       "groupName": "workbench-and-sdks",
       "branchPrefix": "renovate/",
