@@ -77,7 +77,8 @@
     {
       "matchDepNames": ["spigell-codex-binary"],
       "extractVersion": "^rust-(?<version>v\\d+\\.\\d+\\.\\d+)$",
-      "versioning": "semver-coerced"
+      "versioning": "semver-coerced",
+      "schedule": ["before 4am on Saturday"]
     },
     {
       "matchPackageNames": ["linuxserver/openssh-server"],
@@ -159,8 +160,7 @@
         "@anthropic-ai/sandbox-runtime",
         "@qwen-code/qwen-code",
         "@google/gemini-cli",
-        "@google/jules",
-        "spigell-codex-binary"
+        "@google/jules"
       ],
       "groupName": "agent-workbenches",
       "branchPrefix": "renovate/",
