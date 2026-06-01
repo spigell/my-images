@@ -46,7 +46,7 @@ jobs:
     with:
       image-name: pulumi-workbench
       context: ./pulumi-workbench-docker
-      version: 3.236.0 # renovate: datasource=github-releases depName=pulumi/pulumi
+      version: 3.244.0 # renovate: datasource=github-releases depName=pulumi/pulumi
       build-args: |
         DEBUG_SRE_IMAGE_TAG=${{ needs.resolve-debug-sre-tag.outputs.tag }}
       build-contexts: |
