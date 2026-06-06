@@ -45,7 +45,7 @@ jobs:
     with:
       image-name: universal-workbench
       context: ./universal-workbench-docker
-      version: '1.0.6' # renovate: datasource=github-tags depName=github/spec-kit
+      version: '1.0.7'
       build-args: |
         ZMX_BINARY_IMAGE_TAG=${{ needs.resolve-zmx-tag.outputs.tag }}
       build-contexts: |
