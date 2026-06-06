@@ -5,64 +5,7 @@
     "github>spigell/my-renovate//presets/dockerfile-managers",
     "github>spigell/my-renovate//presets/workflow-managers"
   ],
-  "customDatasources": {
-    "agy-version": {
-      "defaultRegistryUrlTemplate": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/{{{packageName}}}.json",
-      "transformTemplates": [
-        "{ \"releases\": [ { \"version\": version } ] }"
-      ]
-    },
-    "agy-url": {
-      "defaultRegistryUrlTemplate": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/{{{packageName}}}.json",
-      "transformTemplates": [
-        "{ \"releases\": [ { \"version\": url } ] }"
-      ]
-    }
-  },
-  "customManagers": [
-    {
-      "customType": "regex",
-      "description": "Update agy version in Dockerfile",
-      "managerFilePatterns": [
-        "/(^|/)agy-docker/Dockerfile$/"
-      ],
-      "matchStrings": [
-        "ARG AGY_VERSION=(?<currentValue>.*)"
-      ],
-      "depNameTemplate": "antigravity-cli-version",
-      "packageNameTemplate": "linux_amd64",
-      "datasourceTemplate": "custom.agy-version",
-      "versioningTemplate": "semver"
-    },
-    {
-      "customType": "regex",
-      "description": "Update agy amd64 url in Dockerfile",
-      "managerFilePatterns": [
-        "/(^|/)agy-docker/Dockerfile$/"
-      ],
-      "matchStrings": [
-        "ARG AGY_LINUX_AMD64_URL=(?<currentValue>[^\\s'\"]+)"
-      ],
-      "depNameTemplate": "antigravity-cli-amd64-url",
-      "packageNameTemplate": "linux_amd64",
-      "datasourceTemplate": "custom.agy-url",
-      "versioningTemplate": "regex:^https://[^/]+/antigravity-public/antigravity-cli/(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<build>\\d+)/.*$"
-    },
-    {
-      "customType": "regex",
-      "description": "Update agy version in publish workflow",
-      "managerFilePatterns": [
-        "/^\\.github/workflows/agy-publish\\.yaml$/"
-      ],
-      "matchStrings": [
-        "version: v(?<currentValue>.*)"
-      ],
-      "depNameTemplate": "antigravity-cli-version",
-      "packageNameTemplate": "linux_amd64",
-      "datasourceTemplate": "custom.agy-version",
-      "versioningTemplate": "semver"
-    }
-  ],
+
   "packageRules": [
     {
       "enabled": false,
@@ -160,7 +103,8 @@
         "@anthropic-ai/sandbox-runtime",
         "@qwen-code/qwen-code",
         "@google/gemini-cli",
-        "@google/jules"
+        "@google/jules",
+        "google-antigravity/antigravity-cli"
       ],
       "groupName": "agent-workbenches",
       "branchPrefix": "renovate/",
