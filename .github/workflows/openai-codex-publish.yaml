@@ -44,7 +44,7 @@ jobs:
     with:
       image-name: codex-binary
       context: ./openai-codex-docker/codex-binary
-      version: v0.136.0 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
+      version: v0.137.0 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
 
   build-codex:
     needs:
