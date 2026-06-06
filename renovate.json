@@ -92,6 +92,7 @@
         "tavily-mcp",
         "notebooklm-mcp-cli"
       ],
+      "automerge": false,
       "groupName": "mcp-servers",
       "branchPrefix": "renovate/",
       "branchTopic": "mcp-servers-deps",
@@ -107,6 +108,7 @@
         "@google/jules",
         "google-antigravity/antigravity-cli"
       ],
+      "automerge": false,
       "groupName": "agent-workbenches",
       "branchPrefix": "renovate/",
       "branchTopic": "agent-workbenches-deps",
