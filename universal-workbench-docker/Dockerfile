@@ -3,7 +3,7 @@
 ARG ZMX_BINARY_IMAGE_TAG=latest
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG GOLANG_IMAGE_TAG=1.26.3-bookworm # renovate: datasource=docker depName=golang
+ARG GOLANG_IMAGE_TAG=1.26.4-bookworm # renovate: datasource=docker depName=golang
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
 ARG GOLANG_VERSION=1.26.3 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
@@ -60,7 +60,7 @@ ARG GOLANGCI_LINT_VERSION=2.12.2 # renovate: datasource=github-releases depName=
 ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
-ARG SPECIFY_VERSION=v0.8.18 # renovate: datasource=github-tags depName=github/spec-kit
+ARG SPECIFY_VERSION=v0.9.5 # renovate: datasource=github-tags depName=github/spec-kit
 ARG ZMX_BINARY_IMAGE_TAG
 ARG MCP_PROXY_VERSION
 ARG MCP_SHELL_SERVER_VERSION
