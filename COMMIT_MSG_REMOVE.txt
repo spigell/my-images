@@ -1,0 +1,3 @@
+Remove temporary commit helper file
+
+Keep the PR branch clean by deleting the transient commit message file that should not ship in the repository.
