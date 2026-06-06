@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.24
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG AGY_VERSION=1.0.5
-ARG AGY_LINUX_AMD64_URL=https://storage.googleapis.com/antigravity-public/antigravity-cli/1.0.5-5009297080451072/linux-x64/cli_linux_x64.tar.gz
+ARG AGY_VERSION=1.0.6
+ARG AGY_LINUX_AMD64_URL=https://storage.googleapis.com/antigravity-public/antigravity-cli/1.0.6-6458082025406464/linux-x64/cli_linux_x64.tar.gz
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

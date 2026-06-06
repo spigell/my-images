@@ -46,6 +46,6 @@ jobs:
     with:
       image-name: agy-workbench
       context: ./agy-docker
-      version: v1.0.5
+      version: v1.0.6
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
