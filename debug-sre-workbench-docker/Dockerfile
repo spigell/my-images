@@ -8,7 +8,7 @@ ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/
 ARG TALOSCTL_VERSION=1.13.3 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=542.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG GCLOUD_VERSION=563.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
-ARG ETCD_VERSION=3.6.11 # renovate: datasource=github-releases depName=etcd-io/etcd
+ARG ETCD_VERSION=3.6.12 # renovate: datasource=github-releases depName=etcd-io/etcd
 ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
 ARG TARGETOS=linux
