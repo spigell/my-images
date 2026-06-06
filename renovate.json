@@ -5,6 +5,7 @@
     "github>spigell/my-renovate//presets/dockerfile-managers",
     "github>spigell/my-renovate//presets/workflow-managers"
   ],
+  "commitMessageExtra": "",
 
   "packageRules": [
     {
