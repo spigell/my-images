@@ -1,0 +1,3 @@
+Fix AGY default release version
+
+Use an existing antigravity-cli GitHub release so the migrated tag-based build can download successfully and the PR can merge.
