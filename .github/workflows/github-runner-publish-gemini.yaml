@@ -25,12 +25,16 @@ permissions:
   contents: write
   packages: write
 
+env:
+  runner_version: '2.335.0' # renovate: datasource=github-releases depName=actions/runner
+
 jobs:
   resolve-base-tags:
     runs-on: ubuntu-latest
     outputs:
       google_tag: ${{ steps.google-tag.outputs.tag }}
       spigell_tag: ${{ steps.spigell-tag.outputs.tag }}
+      runner_version: ${{ steps.version-config.outputs.runner_version }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/resolve-ghcr-tag
@@ -49,6 +53,8 @@ jobs:
           payload_tag: ${{ github.event.client_payload.spigell_gemini_workbench_tag }}
           input_tag: ${{ inputs.spigell_gemini_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+      - id: version-config
+        run: echo "runner_version=${{ env.runner_version }}" >> "$GITHUB_OUTPUT"
 
   build-google-github-runner:
     needs:
@@ -63,6 +69,7 @@ jobs:
       build-args: |
         BASE_IMAGE_NAME=google-gemini-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tags.outputs.google_tag }}
+        RUNNER_VERSION=${{ needs.resolve-base-tags.outputs.runner_version }}
       build-contexts: |
         shared=./shared
 
@@ -79,5 +86,6 @@ jobs:
       build-args: |
         BASE_IMAGE_NAME=spigell-gemini-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tags.outputs.spigell_tag }}
+        RUNNER_VERSION=${{ needs.resolve-base-tags.outputs.runner_version }}
       build-contexts: |
         shared=./shared

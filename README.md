@@ -43,3 +43,22 @@ Omit any flags to be prompted interactively for missing values. The script defau
 matching the editor bundled with each image.
 
 The canonical script source lives at `shared/setup-git-workbench.sh` and is copied into each workbench image during the build.
+
+## GitHub Runners
+
+There are two dedicated runner workflows in this repository:
+- `Build and Publish GitHub Runner image (Codex AI agent)`
+- `Build and Publish GitHub Runner image (Gemini AI Agent)`
+
+### Why two workflows?
+Even though both runner workflows build from the same underlying `github-runner-docker/` context and share the same actions/runner binary version, they are triggered by different upstream events and layer on top of different workbench base images:
+- **Codex Runner**: Layers on `codex-workbench` and is published with tags matching the runner version (e.g., `2.335.0`).
+- **Gemini Runner**: Layers on `google-gemini-workbench` and `spigell-gemini-workbench` and is published with tags matching the resolved workbench version to ensure tag parity.
+
+### Versioning and Propagation
+Renovate tracks `actions/runner` across the shared Dockerfile and both workflows:
+1. `github-runner-docker/Dockerfile`
+2. `.github/workflows/github-runner-publish-codex.yaml` (defined in top-level `env.runner_version`)
+3. `.github/workflows/github-runner-publish-gemini.yaml` (defined in top-level `env.runner_version`)
+
+An update to `actions/runner` produces a single grouped Pull Request that bumps the version in all three files concurrently, ensuring automerge works correctly and runners stay in sync.

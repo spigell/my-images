@@ -113,6 +113,11 @@
       "branchPrefix": "renovate/",
       "branchTopic": "agent-workbenches-deps",
       "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": ["actions/runner"],
+      "groupName": "github-runners",
+      "branchTopic": "github-runners-deps"
     }
   ]
 }

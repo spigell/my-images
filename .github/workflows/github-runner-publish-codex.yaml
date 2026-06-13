@@ -21,11 +21,15 @@ permissions:
   contents: write
   packages: write
 
+env:
+  runner_version: '2.335.0' # renovate: datasource=github-releases depName=actions/runner
+
 jobs:
   resolve-base-tag:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.final-tag.outputs.tag }}
+      runner_version: ${{ steps.version-config.outputs.runner_version }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/resolve-ghcr-tag
@@ -36,6 +40,8 @@ jobs:
           payload_tag: ${{ github.event.client_payload.codex_tag }}
           input_tag: ${{ inputs.codex_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+      - id: version-config
+        run: echo "runner_version=${{ env.runner_version }}" >> "$GITHUB_OUTPUT"
 
   build-github-runner:
     needs:
@@ -46,9 +52,10 @@ jobs:
     with:
       image-name: codex-github-runner
       context: ./github-runner-docker
-      version: 2.335.0 # renovate: datasource=github-releases depName=actions/runner
+      version: ${{ needs.resolve-base-tag.outputs.runner_version }}
       build-args: |
         BASE_IMAGE_NAME=codex-workbench
         BASE_IMAGE_TAG=${{ needs.resolve-base-tag.outputs.tag }}
+        RUNNER_VERSION=${{ needs.resolve-base-tag.outputs.runner_version }}
       build-contexts: |
         shared=./shared
