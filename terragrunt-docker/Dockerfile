@@ -2,8 +2,8 @@
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG TERRAGRUNT_VERSION=1.0.7 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
-ARG TENV_VERSION=v4.12.2 # renovate: datasource=github-releases depName=tofuutils/tenv
+ARG TERRAGRUNT_VERSION=1.0.8 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
+ARG TENV_VERSION=v4.14.8 # renovate: datasource=github-releases depName=tofuutils/tenv
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
