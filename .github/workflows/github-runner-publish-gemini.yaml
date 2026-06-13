@@ -26,7 +26,7 @@ permissions:
   packages: write
 
 env:
-  runner_version: '2.335.0' # renovate: datasource=github-releases depName=actions/runner
+  runner_version: '2.335.1' # renovate: datasource=github-releases depName=actions/runner
 
 jobs:
   resolve-base-tags:
