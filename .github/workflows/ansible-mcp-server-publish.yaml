@@ -1,6 +1,8 @@
 name: Build and Publish Ansible MCP Server image
 
 on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
   push:
     branches-ignore:
       - 'renovate/**'
