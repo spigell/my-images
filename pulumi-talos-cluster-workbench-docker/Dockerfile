@@ -4,7 +4,7 @@
 ############################
 ARG PULUMI_WORKBENCH_IMAGE_TAG=3.223.0
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/k9s
+ARG K9S_VERSION=0.51.0 # renovate: datasource=github-releases depName=derailed/k9s
 ARG PACKER_VERSION=1.15.4 # renovate: datasource=github-releases depName=hashicorp/packer
 
 # Set by buildx/BuildKit (defaults for classic docker build)

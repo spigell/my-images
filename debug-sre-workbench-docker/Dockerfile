@@ -2,10 +2,10 @@
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG KUBECTL_VERSION=1.36.1 # renovate: datasource=github-releases depName=kubernetes/kubernetes
-ARG HELM_VERSION=4.2.0 # renovate: datasource=github-releases depName=helm/helm
-ARG K9S_VERSION=0.50.18 # renovate: datasource=github-releases depName=derailed/k9s
-ARG TALOSCTL_VERSION=1.13.3 # renovate: datasource=github-releases depName=siderolabs/talos
+ARG KUBECTL_VERSION=1.36.2 # renovate: datasource=github-releases depName=kubernetes/kubernetes
+ARG HELM_VERSION=4.2.1 # renovate: datasource=github-releases depName=helm/helm
+ARG K9S_VERSION=0.51.0 # renovate: datasource=github-releases depName=derailed/k9s
+ARG TALOSCTL_VERSION=1.13.4 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=572.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG GCLOUD_VERSION=572.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG ETCD_VERSION=3.6.12 # renovate: datasource=github-releases depName=etcd-io/etcd
@@ -13,7 +13,7 @@ ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernete
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_GIT_REF=0.31.1 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
+ARG HOLMES_GIT_REF=0.32.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
 ARG ARGOCD_VERSION=3.4.3 # renovate: datasource=github-releases depName=argoproj/argo-cd
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
