@@ -1,4 +1,4 @@
-ARG ALPINE_IMAGE_TAG=3.23 # renovate: datasource=docker depName=alpine
+ARG ALPINE_IMAGE_TAG=3.24 # renovate: datasource=docker depName=alpine
 ARG MCP_PROXY_IMAGE_TAG=v0.12.0 # renovate: datasource=docker depName=ghcr.io/sparfenyuk/mcp-proxy
 ARG GITHUB_MCP_SERVER_VERSION=v1.1.2 # renovate: datasource=github-releases depName=github/github-mcp-server
 
