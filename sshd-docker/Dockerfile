@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.24
+# syntax=docker/dockerfile:1.25
 
 ARG OPENSSH_SERVER_IMAGE_TAG=version-10.2_p1-r0 # renovate: datasource=docker depName=linuxserver/openssh-server versioning=regex:^version-(?<major>\d+)\.(?<minor>\d+)_p(?<patch>\d+)-r(?<build>\d+)$
 ARG ZMX_BINARY_IMAGE_TAG=sha-dev

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.24
+# syntax=docker/dockerfile:1.25
 
 # Build the Ansible MCP server from source (vscode-ansible) and expose it over HTTP via mcp-proxy,
 # reusing the universal workbench base so pyenv/python tooling matches the rest of the images.
