@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.24
+# syntax=docker/dockerfile:1.25
 
 ARG ZMX_BINARY_IMAGE_TAG=latest
 ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary

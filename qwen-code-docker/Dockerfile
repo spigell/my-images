@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.24
+# syntax=docker/dockerfile:1.25
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG QWEN_CODE_VERSION=0.18.0 # renovate: datasource=npm depName=@qwen-code/qwen-code

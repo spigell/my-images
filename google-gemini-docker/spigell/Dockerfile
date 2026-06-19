@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.24
+# syntax=docker/dockerfile:1.25
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG GEMINI_CLI_VERSION=v0.39.0-spigell.0
