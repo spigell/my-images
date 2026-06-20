@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.25
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG NOTEBOOKLM_MCP_CLI_VERSION=0.7.2 # renovate: datasource=pypi depName=notebooklm-mcp-cli
+ARG NOTEBOOKLM_MCP_CLI_VERSION=0.7.7 # renovate: datasource=pypi depName=notebooklm-mcp-cli
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
