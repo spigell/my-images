@@ -52,7 +52,7 @@ RUN install -d /tmp/fetch && \
 FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.0.8
+ARG UNIVERSAL_WORKBENCH_VERSION=1.1.0
 ARG PYTHON_VERSION=3.13.14 # renovate: datasource=python-version depName=python
 ARG NODE_VERSION=24.16.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
