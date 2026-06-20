@@ -7,7 +7,7 @@ ARG GOLANG_IMAGE_TAG=1.26.4-bookworm # renovate: datasource=docker depName=golan
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
 ARG GOLANG_VERSION=1.26.4 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
-ARG MCP_SHELL_SERVER_VERSION=v0.5.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
+ARG MCP_SHELL_SERVER_VERSION=v0.7.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.3 # renovate: datasource=github-releases depName=mikefarah/yq
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_IMAGE_TAG} AS zmx-binary
@@ -54,7 +54,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.1.0
 ARG PYTHON_VERSION=3.13.14 # renovate: datasource=python-version depName=python
-ARG NODE_VERSION=24.16.0 # renovate: datasource=node-version depName=node
+ARG NODE_VERSION=24.17.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
 ARG GOLANGCI_LINT_VERSION=2.12.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/delve
