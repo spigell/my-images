@@ -119,6 +119,11 @@
       "matchDepNames": ["actions/runner"],
       "groupName": "github-runners",
       "branchTopic": "github-runners-deps"
+    },
+    {
+      "matchDepNames": ["google-cloud-sdk"],
+      "matchUpdateTypes": ["major"],
+      "automerge": true
     }
   ]
 }
