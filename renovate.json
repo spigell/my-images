@@ -101,19 +101,28 @@
     {
       "matchDepNames": [
         "spigell-codex-binary",
-        "github/spec-kit",
         "@anthropic-ai/claude-code",
         "@anthropic-ai/sandbox-runtime",
-        "@qwen-code/qwen-code",
-        "@google/gemini-cli",
-        "@google/jules",
         "google-antigravity/antigravity-cli"
       ],
       "automerge": false,
-      "groupName": "agent-workbenches",
+      "groupName": "hot-agent-workbenches",
       "branchPrefix": "renovate/",
-      "branchTopic": "agent-workbenches-deps",
+      "branchTopic": "hot-agent-workbenches-deps",
       "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": [
+        "github/spec-kit",
+        "@qwen-code/qwen-code",
+        "@google/gemini-cli",
+        "@google/jules"
+      ],
+      "automerge": false,
+      "groupName": "abandoned-agent-workbenches",
+      "branchPrefix": "renovate/",
+      "branchTopic": "abandoned-agent-workbenches-deps",
+      "schedule": ["before 4am on the first day of the month"]
     },
     {
       "matchDepNames": ["actions/runner"],
