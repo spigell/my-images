@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.25
 
 ARG CODEX_VERSION=v0.141.0 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
-ARG DEBIAN_IMAGE_TAG=trixie-20260610 # renovate: datasource=docker depName=debian
+ARG DEBIAN_IMAGE_TAG=trixie-20260623 # renovate: datasource=docker depName=debian
 ARG CODEX_TARBALL=codex-x86_64-unknown-linux-musl.tar.gz
 ARG CODEX_BINARY_NAME=codex-x86_64-unknown-linux-musl
 ARG CODEX_BASE_URL=https://github.com/openai/codex/releases/download
