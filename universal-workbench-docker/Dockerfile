@@ -52,7 +52,7 @@ RUN install -d /tmp/fetch && \
 FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.1.0
+ARG UNIVERSAL_WORKBENCH_VERSION=1.2.0
 ARG PYTHON_VERSION=3.13.14 # renovate: datasource=python-version depName=python
 ARG NODE_VERSION=24.17.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
@@ -61,6 +61,9 @@ ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/del
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
 ARG SPECIFY_VERSION=v0.10.2 # renovate: datasource=github-tags depName=github/spec-kit
+ARG YAMLLINT_VERSION=1.35.1 # renovate: datasource=pypi depName=yamllint
+ARG COMMITLINT_VERSION=19.5.0 # renovate: datasource=npm depName=@commitlint/cli
+ARG GRAPHIFY_VERSION=0.17.1 # renovate: datasource=npm depName=@sentropic/graphify
 ARG ZMX_BINARY_IMAGE_TAG
 ARG MCP_PROXY_VERSION
 ARG MCP_SHELL_SERVER_VERSION
@@ -213,6 +216,8 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
     UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install "git+https://github.com/sparfenyuk/mcp-proxy.git@${MCP_PROXY_VERSION}"; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
+    python3 -m pip install --no-cache-dir "yamllint==${YAMLLINT_VERSION}"; \
+    yamllint --version; \
     rm -rf "${HOME}/.cache/pip"
 
 # Node.js via fnm with Yarn
@@ -227,6 +232,9 @@ RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_D
     npm install -g corepack; \
     corepack enable; \
     corepack prepare "yarn@${YARN_VERSION}" --activate; \
+    npm install -g "@commitlint/cli@${COMMITLINT_VERSION}" "@commitlint/config-conventional@${COMMITLINT_VERSION}" "@sentropic/graphify@${GRAPHIFY_VERSION}"; \
+    commitlint --version; \
+    graphify --version; \
     npm cache clean --force || true
 
 # Provided by --build-context shared=path/to/repo-root/shared
@@ -277,6 +285,9 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       com.spigell.workbench.go.version="${GOLANG_VERSION}" \
       com.spigell.workbench.go.delve-version="${DELVE_VERSION}" \
       com.spigell.workbench.specify.version="${SPECIFY_VERSION}" \
+      com.spigell.workbench.yamllint.version="${YAMLLINT_VERSION}" \
+      com.spigell.workbench.commitlint.version="${COMMITLINT_VERSION}" \
+      com.spigell.workbench.graphify.version="${GRAPHIFY_VERSION}" \
       com.spigell.workbench.golangci-lint.version="${GOLANGCI_LINT_VERSION}" \
       com.spigell.workbench.zmx.version="${ZMX_BINARY_IMAGE_TAG}" \
       com.spigell.workbench.package-manager="apt"
