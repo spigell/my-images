@@ -13,6 +13,16 @@
       "matchPackageNames": ["/ghcr.io/spigell/*/"]
     },
     {
+      "enabled": false,
+      "matchDepNames": ["@commitlint/cli"],
+      "allowedVersions": "/^19\\.5\\.0$/"
+    },
+    {
+      "enabled": false,
+      "matchDepNames": ["yamllint"],
+      "allowedVersions": "/^1\\.35\\.1$/"
+    },
+    {
       "matchDepNames": [
         "/^antigravity-cli-/"
       ],

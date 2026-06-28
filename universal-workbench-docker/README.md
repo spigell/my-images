@@ -6,6 +6,12 @@ This image is the shared base workbench used by downstream images in this reposi
 - `sonirico/mcp-shell` (Go MCP shell server)
 - `start-shell-mcp` (repo wrapper script that wires envs + proxy)
 
+It also ships pinned linting and graph tooling as runtime-backed commands:
+
+- `yamllint` 1.35.1 via Python
+- `commitlint` 19.5.0 with `@commitlint/config-conventional` via Node.js
+- `graphify` 0.17.1 via `@sentropic/graphify` and Node.js
+
 ## Build
 
 Build the image from the repository root and include the `shared/` build context (required for helper scripts such as `start-shell-mcp`).
