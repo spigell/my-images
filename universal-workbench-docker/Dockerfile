@@ -54,10 +54,10 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.2.0
 ARG PYTHON_VERSION=3.13.14 # renovate: datasource=python-version depName=python
-ARG NODE_VERSION=24.17.0 # renovate: datasource=node-version depName=node
+ARG NODE_VERSION=24.18.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
 ARG GOLANGCI_LINT_VERSION=2.12.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/delve
+ARG DELVE_VERSION=1.27.0 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
 ARG SPECIFY_VERSION=v0.10.2 # renovate: datasource=github-tags depName=github/spec-kit
