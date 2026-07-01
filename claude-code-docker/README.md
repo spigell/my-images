@@ -11,9 +11,9 @@ The image includes sandbox prerequisites for Claude Code:
 ```bash
 docker build \
   -f Dockerfile \
-  --build-arg CLAUDE_CODE_VERSION=2.1.47 \
-  --build-arg SANDBOX_RUNTIME_VERSION=0.0.37 \
-  -t ghcr.io/example/claude-code:v2.1.47 \
+  --build-arg CLAUDE_CODE_VERSION=2.1.197 \
+  --build-arg SANDBOX_RUNTIME_VERSION=0.0.62 \
+  -t ghcr.io/example/claude-code:v2.1.197 \
   .
 ```
 
