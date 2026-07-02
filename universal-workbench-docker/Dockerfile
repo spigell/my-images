@@ -60,7 +60,7 @@ ARG GOLANGCI_LINT_VERSION=2.12.2 # renovate: datasource=github-releases depName=
 ARG DELVE_VERSION=1.26.3 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
-ARG SPECIFY_VERSION=v0.10.2 # renovate: datasource=github-tags depName=github/spec-kit
+ARG SPECIFY_VERSION=v0.12.4 # renovate: datasource=github-tags depName=github/spec-kit
 ARG YAMLLINT_VERSION=1.35.1 # renovate: datasource=pypi depName=yamllint
 ARG COMMITLINT_VERSION=19.5.0 # renovate: datasource=npm depName=@commitlint/cli
 ARG GRAPHIFY_VERSION=0.17.1 # renovate: datasource=npm depName=@sentropic/graphify

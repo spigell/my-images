@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.25
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG QWEN_CODE_VERSION=0.18.0 # renovate: datasource=npm depName=@qwen-code/qwen-code
+ARG QWEN_CODE_VERSION=0.19.4 # renovate: datasource=npm depName=@qwen-code/qwen-code
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
