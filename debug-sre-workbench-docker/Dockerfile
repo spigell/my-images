@@ -11,6 +11,7 @@ ARG GCLOUD_VERSION=575.0.0 # renovate: datasource=docker depName=google-cloud-sd
 ARG ETCD_VERSION=3.6.13 # renovate: datasource=github-releases depName=etcd-io/etcd
 ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
+ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_GIT_REF=0.35.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
@@ -30,6 +31,7 @@ ARG KREW_VERSION
 ARG TARGETOS
 ARG TARGETARCH
 ARG ARGOCD_VERSION
+ARG WERF_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git tar xz-utils \
@@ -58,6 +60,17 @@ RUN curl -fsSL -o talosctl \
 RUN curl -fsSL -o kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
     && chmod +x kubectl
+
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+      werf_arch="arm64"; \
+    elif [ "${TARGETARCH}" = "amd64" ]; then \
+      werf_arch="amd64"; \
+    else \
+      echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1; \
+    fi \
+    && curl -fsSL -o werf \
+      "https://tuf.werf.io/targets/releases/${WERF_VERSION}/${TARGETOS}-${werf_arch}/bin/werf" \
+    && chmod +x werf
 
 RUN workdir="$(mktemp -d)" \
     && arch="${TARGETARCH}" \
@@ -139,6 +152,7 @@ ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 ARG HOLMES_GIT_REF
 ARG ARGOCD_VERSION
+ARG WERF_VERSION
 
 ENV PYTHONUNBUFFERED=1
 
@@ -146,6 +160,7 @@ COPY --from=fetch /tmp/fetch/k9s.deb /tmp/k9s.deb
 COPY --from=fetch /tmp/fetch/talosctl /usr/local/bin/talosctl
 COPY --from=fetch /tmp/fetch/kubectl /usr/local/bin/kubectl
 COPY --from=fetch /tmp/fetch/helm /usr/local/bin/helm
+COPY --from=fetch /tmp/fetch/werf /usr/local/bin/werf
 COPY --from=fetch /tmp/fetch/argocd /usr/local/bin/argocd
 COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-auth-plugin
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
@@ -221,12 +236,13 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, Docker CLI, psql, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, werf, Docker CLI, psql, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.kubectl.version="${KUBECTL_VERSION}" \
       com.spigell.workbench.helm.version="${HELM_VERSION}" \
+      com.spigell.workbench.werf.version="${WERF_VERSION}" \
       com.spigell.workbench.k9s.version="${K9S_VERSION}" \
       com.spigell.workbench.talosctl.version="${TALOSCTL_VERSION}" \
       com.spigell.workbench.gke-gcloud-auth-plugin.version="${GKE_AUTH_PLUGIN_VERSION}" \
@@ -238,4 +254,4 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && argocd version --client && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && werf version && argocd version --client && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
