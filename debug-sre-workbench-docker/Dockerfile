@@ -11,7 +11,7 @@ ARG GCLOUD_VERSION=575.0.0 # renovate: datasource=docker depName=google-cloud-sd
 ARG ETCD_VERSION=3.6.13 # renovate: datasource=github-releases depName=etcd-io/etcd
 ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
-ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
+ARG WERF_VERSION=2.73.0 # renovate: datasource=github-releases depName=werf/werf
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_GIT_REF=0.35.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
