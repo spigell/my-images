@@ -13,6 +13,11 @@
       "matchPackageNames": ["/ghcr.io/spigell/*/"]
     },
     {
+      "enabled": true,
+      "matchDepNames": ["werf/werf"],
+      "allowedVersions": "/^2\\.31\\.1$/"
+    },
+    {
       "enabled": false,
       "matchDepNames": ["@commitlint/cli"],
       "allowedVersions": "/^19\\.5\\.0$/"
