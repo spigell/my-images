@@ -10,8 +10,8 @@ This directory provides two Dockerfiles:
 ```bash
 docker build \
   -f codex-binary/Dockerfile \
-  --build-arg CODEX_VERSION=v0.143.0 \
-  -t ghcr.io/example/codex-binary:v0.143.0 \
+  --build-arg CODEX_VERSION=v0.144.1 \
+  -t ghcr.io/example/codex-binary:v0.144.1 \
   .
 ```
 
@@ -25,8 +25,8 @@ Build the primary image by referencing the binary image.  The `CODEX_BINARY_IMAG
 docker build \
   -f Dockerfile \
   --build-arg CODEX_BINARY_IMAGE=ghcr.io/example/codex-binary \
-  --build-arg CODEX_BINARY_IMAGE_TAG=v0.143.0@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
-  -t ghcr.io/example/codex:v0.143.0 \
+  --build-arg CODEX_BINARY_IMAGE_TAG=v0.144.1@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
+  -t ghcr.io/example/codex:v0.144.1 \
   .
 ```
 
