@@ -2,28 +2,18 @@
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG TERRAGRUNT_VERSION=1.0.8 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
 ARG TENV_VERSION=v4.14.8 # renovate: datasource=github-releases depName=tofuutils/tenv
-ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG TERRAGRUNT_VERSION
 ARG TENV_VERSION
-ARG TARGETOS
 ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /tmp/fetch
-
-RUN curl -fsSL -o terragrunt \
-      "https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_${TARGETOS}_${TARGETARCH}" \
-    && chmod +x terragrunt
 
 RUN arch="${TARGETARCH:-amd64}"; \
     case "${arch}" in \
@@ -33,8 +23,8 @@ RUN arch="${TARGETARCH:-amd64}"; \
     esac; \
     curl -fsSL -o tenv.tar.gz \
       "https://github.com/tofuutils/tenv/releases/download/${TENV_VERSION}/tenv_${TENV_VERSION}_Linux_${tenv_arch}.tar.gz"; \
-    tar -xzf tenv.tar.gz tenv; \
-    chmod +x tenv; \
+    tar -xzf tenv.tar.gz tenv terraform tofu terragrunt tf; \
+    chmod +x tenv terraform tofu terragrunt tf; \
     rm -f tenv.tar.gz
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
@@ -43,24 +33,26 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 USER root
 ENV HOME=/root
 
-ARG TERRAGRUNT_VERSION
 ARG TENV_VERSION
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
-COPY --from=fetch /tmp/fetch/terragrunt /usr/local/bin/terragrunt
 COPY --from=fetch /tmp/fetch/tenv /usr/local/bin/tenv
+COPY --from=fetch /tmp/fetch/terraform /usr/local/bin/terraform
+COPY --from=fetch /tmp/fetch/tofu /usr/local/bin/tofu
+COPY --from=fetch /tmp/fetch/terragrunt /usr/local/bin/terragrunt
+COPY --from=fetch /tmp/fetch/tf /usr/local/bin/tf
+COPY --chmod=0755 entrypoint.sh /usr/local/bin/tenv-startup
 
 USER ubuntu
 ENV HOME=/home/ubuntu
 
-LABEL org.opencontainers.image.title="Terragrunt Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Terragrunt CLI" \
-      org.opencontainers.image.version="${TERRAGRUNT_VERSION}" \
+LABEL org.opencontainers.image.title="tenv Workbench" \
+      org.opencontainers.image.description="Universal workbench derivative with tenv-managed IaC CLIs" \
+      org.opencontainers.image.version="${TENV_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/terragrunt-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
-      com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}" \
       com.spigell.workbench.tenv.version="${TENV_VERSION}"
 
-ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["terragrunt --version"]
+ENTRYPOINT ["/usr/local/bin/tenv-startup"]
+CMD ["/bin/bash"]
