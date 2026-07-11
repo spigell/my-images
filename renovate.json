@@ -45,6 +45,11 @@
     },
     {
       "matchDepNames": [
+        "debian",
+        "ubuntu",
+        "golang",
+        "alpine",
+        "lsiobase/kasmvnc",
         "python",
         "node",
         "go",
@@ -55,9 +60,10 @@
         "sparfenyuk/mcp-proxy",
         "sonirico/mcp-shell"
       ],
-      "groupName": "universal-workbench",
+      "groupName": "platform foundation",
       "branchPrefix": "renovate/",
-      "branchTopic": "universal-workbench-deps",
+      "branchTopic": "platform-foundation",
+      "minimumReleaseAge": "7 days",
       "schedule": ["before 4am on Saturday"]
     },
     {
@@ -90,14 +96,6 @@
       "groupName": "infra-workbenches",
       "branchPrefix": "renovate/",
       "branchTopic": "infra-workbenches-deps",
-      "schedule": ["before 4am on Saturday"]
-    },
-    {
-      "matchDepNames": ["debian", "ubuntu", "golang", "alpine", "lsiobase/kasmvnc"],
-      "matchDatasources": ["docker"],
-      "groupName": "base-os-images",
-      "branchPrefix": "renovate/",
-      "branchTopic": "base-os-images",
       "schedule": ["before 4am on Saturday"]
     },
     {
