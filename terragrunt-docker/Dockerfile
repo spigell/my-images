@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /tmp/fetch
+
 RUN arch="${TARGETARCH:-amd64}"; \
     case "${arch}" in \
       amd64) tenv_arch="x86_64" ;; \
