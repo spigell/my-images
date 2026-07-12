@@ -10,6 +10,8 @@ on:
     paths:
       - 'pulumi-workbench-docker/**'
       - 'pulumi-talos-cluster-workbench-docker/**'
+      - 'shared/pulumi-fail-fast.mjs'
+      - 'shared/pulumi-wrapper.sh'
       - '.github/workflows/pulumi-workbench-publish.yaml'
   workflow_dispatch:
     inputs:

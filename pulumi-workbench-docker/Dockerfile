@@ -73,6 +73,15 @@ RUN shopt -s nullglob; \
     done; \
     shopt -u nullglob
 
+# Wrap Pulumi so every Node.js program reports its original fatal error before
+# Pulumi's asynchronous diagnostics can obscure it or exhaust container memory.
+RUN rm -f /usr/local/bin/pulumi \
+ && install -d -m 0755 /usr/local/lib
+COPY --from=shared pulumi-fail-fast.mjs /usr/local/lib/pulumi-fail-fast.mjs
+COPY --from=shared pulumi-wrapper.sh /usr/local/bin/pulumi
+RUN chmod 0644 /usr/local/lib/pulumi-fail-fast.mjs \
+ && chmod 0755 /usr/local/bin/pulumi
+
 # pulumictl from fetcher
 COPY --from=fetch /tmp/fetch/pulumictl /usr/local/bin/pulumictl
 RUN chmod +x /usr/local/bin/pulumictl
