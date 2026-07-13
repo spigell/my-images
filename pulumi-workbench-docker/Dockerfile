@@ -77,8 +77,8 @@ RUN shopt -s nullglob; \
 # Pulumi's asynchronous diagnostics can obscure it or exhaust container memory.
 RUN rm -f /usr/local/bin/pulumi \
  && install -d -m 0755 /usr/local/lib
-COPY --from=shared pulumi-fail-fast.mjs /usr/local/lib/pulumi-fail-fast.mjs
-COPY --from=shared pulumi-wrapper.sh /usr/local/bin/pulumi
+COPY pulumi-fail-fast.mjs /usr/local/lib/pulumi-fail-fast.mjs
+COPY pulumi-wrapper.sh /usr/local/bin/pulumi
 RUN chmod 0644 /usr/local/lib/pulumi-fail-fast.mjs \
  && chmod 0755 /usr/local/bin/pulumi
 
