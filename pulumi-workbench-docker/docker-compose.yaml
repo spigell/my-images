@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PULUMI_VERSION: 3.223.0
+        PULUMI_VERSION: 3.252.0
         PULUMICTL_VERSION: 0.0.50
         KUBECTL_VERSION: 1.35.3
         DEBUG_SRE_IMAGE_TAG: sha-dev

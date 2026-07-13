@@ -3,7 +3,7 @@
 ############################
 # Global, configurable args
 ############################
-ARG PULUMI_VERSION=3.244.0 # renovate: datasource=github-releases depName=pulumi/pulumi
+ARG PULUMI_VERSION=3.252.0 # renovate: datasource=github-releases depName=pulumi/pulumi
 ARG PULUMICTL_VERSION=0.0.50 # renovate: datasource=github-releases depName=pulumi/pulumictl
 ARG KUBECTL_VERSION=1.36.2 # renovate: datasource=github-releases depName=kubernetes/kubernetes
 ARG DEBUG_SRE_IMAGE_TAG=sha-dev
@@ -72,6 +72,15 @@ RUN shopt -s nullglob; \
       ln -sf "$bin" "/usr/local/bin/$name"; \
     done; \
     shopt -u nullglob
+
+# Wrap Pulumi so every Node.js program reports its original fatal error before
+# Pulumi's asynchronous diagnostics can obscure it or exhaust container memory.
+RUN rm -f /usr/local/bin/pulumi \
+ && install -d -m 0755 /usr/local/lib
+COPY pulumi-fail-fast.mjs /usr/local/lib/pulumi-fail-fast.mjs
+COPY pulumi-wrapper.sh /usr/local/bin/pulumi
+RUN chmod 0644 /usr/local/lib/pulumi-fail-fast.mjs \
+ && chmod 0755 /usr/local/bin/pulumi
 
 # pulumictl from fetcher
 COPY --from=fetch /tmp/fetch/pulumictl /usr/local/bin/pulumictl
