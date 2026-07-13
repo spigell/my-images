@@ -1,4 +1,4 @@
-name: Build and Publish Terragrunt image
+name: Build and Publish tenv image
 run-name: "${{ github.event.client_payload.message || (github.event_name == 'repository_dispatch' && format('{0}: repository_dispatch by {1}', github.event.action, github.actor)) || format('{0} by {1}', github.event_name, github.actor) }}"
 
 on:
@@ -37,28 +37,28 @@ jobs:
           input_tag: ${{ inputs.universal_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
 
-  build-terragrunt-workbench:
+  build-tenv-workbench:
     needs:
       - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
-      image-name: terragrunt-workbench
+      image-name: tenv-workbench
       context: ./terragrunt-docker
-      version: v1.0.8 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
+      version: v4.14.8 # renovate: datasource=github-releases depName=tofuutils/tenv
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
       build-contexts: |
         shared=./shared
 
   trigger-downstreams:
-    needs: build-terragrunt-workbench
+    needs: build-tenv-workbench
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch Terragrunt Workbench Update
+      - name: Dispatch tenv Workbench Update
         uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-          event-type: terragrunt-workbench-updated
-          client-payload: '{"terragrunt_tag":"${{ needs.build-terragrunt-workbench.outputs.sha-tag }}"}'
+          event-type: tenv-workbench-updated
+          client-payload: '{"tenv_tag":"${{ needs.build-tenv-workbench.outputs.sha-tag }}"}'
