@@ -61,6 +61,7 @@
         "sonirico/mcp-shell"
       ],
       "groupName": "platform foundation",
+      "automerge": false,
       "branchPrefix": "renovate/",
       "branchTopic": "platform-foundation",
       "minimumReleaseAge": "7 days",
