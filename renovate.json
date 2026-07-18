@@ -107,9 +107,7 @@
         "notebooklm-mcp-cli"
       ],
       "automerge": false,
-      "groupName": "mcp-servers",
       "branchPrefix": "renovate/",
-      "branchTopic": "mcp-servers-deps",
       "schedule": ["before 4am on Saturday"]
     },
     {
