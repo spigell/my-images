@@ -15,6 +15,8 @@ ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_GIT_REF=0.35.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
+ARG AWXKIT_VERSION=24.6.1 # renovate: datasource=pypi depName=awxkit
+ARG AWXKIT_PYTHON_VERSION=3.11
 ARG ARGOCD_VERSION=3.4.5 # renovate: datasource=github-releases depName=argoproj/argo-cd
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
@@ -151,6 +153,8 @@ ARG KREW_VERSION
 ARG LINEAGE_VERSION
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 ARG HOLMES_GIT_REF
+ARG AWXKIT_VERSION
+ARG AWXKIT_PYTHON_VERSION
 ARG ARGOCD_VERSION
 ARG WERF_VERSION
 
@@ -199,6 +203,15 @@ RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
     XDG_BIN_HOME=/usr/local/bin \
     uv tool install "git+https://github.com/HolmesGPT/holmesgpt.git@${HOLMES_GIT_REF}"
 
+# Install the AWX CLI (awxkit) in an isolated uv tool environment. Use a
+# compatibility interpreter so the image's default Python can remain current.
+# AWXKit 24.6.1 still imports pkg_resources, so keep setuptools below the
+# removal version.
+RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
+    XDG_DATA_HOME=/usr/local/share/uv-data \
+    XDG_BIN_HOME=/usr/local/bin \
+    uv tool install --managed-python --python "${AWXKIT_PYTHON_VERSION}" --link-mode=copy --with 'setuptools<81' "awxkit==${AWXKIT_VERSION}"
+
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
 USER ubuntu
@@ -236,7 +249,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, werf, Docker CLI, psql, K9s, Talosctl, ArgoCD, etcdctl, krew, kube-lineage, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, werf, Docker CLI, psql, K9s, Talosctl, ArgoCD, AWX CLI, etcdctl, krew, kube-lineage, uv)" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
@@ -251,7 +264,9 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
       com.spigell.holmes_ref="${HOLMES_GIT_REF}" \
+      com.spigell.awxkit.version="${AWXKIT_VERSION}" \
+      com.spigell.awxkit.python.version="${AWXKIT_PYTHON_VERSION}" \
       com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && werf version && argocd version --client && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && werf version && argocd version --client && awx --version && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
