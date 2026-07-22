@@ -179,7 +179,9 @@ RUN ln -sf /opt/google-cloud-cli/bin/gcloud /usr/local/bin/gcloud \
  && ln -sf /opt/google-cloud-cli/bin/git-credential-gcloud.sh /usr/local/bin/git-credential-gcloud.sh
 
 # Docker CLI comes from apt; PostgreSQL clients come from the official upstream repository
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
       postgresql-common \
     && /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y \
     && apt-get update \
