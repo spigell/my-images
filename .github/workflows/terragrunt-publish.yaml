@@ -46,7 +46,7 @@ jobs:
     with:
       image-name: tenv-workbench
       context: ./terragrunt-docker
-      version: v4.14.8 # renovate: datasource=github-releases depName=tofuutils/tenv
+      version: v4.15.1 # renovate: datasource=github-releases depName=tofuutils/tenv
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
       build-contexts: |
