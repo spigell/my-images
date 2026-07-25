@@ -132,13 +132,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         sqlite3=3.45.1-* \
         swig3.0=3.0.* \
         tk-dev=8.6.* \
-        tzdata=2026a-* \
+        tzdata \
         unixodbc-dev=2.3.* \
         unzip=6.0-* \
         uuid-dev=2.39.* \
         vim=2:9.* \
         lsof \
-        wget=1.21.4-1ubuntu4.1 \
+        wget \
         xz-utils=5.6.* \
         zip=3.0-* \
         zlib1g=1:1.3.* \
