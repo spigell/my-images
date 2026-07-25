@@ -2,7 +2,7 @@
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG TENV_VERSION=v4.14.8 # renovate: datasource=github-releases depName=tofuutils/tenv
+ARG TENV_VERSION=v4.15.1 # renovate: datasource=github-releases depName=tofuutils/tenv
 ARG TARGETARCH=amd64
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
