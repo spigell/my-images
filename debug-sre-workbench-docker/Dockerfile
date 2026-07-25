@@ -2,13 +2,13 @@
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
-ARG KUBECTL_VERSION=1.36.2 # renovate: datasource=github-releases depName=kubernetes/kubernetes
+ARG KUBECTL_VERSION=1.36.3 # renovate: datasource=github-releases depName=kubernetes/kubernetes
 ARG HELM_VERSION=4.2.3 # renovate: datasource=github-releases depName=helm/helm
 ARG K9S_VERSION=0.51.0 # renovate: datasource=github-releases depName=derailed/k9s
 ARG TALOSCTL_VERSION=1.13.7 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=577.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG GCLOUD_VERSION=577.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
-ARG ETCD_VERSION=3.7.0 # renovate: datasource=github-releases depName=etcd-io/etcd
+ARG ETCD_VERSION=3.7.1 # renovate: datasource=github-releases depName=etcd-io/etcd
 ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
 ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
