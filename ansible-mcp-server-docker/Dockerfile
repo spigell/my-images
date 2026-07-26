@@ -13,6 +13,11 @@ WORKDIR /src
 # Fetch the upstream repo at the requested ref
 RUN git clone --depth=1 --branch "${VSCODE_ANSIBLE_GIT_REF}" https://github.com/ansible/vscode-ansible .
 
+# Allow callers to select an Ansible project directory within WORKSPACE_ROOT.
+COPY patches/ansible-navigator-working-directory.patch /tmp/ansible-navigator-working-directory.patch
+RUN git apply --check /tmp/ansible-navigator-working-directory.patch \
+    && git apply /tmp/ansible-navigator-working-directory.patch
+
 # Install dependencies and build only the MCP server workspace
 RUN corepack prepare pnpm@latest --activate
 RUN pnpm install --frozen-lockfile

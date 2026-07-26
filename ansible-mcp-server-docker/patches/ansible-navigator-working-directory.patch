@@ -1,0 +1,150 @@
+diff --git a/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts b/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
+index d8384f9..5f83e5c 100644
+--- a/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
++++ b/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
+@@ -3,6 +3,7 @@ import { access, stat } from "node:fs/promises";
+ import { resolve, isAbsolute, join } from "node:path";
+ import { existsSync } from "node:fs";
+ import { quote } from "shell-quote";
++import { validatePathWithinWorkspace } from "@src/utils/pathValidation.js";
+ 
+ /**
+  * Check if ansible-navigator is available in PATH or virtual environments
+@@ -266,6 +267,7 @@ export async function runAnsibleNavigator(
+   workspaceRoot?: string,
+   disableExecutionEnvironment?: boolean,
+   environment?: string,
++  workingDirectory?: string,
+ ): Promise<{
+   output: string;
+   debugOutput?: string;
+@@ -284,23 +286,32 @@ export async function runAnsibleNavigator(
+     );
+   }
+ 
+-  // Resolve the file path to absolute path
+-  const absolutePath = isAbsolute(filePath)
+-    ? resolve(filePath)
++  // Keep each Ansible invocation in its own project while preserving the
++  // server-wide workspace boundary.
++  const executionDirectory = workingDirectory
++    ? workspaceRoot
++      ? validatePathWithinWorkspace(workingDirectory, workspaceRoot)
++      : resolve(workingDirectory)
+     : workspaceRoot
+-      ? resolve(workspaceRoot, filePath)
+-      : resolve(filePath);
++      ? resolve(workspaceRoot)
++      : process.cwd();
+ 
+-  // Validate path is within workspace (security check)
+-  if (workspaceRoot) {
+-    const workspacePath = resolve(workspaceRoot);
+-    if (!absolutePath.startsWith(workspacePath)) {
+-      throw new Error(
+-        `File path must be within the workspace. Attempted to access: ${absolutePath}`,
+-      );
+-    }
++  const executionDirectoryStats = await stat(executionDirectory);
++  if (!executionDirectoryStats.isDirectory()) {
++    throw new Error(
++      `Working directory is not a directory: ${executionDirectory}`,
++    );
+   }
+ 
++  // Resolve the file path relative to the selected Ansible project.
++  const absolutePath = isAbsolute(filePath)
++    ? resolve(filePath)
++    : resolve(executionDirectory, filePath);
++
++  // A playbook must belong to the selected project, not merely the broader
++  // mounted workspace.
++  validatePathWithinWorkspace(absolutePath, executionDirectory);
++
+   // Check if file exists and is accessible
+   try {
+     await access(absolutePath);
+@@ -334,15 +345,15 @@ export async function runAnsibleNavigator(
+   // This will check based on the environment preference
+   const environmentToUse = environment || "auto";
+   const navCheck = checkAnsibleNavigatorAvailable(
+-    workspaceRoot,
++    executionDirectory,
+     environmentToUse,
+   );
+   if (!navCheck.available) {
+     const pathEnv = process.env.PATH || "not set";
+     let errorMsg = `ansible-navigator is not available in PATH or virtual environments.\n\n`;
+     errorMsg += `PATH: ${pathEnv}\n\n`;
+-    if (workspaceRoot) {
+-      errorMsg += `Checked virtual environments in: ${workspaceRoot}\n`;
++    if (executionDirectory) {
++      errorMsg += `Checked virtual environments in: ${executionDirectory}\n`;
+       errorMsg += `Common venv names checked: ansible-dev, venv, .venv, virtualenv, .virtualenv, env, .env\n\n`;
+     }
+     errorMsg += `Please install ansible-navigator:\n`;
+@@ -376,6 +387,7 @@ export async function runAnsibleNavigator(
+     const navProcess = spawn(quote([navigatorPath, ...args]), {
+       shell: true, // keep it
+       env: process.env,
++      cwd: executionDirectory,
+     });
+ 
+     let stdoutData = "";
+diff --git a/packages/ansible-mcp-server/src/handlers.ts b/packages/ansible-mcp-server/src/handlers.ts
+index 02012fd..238d348 100644
+--- a/packages/ansible-mcp-server/src/handlers.ts
++++ b/packages/ansible-mcp-server/src/handlers.ts
+@@ -341,6 +341,7 @@ export function createAnsibleNavigatorHandler() {
+       mode?: string;
+       environment?: string;
+       disableExecutionEnvironment?: boolean;
++      workingDirectory?: string;
+     },
+     workspaceRoot?: string,
+   ) => {
+@@ -477,6 +478,7 @@ export function createAnsibleNavigatorHandler() {
+         workspaceRoot,
+         disableExecutionEnvironment,
+         environment,
++        args.workingDirectory,
+       );
+ 
+       const formattedResult = formatNavigatorResult(
+@@ -528,6 +530,7 @@ export function createAnsibleNavigatorHandler() {
+             workspaceRoot,
+             true, // Force disable execution environment
+             environment,
++            args.workingDirectory,
+           );
+ 
+           const formattedResult = formatNavigatorResult(
+diff --git a/packages/ansible-mcp-server/src/server.ts b/packages/ansible-mcp-server/src/server.ts
+index 59e0026..a74145c 100644
+--- a/packages/ansible-mcp-server/src/server.ts
++++ b/packages/ansible-mcp-server/src/server.ts
+@@ -408,6 +408,14 @@ export function createAnsibleMcpServer(workspaceRoot: string) {
+           "If provided, this takes precedence over userMessage parsing. " +
+           "Most of the time, just use userMessage instead.",
+       ),
++    workingDirectory: z
++      .string()
++      .optional()
++      .describe(
++        "Absolute path to the Ansible project directory. " +
++          "The playbook path is resolved from this directory and ansible-navigator runs with it as cwd. " +
++          "The directory must be inside WORKSPACE_ROOT.",
++      ),
+     mode: z
+       .enum(["stdout", "interactive"])
+       .optional()
+@@ -479,6 +487,9 @@ export function createAnsibleMcpServer(workspaceRoot: string) {
+         "\n" +
+         "User: 'run using my venv at /custom/path'\n" +
+         '→ Call: {"userMessage": "run playbook", "environment": "/custom/path"}\n' +
++        "\n" +
++        "User: 'run a playbook from a specific Ansible project'\n" +
++        '→ Call: {"userMessage": "run deploy.yml", "workingDirectory": "/workspace/project/ansible"}\n' +
+         "```\n" +
+         "\n\n" +
+         "**IMPORTANT:** Always pass the user's original message in userMessage. The tool extracts the playbook name and handles everything else.",
