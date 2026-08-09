@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        CODEX_BINARY_IMAGE_TAG: v0.144.1
+        CODEX_BINARY_IMAGE_TAG: v0.147.0
     image: codex:test
     container_name: codex-mini
     command: ["sleep infinity"]

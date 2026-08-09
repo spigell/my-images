@@ -2,7 +2,7 @@
 
 This directory provides two Dockerfiles:
 
-- `codex-binary/Dockerfile` builds a minimal image that only contains the Codex binary. A compatibility symlink named `Dockerfile.codex-binary` is kept at the repository root for existing tooling.
+- `codex-binary/Dockerfile` builds a minimal image that contains the Codex binary and its `codex-code-mode-host` companion binary. A compatibility symlink named `Dockerfile.codex-binary` is kept at the repository root for existing tooling.
 - `Dockerfile` consumes the binary image and installs additional tooling for interactive Codex work.
 
 ## Building the Codex binary image
@@ -10,8 +10,8 @@ This directory provides two Dockerfiles:
 ```bash
 docker build \
   -f codex-binary/Dockerfile \
-  --build-arg CODEX_VERSION=v0.144.1 \
-  -t ghcr.io/example/codex-binary:v0.144.1 \
+  --build-arg CODEX_VERSION=v0.147.0 \
+  -t ghcr.io/example/codex-binary:v0.147.0 \
   .
 ```
 
@@ -25,8 +25,8 @@ Build the primary image by referencing the binary image.  The `CODEX_BINARY_IMAG
 docker build \
   -f Dockerfile \
   --build-arg CODEX_BINARY_IMAGE=ghcr.io/example/codex-binary \
-  --build-arg CODEX_BINARY_IMAGE_TAG=v0.144.1@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
-  -t ghcr.io/example/codex:v0.144.1 \
+  --build-arg CODEX_BINARY_IMAGE_TAG=v0.147.0@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
+  -t ghcr.io/example/codex:v0.147.0 \
   .
 ```
 

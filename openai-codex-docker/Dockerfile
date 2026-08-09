@@ -25,6 +25,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
+COPY --from=codex /usr/local/bin/codex-code-mode-host /usr/local/bin/codex-code-mode-host
 
 RUN install -d /etc/codex
 COPY config/config.toml /etc/codex/config.toml
