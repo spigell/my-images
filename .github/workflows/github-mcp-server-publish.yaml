@@ -21,4 +21,4 @@ jobs:
     with:
       image-name: github-mcp-server
       context: ./github-mcp-server-docker
-      version: 1.8.0 # renovate: datasource=github-releases depName=github/github-mcp-server
+      version: 1.9.0 # renovate: datasource=github-releases depName=github/github-mcp-server
