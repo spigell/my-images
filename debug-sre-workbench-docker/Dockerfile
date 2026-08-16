@@ -76,8 +76,8 @@ RUN case "${TARGETARCH}" in \
       "https://github.com/hetznercloud/cli/releases/download/v${HCLOUD_VERSION}/checksums.txt" \
     && grep "  ${archive}$" hcloud-checksums.txt | sha256sum --check --strict - \
     && tar -xzf "${archive}" \
-    && install -m 0755 hcloud /tmp/fetch/hcloud \
-    && rm -f "${archive}" hcloud hcloud-checksums.txt
+    && chmod 0755 hcloud \
+    && rm -f "${archive}" hcloud-checksums.txt
 
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
       werf_arch="arm64"; \
