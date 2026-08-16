@@ -23,7 +23,8 @@ RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
        XDG_BIN_HOME=/usr/local/bin \
        uv tool install "awslabs.aws-pricing-mcp-server==${AWS_PRICING_MCP_VERSION}" \
     && test -x /usr/local/bin/awslabs.eks-mcp-server \
-    && test -x /usr/local/bin/awslabs.aws-pricing-mcp-server
+    && test -x /usr/local/bin/awslabs.aws-pricing-mcp-server \
+    && mcp-proxy --help >/dev/null
 
 ENV MCP_PROXY_HOST=0.0.0.0 \
     MCP_PROXY_PORT=8080 \

@@ -232,6 +232,8 @@ RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
     XDG_BIN_HOME=/usr/local/bin \
     uv tool install --managed-python --python "${AWXKIT_PYTHON_VERSION}" --link-mode=copy --with 'setuptools<81' "awxkit==${AWXKIT_VERSION}"
 
+RUN mcp-proxy --help >/dev/null
+
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
 USER ubuntu
