@@ -11,7 +11,7 @@ docker run --rm -p 8080:8080 \
   -e AWS_REGION=eu-central-1 \
   -e AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY \
-  ghcr.io/spigell/aws-mcp-server:eks-0.1.35-pricing-1.0.32
+  ghcr.io/spigell/aws-mcp-server:v0.1.0-latest
 ```
 
 Select the Pricing server by replacing the image command:
@@ -19,7 +19,7 @@ Select the Pricing server by replacing the image command:
 ```bash
 docker run --rm -p 8080:8080 \
   -e AWS_REGION=eu-central-1 \
-  ghcr.io/spigell/aws-mcp-server:eks-0.1.35-pricing-1.0.32 \
+  ghcr.io/spigell/aws-mcp-server:v0.1.0-latest \
   /usr/local/bin/awslabs.aws-pricing-mcp-server
 ```
 
@@ -30,6 +30,7 @@ other than `8080`.
 ## Renovation policy
 
 The Dockerfile arguments are the source of truth for both package versions.
-The publish workflow derives the image tag from those arguments, so each
-Renovate update produces a new compound tag. Renovate groups the two packages,
-waits seven days after release, runs weekly, and never automerges the update.
+Renovate groups the two packages, waits seven days after release, runs weekly,
+and never automerges the update. A dependency update refreshes the
+`v0.1.0-latest` channel and publishes a new immutable commit-derived tag. The
+image version is bumped only when its runtime contract or packaging changes.

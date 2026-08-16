@@ -33,7 +33,7 @@ EXPOSE 8080
 
 LABEL org.opencontainers.image.title="AWS MCP Server" \
       org.opencontainers.image.description="Shared AWS EKS and Pricing MCP server runtime built on the universal workbench" \
-      org.opencontainers.image.version="eks-${AWS_EKS_MCP_VERSION}-pricing-${AWS_PRICING_MCP_VERSION}" \
+      org.opencontainers.image.version="v0.1.0" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/aws-mcp-server-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \

@@ -21,11 +21,10 @@ permissions:
   packages: write
 
 jobs:
-  resolve-build-inputs:
+  resolve-universal-tag:
     runs-on: ubuntu-latest
     outputs:
-      universal_tag: ${{ steps.final-tag.outputs.tag }}
-      image_version: ${{ steps.package-versions.outputs.version }}
+      tag: ${{ steps.final-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/resolve-ghcr-tag
@@ -36,25 +35,15 @@ jobs:
           payload_tag: ${{ github.event.client_payload.universal_tag }}
           input_tag: ${{ inputs.universal_tag }}
           ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
-      - name: Resolve AWS MCP package versions
-        id: package-versions
-        shell: bash
-        run: |
-          eks_version="$(sed -n 's/^ARG AWS_EKS_MCP_VERSION=\([^ ]*\).*/\1/p' aws-mcp-server-docker/Dockerfile)"
-          pricing_version="$(sed -n 's/^ARG AWS_PRICING_MCP_VERSION=\([^ ]*\).*/\1/p' aws-mcp-server-docker/Dockerfile)"
-          test -n "${eks_version}"
-          test -n "${pricing_version}"
-          echo "version=eks-${eks_version}-pricing-${pricing_version}" >> "${GITHUB_OUTPUT}"
-
   build-aws-mcp-server:
     needs:
-      - resolve-build-inputs
+      - resolve-universal-tag
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: aws-mcp-server
       context: ./aws-mcp-server-docker
-      version: ${{ needs.resolve-build-inputs.outputs.image_version }}
+      version: v0.1.0
       build-args: |
-        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-build-inputs.outputs.universal_tag }}
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
