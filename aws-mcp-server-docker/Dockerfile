@@ -14,6 +14,7 @@ ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 ARG AWS_EKS_MCP_VERSION
 ARG AWS_PRICING_MCP_VERSION
 
+# Refuse to publish when the inherited proxy cannot import its MCP SDK.
 RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
     XDG_DATA_HOME=/usr/local/share/uv-data \
     XDG_BIN_HOME=/usr/local/bin \
