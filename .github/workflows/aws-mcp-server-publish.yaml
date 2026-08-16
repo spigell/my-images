@@ -21,11 +21,11 @@ permissions:
   packages: write
 
 jobs:
-  resolve-universal-tag:
+  resolve-build-inputs:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.final-tag.outputs.tag }}
-      version: ${{ steps.package-versions.outputs.version }}
+      universal_tag: ${{ steps.final-tag.outputs.tag }}
+      image_version: ${{ steps.package-versions.outputs.version }}
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/resolve-ghcr-tag
@@ -48,13 +48,13 @@ jobs:
 
   build-aws-mcp-server:
     needs:
-      - resolve-universal-tag
+      - resolve-build-inputs
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
       gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
     with:
       image-name: aws-mcp-server
       context: ./aws-mcp-server-docker
-      version: ${{ needs.resolve-universal-tag.outputs.version }}
+      version: ${{ needs.resolve-build-inputs.outputs.image_version }}
       build-args: |
-        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-build-inputs.outputs.universal_tag }}
