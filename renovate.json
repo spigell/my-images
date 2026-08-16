@@ -81,6 +81,7 @@
         "etcd-io/etcd",
         "kubernetes-sigs/krew",
         "tohjustin/kube-lineage",
+        "hetznercloud/cli",
         "HolmesGPT/holmesgpt",
         "argoproj/argo-cd",
         "google-cloud-sdk"
@@ -88,6 +89,18 @@
       "groupName": "debug-sre-workbench",
       "branchPrefix": "renovate/",
       "branchTopic": "debug-sre-workbench-deps",
+      "schedule": ["before 4am on Saturday"]
+    },
+    {
+      "matchDepNames": [
+        "awslabs.eks-mcp-server",
+        "awslabs.aws-pricing-mcp-server"
+      ],
+      "groupName": "aws-mcp-server",
+      "automerge": false,
+      "minimumReleaseAge": "7 days",
+      "branchPrefix": "renovate/",
+      "branchTopic": "aws-mcp-server-deps",
       "schedule": ["before 4am on Saturday"]
     },
     {

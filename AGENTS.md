@@ -13,7 +13,7 @@
 - `claude-code-docker/`: Claude Code workbench with `bubblewrap`, `socat`, and `@anthropic-ai/sandbox-runtime`.
 - `qwen-code-docker/`: Qwen Code CLI workbench derived from the universal workbench.
 - `github-runner-docker/`: GitHub Actions runner layer that builds agent-specific runner images for Codex and Gemini workbenches.
-- `debug-sre-workbench-docker/`: operational workbench with Docker, PostgreSQL clients, Kubernetes/Talos/ArgoCD tooling, HolmesGPT runtime, and related CLI utilities.
+- `debug-sre-workbench-docker/`: operational workbench with Docker, PostgreSQL clients, Kubernetes/Talos/ArgoCD and hcloud tooling, HolmesGPT runtime, and related CLI utilities.
 - `pulumi-workbench-docker/`: Pulumi CLI workbench layered on Debug SRE and bundling `@pulumi/mcp-server`.
 - `pulumi-talos-cluster-workbench-docker/`: Pulumi Talos cluster workbench layered on the Pulumi workbench.
 - `terragrunt-docker/`: Terragrunt and `tenv` workbench derived from the universal workbench.
@@ -25,6 +25,7 @@
 - `universal-workbench-docker/` plus `shared/start-shell-mcp.sh`: shared base image with `mcp-proxy`, `mcp-shell`, and the `start-shell-mcp` wrapper for exposing a constrained shell over HTTP.
 - `github-mcp-server-docker/`: dedicated GitHub MCP server image exposed through `mcp-proxy`.
 - `ansible-mcp-server-docker/`: dedicated Ansible MCP server image built from `vscode-ansible` and exposed through `mcp-proxy`.
+- `aws-mcp-server-docker/`: shared AWS MCP runtime with pinned EKS and Pricing servers exposed through `mcp-proxy`.
 - `notebooklm-mcp-docker/`: NotebookLM MCP CLI/server image.
 - `pulumi-workbench-docker/`: workbench image that installs `@pulumi/mcp-server` alongside Pulumi tooling.
 - `openai-codex-docker/config/config.toml`: Codex workbench defaults; this repo does not ship a repo-local Codex MCP server config beyond the example in `universal-workbench-docker/README.md`.
