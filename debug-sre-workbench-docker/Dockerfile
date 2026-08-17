@@ -12,6 +12,7 @@ ARG ETCD_VERSION=3.7.0 # renovate: datasource=github-releases depName=etcd-io/et
 ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
 ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
+ARG HCLOUD_VERSION=1.66.0 # renovate: datasource=github-releases depName=hetznercloud/cli
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG HOLMES_GIT_REF=0.36.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
@@ -34,6 +35,7 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG ARGOCD_VERSION
 ARG WERF_VERSION
+ARG HCLOUD_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git tar xz-utils \
@@ -62,6 +64,20 @@ RUN curl -fsSL -o talosctl \
 RUN curl -fsSL -o kubectl \
       "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl" \
     && chmod +x kubectl
+
+RUN case "${TARGETARCH}" in \
+      amd64|arm64) ;; \
+      *) echo "Unsupported hcloud architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && archive="hcloud-${TARGETOS}-${TARGETARCH}.tar.gz" \
+    && curl -fsSL -o "${archive}" \
+      "https://github.com/hetznercloud/cli/releases/download/v${HCLOUD_VERSION}/${archive}" \
+    && curl -fsSL -o hcloud-checksums.txt \
+      "https://github.com/hetznercloud/cli/releases/download/v${HCLOUD_VERSION}/checksums.txt" \
+    && grep "  ${archive}$" hcloud-checksums.txt | sha256sum --check --strict - \
+    && tar -xzf "${archive}" \
+    && chmod 0755 hcloud \
+    && rm -f "${archive}" hcloud-checksums.txt
 
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
       werf_arch="arm64"; \
@@ -157,6 +173,7 @@ ARG AWXKIT_VERSION
 ARG AWXKIT_PYTHON_VERSION
 ARG ARGOCD_VERSION
 ARG WERF_VERSION
+ARG HCLOUD_VERSION
 
 ENV PYTHONUNBUFFERED=1
 
@@ -168,6 +185,7 @@ COPY --from=fetch /tmp/fetch/werf /usr/local/bin/werf
 COPY --from=fetch /tmp/fetch/argocd /usr/local/bin/argocd
 COPY --from=fetch /tmp/fetch/gke-gcloud-auth-plugin /usr/local/bin/gke-gcloud-auth-plugin
 COPY --from=fetch /tmp/fetch/etcdctl /usr/local/bin/etcdctl
+COPY --from=fetch /tmp/fetch/hcloud /usr/local/bin/hcloud
 COPY --from=fetch /tmp/fetch/google-cloud-sdk /opt/google-cloud-cli
 COPY --from=fetch /tmp/fetch/krew-installer /tmp/krew-installer
 
@@ -214,6 +232,9 @@ RUN UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python \
     XDG_BIN_HOME=/usr/local/bin \
     uv tool install --managed-python --python "${AWXKIT_PYTHON_VERSION}" --link-mode=copy --with 'setuptools<81' "awxkit==${AWXKIT_VERSION}"
 
+# Refuse to publish when the inherited proxy cannot import its MCP SDK.
+RUN mcp-proxy --help >/dev/null
+
 RUN chown ubuntu:ubuntu /tmp/krew-installer
 
 USER ubuntu
@@ -251,7 +272,7 @@ RUN /tmp/krew-installer install krew \
     && rm -f /tmp/krew-installer "/tmp/${lineage_archive}" /tmp/lineage.yaml
 
 LABEL org.opencontainers.image.title="Debug SRE Workbench" \
-      org.opencontainers.image.description="Universal workbench derivative with Kubernetes debugging tools and Holmes runtime (kubectl, Helm, werf, Docker CLI, psql, K9s, Talosctl, ArgoCD, AWX CLI, etcdctl, krew, kube-lineage, uv)" \
+      org.opencontainers.image.description="Universal workbench derivative with Kubernetes and cloud debugging tools, including hcloud and the Holmes runtime" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/debug-sre-workbench-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
@@ -265,10 +286,11 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.krew.version="${KREW_VERSION}" \
       com.spigell.workbench.kube-lineage.version="${LINEAGE_VERSION}" \
       com.spigell.workbench.etcdctl.version="${ETCD_VERSION}" \
+      com.spigell.workbench.hcloud.version="${HCLOUD_VERSION}" \
       com.spigell.holmes_ref="${HOLMES_GIT_REF}" \
       com.spigell.awxkit.version="${AWXKIT_VERSION}" \
       com.spigell.awxkit.python.version="${AWXKIT_PYTHON_VERSION}" \
       com.spigell.holmes_argocd_version="${ARGOCD_VERSION}"
 
 ENTRYPOINT ["/bin/bash","-lc"]
-CMD ["kubectl version --client=true --output=yaml && helm version --short && werf version && argocd version --client && awx --version && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version || true"]
+CMD ["kubectl version --client=true --output=yaml && helm version --short && werf version && argocd version --client && awx --version && docker --version && psql --version && k9s version --short && talosctl version --short && etcdctl version && hcloud version || true"]

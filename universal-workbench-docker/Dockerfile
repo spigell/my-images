@@ -52,7 +52,7 @@ RUN install -d /tmp/fetch && \
 FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.2.1
+ARG UNIVERSAL_WORKBENCH_VERSION=1.2.2
 ARG PYTHON_VERSION=3.13.14 # renovate: datasource=python-version depName=python
 ARG NODE_VERSION=24.18.1 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
@@ -203,6 +203,7 @@ RUN chown -R ubuntu:ubuntu "${UBUNTU_GOPATH}" "${UBUNTU_HOME}/.cache"
 ENV PYENV_ROOT=/usr/local/share/pyenv
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 ENV UV_NO_PROGRESS=1
+# mcp-proxy 0.12.0 imports a low-level API removed in MCP SDK 2.x.
 RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     pyenv install "${PYTHON_VERSION}"; \
     pyenv global "${PYTHON_VERSION}"; \
@@ -214,7 +215,8 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     ln -sf /usr/local/share/uv/uv /usr/local/bin/uv; \
     ln -sf /usr/local/share/uv/uvx /usr/local/bin/uvx; \
     UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"; \
-    UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install "git+https://github.com/sparfenyuk/mcp-proxy.git@${MCP_PROXY_VERSION}"; \
+    UV_PYTHON_INSTALL_DIR=/usr/local/share/uv-python XDG_DATA_HOME=/usr/local/share/uv-data XDG_BIN_HOME=/usr/local/bin uv tool install --with "mcp<2" "git+https://github.com/sparfenyuk/mcp-proxy.git@${MCP_PROXY_VERSION}"; \
+    mcp-proxy --help >/dev/null; \
     python3 -m pip install --no-cache-dir --upgrade pip; \
     python3 -m pip install --no-cache-dir "yamllint==${YAMLLINT_VERSION}"; \
     yamllint --version; \

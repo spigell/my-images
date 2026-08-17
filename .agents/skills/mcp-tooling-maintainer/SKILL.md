@@ -14,6 +14,7 @@ Use this skill when editing MCP-related images, wrappers, workflows, or docs in 
 - `universal-workbench-docker/` and `shared/start-shell-mcp.sh`: shell MCP server exposure through `mcp-proxy` plus `mcp-shell`.
 - `github-mcp-server-docker/`: GitHub MCP server behind `mcp-proxy`.
 - `ansible-mcp-server-docker/`: Ansible MCP server build from `vscode-ansible`, exposed over HTTP through `mcp-proxy`.
+- `aws-mcp-server-docker/`: shared AWS EKS and Pricing MCP runtime with both pinned Python packages installed at build time.
 - `notebooklm-mcp-docker/`: NotebookLM MCP CLI/server image.
 - `pulumi-workbench-docker/`: workbench image that installs `@pulumi/mcp-server`.
 - MCP-facing config and docs such as `universal-workbench-docker/README.md` and client defaults that point agents at these tools.
@@ -22,6 +23,7 @@ Use this skill when editing MCP-related images, wrappers, workflows, or docs in 
 - HTTP-exposed MCP services in this repo normally listen through `mcp-proxy` on port `8080`.
 - The shell MCP entrypoint is `/usr/local/bin/start-shell-mcp`; it passes through proxy env vars and can generate a fallback `mcp-shell` security config when `MCP_SHELL_SEC_CONFIG_FILE` is unset.
 - `github-mcp-server-docker/` and `ansible-mcp-server-docker/` use `mcp-proxy` as the entrypoint and launch their server implementations over stdio behind it.
+- `aws-mcp-server-docker/` uses `start-shell-mcp` as its entrypoint; callers select either installed AWS server by overriding the image command.
 - `notebooklm-mcp-docker/` runs `notebooklm-mcp` directly and still tracks the universal workbench base tag through workflow resolution.
 - `pulumi-workbench-docker/` bundles MCP tooling inside a broader workbench image rather than exposing a dedicated HTTP server by default.
 
