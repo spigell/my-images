@@ -76,6 +76,7 @@
       "matchDepNames": [
         "kubernetes/kubernetes",
         "helm/helm",
+        "helm-unittest/helm-unittest",
         "derailed/k9s",
         "siderolabs/talos",
         "etcd-io/etcd",

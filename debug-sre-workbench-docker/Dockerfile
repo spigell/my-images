@@ -3,7 +3,8 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG KUBECTL_VERSION=1.36.2 # renovate: datasource=github-releases depName=kubernetes/kubernetes
-ARG HELM_VERSION=4.2.3 # renovate: datasource=github-releases depName=helm/helm
+ARG HELM_VERSION=3.19.5 # renovate: datasource=github-releases depName=helm/helm
+ARG HELM_UNITTEST_VERSION=1.0.3 # renovate: datasource=github-releases depName=helm-unittest/helm-unittest
 ARG K9S_VERSION=0.51.0 # renovate: datasource=github-releases depName=derailed/k9s
 ARG TALOSCTL_VERSION=1.13.7 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=580.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
@@ -160,6 +161,7 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG KUBECTL_VERSION
 ARG HELM_VERSION
+ARG HELM_UNITTEST_VERSION
 ARG K9S_VERSION
 ARG TALOSCTL_VERSION
 ARG GKE_AUTH_PLUGIN_VERSION
@@ -242,6 +244,8 @@ ENV HOME=/home/ubuntu
 ENV KREW_ROOT=/home/ubuntu/.krew
 ENV PATH="${KREW_ROOT}/bin:${PATH}"
 
+RUN helm plugin install https://github.com/helm-unittest/helm-unittest.git --version "v${HELM_UNITTEST_VERSION}"
+
 RUN /tmp/krew-installer install krew \
     && lineage_arch="${TARGETARCH}" \
     && if [ "${TARGETARCH}" = "amd64" ]; then lineage_arch="amd64"; fi \
@@ -278,6 +282,7 @@ LABEL org.opencontainers.image.title="Debug SRE Workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.kubectl.version="${KUBECTL_VERSION}" \
       com.spigell.workbench.helm.version="${HELM_VERSION}" \
+      com.spigell.workbench.helm-unittest.version="${HELM_UNITTEST_VERSION}" \
       com.spigell.workbench.werf.version="${WERF_VERSION}" \
       com.spigell.workbench.k9s.version="${K9S_VERSION}" \
       com.spigell.workbench.talosctl.version="${TALOSCTL_VERSION}" \
