@@ -162,8 +162,11 @@
     },
     {
       "matchDepNames": ["google-cloud-sdk"],
-      "matchUpdateTypes": ["major"],
-      "automerge": true
+      "allowedVersions": "/^581\\.0\\.0$/"
+    },
+    {
+      "matchDepNames": ["helm/helm"],
+      "allowedVersions": "/^3\\.19\\.5$/"
     }
   ]
 }
