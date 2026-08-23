@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.26
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG AWS_EKS_MCP_VERSION=0.1.35 # renovate: datasource=pypi depName=awslabs.eks-mcp-server
-ARG AWS_PRICING_MCP_VERSION=1.0.32 # renovate: datasource=pypi depName=awslabs.aws-pricing-mcp-server
+ARG AWS_EKS_MCP_VERSION=0.1.37 # renovate: datasource=pypi depName=awslabs.eks-mcp-server
+ARG AWS_PRICING_MCP_VERSION=1.0.34 # renovate: datasource=pypi depName=awslabs.aws-pricing-mcp-server
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
