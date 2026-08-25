@@ -16,7 +16,7 @@
 - `debug-sre-workbench-docker/`: operational workbench with Docker, PostgreSQL clients, Kubernetes/Talos/ArgoCD and hcloud tooling, HolmesGPT runtime, and related CLI utilities.
 - `pulumi-workbench-docker/`: Pulumi CLI workbench layered on Debug SRE and bundling `@pulumi/mcp-server`.
 - `pulumi-talos-cluster-workbench-docker/`: Pulumi Talos cluster workbench layered on the Pulumi workbench.
-- `terragrunt-docker/`: Terragrunt and `tenv` workbench derived from the universal workbench.
+- `tenv-docker/`: tenv workbench with build-pinned Terraform, Terragrunt, and cached providers, derived from the universal workbench.
 - `sshd-docker/`: LinuxServer OpenSSH image extended with `zmx` and selected SRE tooling.
 - `anki-desktop-docker/`: CI-oriented Anki Desktop image with bundled AnkiConnect configuration.
 - `zmx-binary/`: scratch image that packages the `zmx` binary consumed by other builds.
