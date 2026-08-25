@@ -3,6 +3,8 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG TENV_VERSION=v4.15.1 # renovate: datasource=github-releases depName=tofuutils/tenv
+ARG TERRAFORM_VERSION=1.15.1 # renovate: datasource=github-releases depName=hashicorp/terraform
+ARG TERRAGRUNT_VERSION=1.0.2 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
 ARG TARGETARCH=amd64
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
@@ -36,6 +38,8 @@ USER root
 ENV HOME=/root
 
 ARG TENV_VERSION
+ARG TERRAFORM_VERSION
+ARG TERRAGRUNT_VERSION
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
 COPY --from=fetch /tmp/fetch/tenv /usr/local/bin/tenv
@@ -43,10 +47,16 @@ COPY --from=fetch /tmp/fetch/terraform /usr/local/bin/terraform
 COPY --from=fetch /tmp/fetch/tofu /usr/local/bin/tofu
 COPY --from=fetch /tmp/fetch/terragrunt /usr/local/bin/terragrunt
 COPY --from=fetch /tmp/fetch/tf /usr/local/bin/tf
-COPY --chmod=0755 entrypoint.sh /usr/local/bin/tenv-startup
 
 USER ubuntu
 ENV HOME=/home/ubuntu
+
+RUN tenv tf install "${TERRAFORM_VERSION}" \
+    && tenv tf use "${TERRAFORM_VERSION}" \
+    && tenv tg install "${TERRAGRUNT_VERSION}" \
+    && tenv tg use "${TERRAGRUNT_VERSION}" \
+    && terraform version \
+    && terragrunt --version
 
 LABEL org.opencontainers.image.title="tenv Workbench" \
       org.opencontainers.image.description="Universal workbench derivative with tenv-managed IaC CLIs" \
@@ -54,7 +64,9 @@ LABEL org.opencontainers.image.title="tenv Workbench" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/terragrunt-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
-      com.spigell.workbench.tenv.version="${TENV_VERSION}"
+      com.spigell.workbench.tenv.version="${TENV_VERSION}" \
+      com.spigell.workbench.terraform.version="${TERRAFORM_VERSION}" \
+      com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}"
 
-ENTRYPOINT ["/usr/local/bin/tenv-startup"]
-CMD ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-lc"]
+CMD ["terraform version && terragrunt --version"]

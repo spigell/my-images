@@ -110,6 +110,7 @@
         "pulumi/pulumictl",
         "@pulumi/mcp-server",
         "hashicorp/packer",
+        "hashicorp/terraform",
         "gruntwork-io/terragrunt",
         "tofuutils/tenv"
       ],
