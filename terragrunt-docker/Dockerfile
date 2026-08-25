@@ -56,15 +56,15 @@ USER ubuntu
 ENV HOME=/home/ubuntu
 ENV TF_PLUGIN_CACHE_DIR=/home/ubuntu/.terraform.d/plugin-cache
 
-RUN tenv tf install "${TERRAFORM_VERSION}" \
+RUN install -d "${TF_PLUGIN_CACHE_DIR}" \
+    && tenv tf install "${TERRAFORM_VERSION}" \
     && tenv tf use "${TERRAFORM_VERSION}" \
     && tenv tg install "${TERRAGRUNT_VERSION}" \
     && tenv tg use "${TERRAGRUNT_VERSION}" \
     && terraform version \
     && terragrunt --version
 
-RUN install -d "${TF_PLUGIN_CACHE_DIR}" \
-    && provider_config_dir="$(mktemp -d)" \
+RUN provider_config_dir="$(mktemp -d)" \
     && printf '%s\n' \
       'terraform {' \
       '  required_providers {' \
@@ -79,6 +79,8 @@ RUN install -d "${TF_PLUGIN_CACHE_DIR}" \
       '  }' \
       '}' \
       > "${provider_config_dir}/providers.tf" \
+    && terraform -chdir="${provider_config_dir}" init -backend=false -input=false \
+    && rm -rf "${provider_config_dir}/.terraform" \
     && terraform -chdir="${provider_config_dir}" init -backend=false -input=false \
     && rm -rf "${provider_config_dir}"
 
