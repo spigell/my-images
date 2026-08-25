@@ -5,6 +5,8 @@ ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG TENV_VERSION=v4.15.1 # renovate: datasource=github-releases depName=tofuutils/tenv
 ARG TERRAFORM_VERSION=1.15.1 # renovate: datasource=github-releases depName=hashicorp/terraform
 ARG TERRAGRUNT_VERSION=1.0.2 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
+ARG AWS_PROVIDER_VERSION=6.45.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-aws
+ARG VAULT_PROVIDER_VERSION=4.6.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-vault
 ARG TARGETARCH=amd64
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
@@ -40,6 +42,8 @@ ENV HOME=/root
 ARG TENV_VERSION
 ARG TERRAFORM_VERSION
 ARG TERRAGRUNT_VERSION
+ARG AWS_PROVIDER_VERSION
+ARG VAULT_PROVIDER_VERSION
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
 
 COPY --from=fetch /tmp/fetch/tenv /usr/local/bin/tenv
@@ -50,6 +54,7 @@ COPY --from=fetch /tmp/fetch/tf /usr/local/bin/tf
 
 USER ubuntu
 ENV HOME=/home/ubuntu
+ENV TF_PLUGIN_CACHE_DIR=/home/ubuntu/.terraform.d/plugin-cache
 
 RUN tenv tf install "${TERRAFORM_VERSION}" \
     && tenv tf use "${TERRAFORM_VERSION}" \
@@ -57,6 +62,25 @@ RUN tenv tf install "${TERRAFORM_VERSION}" \
     && tenv tg use "${TERRAGRUNT_VERSION}" \
     && terraform version \
     && terragrunt --version
+
+RUN install -d "${TF_PLUGIN_CACHE_DIR}" \
+    && provider_config_dir="$(mktemp -d)" \
+    && printf '%s\n' \
+      'terraform {' \
+      '  required_providers {' \
+      '    aws = {' \
+      '      source = "hashicorp/aws"' \
+      "      version = \"${AWS_PROVIDER_VERSION}\"" \
+      '    }' \
+      '    vault = {' \
+      '      source = "hashicorp/vault"' \
+      "      version = \"${VAULT_PROVIDER_VERSION}\"" \
+      '    }' \
+      '  }' \
+      '}' \
+      > "${provider_config_dir}/providers.tf" \
+    && terraform -chdir="${provider_config_dir}" init -backend=false -input=false \
+    && rm -rf "${provider_config_dir}"
 
 LABEL org.opencontainers.image.title="tenv Workbench" \
       org.opencontainers.image.description="Universal workbench derivative with tenv-managed IaC CLIs" \
@@ -66,7 +90,9 @@ LABEL org.opencontainers.image.title="tenv Workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
       com.spigell.workbench.tenv.version="${TENV_VERSION}" \
       com.spigell.workbench.terraform.version="${TERRAFORM_VERSION}" \
-      com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}"
+      com.spigell.workbench.terragrunt.version="${TERRAGRUNT_VERSION}" \
+      com.spigell.workbench.terraform-provider-aws.version="${AWS_PROVIDER_VERSION}" \
+      com.spigell.workbench.terraform-provider-vault.version="${VAULT_PROVIDER_VERSION}"
 
 ENTRYPOINT ["/bin/bash", "-lc"]
 CMD ["terraform version && terragrunt --version"]

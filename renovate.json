@@ -111,6 +111,8 @@
         "@pulumi/mcp-server",
         "hashicorp/packer",
         "hashicorp/terraform",
+        "hashicorp/terraform-provider-aws",
+        "hashicorp/terraform-provider-vault",
         "gruntwork-io/terragrunt",
         "tofuutils/tenv"
       ],
