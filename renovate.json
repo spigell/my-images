@@ -49,6 +49,10 @@
       "minimumReleaseAge": "14 days"
     },
     {
+      "matchDepNames": ["sonirico/mcp-shell"],
+      "allowedVersions": "/^v0\\.7\\.0$/"
+    },
+    {
       "matchDepNames": [
         "debian",
         "ubuntu",
