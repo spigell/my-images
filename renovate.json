@@ -92,6 +92,7 @@
         "google-cloud-sdk"
       ],
       "groupName": "debug-sre-workbench",
+      "automerge": false,
       "branchPrefix": "renovate/",
       "branchTopic": "debug-sre-workbench-deps",
       "schedule": ["before 8am on Saturday"]
