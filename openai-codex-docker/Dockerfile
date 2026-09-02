@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.26
+# syntax=docker/dockerfile:1.27
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG CODEX_BINARY_IMAGE=ghcr.io/spigell/codex-binary
