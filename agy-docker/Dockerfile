@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.26
+# syntax=docker/dockerfile:1.27
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG AGY_VERSION=1.1.19 # renovate: datasource=github-tags depName=google-antigravity/antigravity-cli

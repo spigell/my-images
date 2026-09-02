@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.26
+# syntax=docker/dockerfile:1.27
 
 ARG CODEX_VERSION=v0.149.0 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
 ARG DEBIAN_IMAGE_TAG=trixie-20260713 # renovate: datasource=docker depName=debian
