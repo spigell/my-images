@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.27
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG AGY_VERSION=1.1.19 # renovate: datasource=github-tags depName=google-antigravity/antigravity-cli
+ARG AGY_VERSION=1.1.27 # renovate: datasource=github-tags depName=google-antigravity/antigravity-cli
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
