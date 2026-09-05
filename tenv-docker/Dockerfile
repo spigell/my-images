@@ -6,7 +6,7 @@ ARG TENV_VERSION=v4.15.1 # renovate: datasource=github-releases depName=tofuutil
 ARG TERRAFORM_VERSION=1.15.1 # renovate: datasource=github-releases depName=hashicorp/terraform
 ARG TERRAGRUNT_VERSION=1.0.2 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
 ARG AWS_PROVIDER_VERSION=6.45.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-aws
-ARG VAULT_PROVIDER_VERSION=4.6.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-vault
+ARG VAULT_PROVIDER_VERSION=5.11.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-vault
 ARG TARGETARCH=amd64
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
