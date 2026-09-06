@@ -175,6 +175,26 @@
     {
       "matchDepNames": ["helm/helm"],
       "allowedVersions": "/^3\\.19\\.5$/"
+    },
+    {
+      "matchDepNames": ["helm-unittest/helm-unittest"],
+      "allowedVersions": "/^1\\.1\\.2$/"
+    },
+    {
+      "matchDepNames": ["hashicorp/terraform"],
+      "allowedVersions": "/^1\\.15\\.1$/"
+    },
+    {
+      "matchDepNames": ["hashicorp/terraform-provider-aws"],
+      "allowedVersions": "/^6\\.45\\.0$/"
+    },
+    {
+      "matchDepNames": ["hashicorp/terraform-provider-vault"],
+      "allowedVersions": "/^4\\.6\\.0$/"
+    },
+    {
+      "matchDepNames": ["gruntwork-io/terragrunt"],
+      "allowedVersions": "/^1\\.0\\.2$/"
     }
   ]
 }
