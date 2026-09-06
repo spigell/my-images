@@ -52,15 +52,15 @@ RUN install -d /tmp/fetch && \
 FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.3.0
+ARG UNIVERSAL_WORKBENCH_VERSION=1.4.0
 ARG PYTHON_VERSION=3.13.15 # renovate: datasource=python-version depName=python
-ARG NODE_VERSION=24.19.0 # renovate: datasource=node-version depName=node
+ARG NODE_VERSION=24.20.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
-ARG GOLANGCI_LINT_VERSION=2.13.1 # renovate: datasource=github-releases depName=golangci/golangci-lint
+ARG GOLANGCI_LINT_VERSION=2.13.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG DELVE_VERSION=1.27.1 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
-ARG SPECIFY_VERSION=v0.15.1 # renovate: datasource=github-tags depName=github/spec-kit
+ARG SPECIFY_VERSION=v1.0.4 # renovate: datasource=github-tags depName=github/spec-kit
 ARG YAMLLINT_VERSION=1.35.1 # renovate: datasource=pypi depName=yamllint
 ARG COMMITLINT_VERSION=19.5.0 # renovate: datasource=npm depName=@commitlint/cli
 ARG GRAPHIFY_VERSION=0.17.1 # renovate: datasource=npm depName=@sentropic/graphify
