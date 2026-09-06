@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.27
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG CLAUDE_CODE_VERSION=2.1.240 # renovate: datasource=npm depName=@anthropic-ai/claude-code
-ARG SANDBOX_RUNTIME_VERSION=0.0.73 # renovate: datasource=npm depName=@anthropic-ai/sandbox-runtime
+ARG CLAUDE_CODE_VERSION=2.1.261 # renovate: datasource=npm depName=@anthropic-ai/claude-code
+ARG SANDBOX_RUNTIME_VERSION=0.0.75 # renovate: datasource=npm depName=@anthropic-ai/sandbox-runtime
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
