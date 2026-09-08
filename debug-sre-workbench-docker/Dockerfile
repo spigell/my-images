@@ -6,7 +6,7 @@ ARG KUBECTL_VERSION=1.37.0 # renovate: datasource=github-releases depName=kubern
 ARG HELM_VERSION=3.19.5 # renovate: datasource=github-releases depName=helm/helm
 ARG HELM_UNITTEST_VERSION=1.1.2 # renovate: datasource=github-releases depName=helm-unittest/helm-unittest
 ARG K9S_VERSION=0.51.0 # renovate: datasource=github-releases depName=derailed/k9s
-ARG TALOSCTL_VERSION=1.13.9 # renovate: datasource=github-releases depName=siderolabs/talos
+ARG TALOSCTL_VERSION=1.14.0 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=581.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG GCLOUD_VERSION=581.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG ETCD_VERSION=3.7.1 # renovate: datasource=github-releases depName=etcd-io/etcd
@@ -16,7 +16,7 @@ ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
 ARG HCLOUD_VERSION=1.67.0 # renovate: datasource=github-releases depName=hetznercloud/cli
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_GIT_REF=0.40.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
+ARG HOLMES_GIT_REF=0.41.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
 ARG AWXKIT_VERSION=24.6.1 # renovate: datasource=pypi depName=awxkit
 ARG AWXKIT_PYTHON_VERSION=3.11
 ARG ARGOCD_VERSION=3.5.2 # renovate: datasource=github-releases depName=argoproj/argo-cd
