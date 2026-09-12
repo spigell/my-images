@@ -62,6 +62,7 @@
         "python",
         "node",
         "go",
+        "rust-lang/rust",
         "golangci/golangci-lint",
         "go-delve/delve",
         "yarnpkg/yarn",

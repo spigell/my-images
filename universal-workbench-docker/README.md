@@ -1,6 +1,6 @@
 # Universal Workbench (MCP Shell Server)
 
-This image is the shared base workbench used by downstream images in this repository. It also includes shell MCP tooling for exposing a constrained shell over HTTP:
+This image is the shared base workbench used by downstream images in this repository. It includes Go, Python, Node.js, and Rust runtimes, shared developer tooling, and shell MCP tooling for exposing a constrained shell over HTTP:
 
 - `mcp-proxy` (HTTP wrapper)
 - `sonirico/mcp-shell` (Go MCP shell server)
