@@ -5,7 +5,7 @@ ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG GOLANG_IMAGE_TAG=1.26.5-bookworm # renovate: datasource=docker depName=golang
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
-ARG GOLANG_VERSION=1.27.0 # renovate: datasource=golang-version depName=go
+ARG GOLANG_VERSION=1.27.1 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.7.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.6 # renovate: datasource=github-releases depName=mikefarah/yq
@@ -52,10 +52,11 @@ RUN install -d /tmp/fetch && \
 FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.4.0
+ARG UNIVERSAL_WORKBENCH_VERSION=1.5.0
 ARG PYTHON_VERSION=3.13.15 # renovate: datasource=python-version depName=python
 ARG NODE_VERSION=24.20.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
+ARG RUST_VERSION=1.98.1 # renovate: datasource=github-releases depName=rust-lang/rust
 ARG GOLANGCI_LINT_VERSION=2.13.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG DELVE_VERSION=1.27.1 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
@@ -71,7 +72,9 @@ ARG MCP_SHELL_SERVER_VERSION
 ENV LANG="C.UTF-8"
 ENV UBUNTU_HOME=/home/ubuntu
 ENV UBUNTU_GOPATH=/home/ubuntu/go
-ENV PATH="/usr/local/go/bin:${PATH}"
+ENV RUSTUP_HOME=/usr/local/share/rustup
+ENV CARGO_HOME=/usr/local/share/cargo
+ENV PATH="/usr/local/share/cargo/bin:/usr/local/go/bin:${PATH}"
 ENV HOME=/root
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -199,6 +202,17 @@ RUN --mount=type=cache,target=/home/ubuntu/.cache/go-build \
     GOBIN=/usr/local/bin /usr/local/go/bin/go install github.com/go-delve/delve/cmd/dlv@v${DELVE_VERSION}
 RUN chown -R ubuntu:ubuntu "${UBUNTU_GOPATH}" "${UBUNTU_HOME}/.cache"
 
+# Install Rust toolchain via rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+      --default-toolchain "${RUST_VERSION}" \
+      --profile minimal \
+      --component rustfmt \
+      --component clippy \
+    && chmod -R a+rwX "${RUSTUP_HOME}" "${CARGO_HOME}" \
+    && chown -R ubuntu:ubuntu "${RUSTUP_HOME}" "${CARGO_HOME}" \
+    && rustc --version \
+    && cargo --version
+
 # Python via pyenv + tooling
 ENV PYENV_ROOT=/usr/local/share/pyenv
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
@@ -274,7 +288,7 @@ RUN git clone --depth=1 https://github.com/spigell/dotfiles /tmp/dotfiles \
  && rm -rf /tmp/dotfiles
 
 LABEL org.opencontainers.image.title="Universal Workbench" \
-      org.opencontainers.image.description="Common Ubuntu 24.04 workbench runtime with Go, Python, Node.js, delve, yarn, and shared tooling for Codex and Gemini" \
+      org.opencontainers.image.description="Common Ubuntu 24.04 workbench runtime with Go, Python, Node.js, Rust, delve, yarn, and shared tooling for Codex and Gemini" \
       org.opencontainers.image.version="${UNIVERSAL_WORKBENCH_VERSION}" \
       org.opencontainers.image.authors="spigell (spigelly@gmail.com)" \
       org.opencontainers.image.vendor="individual" \
@@ -286,6 +300,8 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       com.spigell.workbench.node.manager="fnm" \
       com.spigell.workbench.go.version="${GOLANG_VERSION}" \
       com.spigell.workbench.go.delve-version="${DELVE_VERSION}" \
+      com.spigell.workbench.rust.version="${RUST_VERSION}" \
+      com.spigell.workbench.rust.manager="rustup" \
       com.spigell.workbench.specify.version="${SPECIFY_VERSION}" \
       com.spigell.workbench.yamllint.version="${YAMLLINT_VERSION}" \
       com.spigell.workbench.commitlint.version="${COMMITLINT_VERSION}" \
@@ -295,4 +311,4 @@ LABEL org.opencontainers.image.title="Universal Workbench" \
       com.spigell.workbench.package-manager="apt"
 
 ENTRYPOINT ["/bin/bash", "-lc"]
-CMD ["python --version && node --version && go version && dlv version && yarn --version || true"]
+CMD ["python --version && node --version && go version && dlv version && yarn --version && rustc --version && cargo --version || true"]
