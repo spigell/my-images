@@ -5,7 +5,7 @@ ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG GOLANG_IMAGE_TAG=1.26.5-bookworm # renovate: datasource=docker depName=golang
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
-ARG GOLANG_VERSION=1.27.0 # renovate: datasource=golang-version depName=go
+ARG GOLANG_VERSION=1.27.1 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.7.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.6 # renovate: datasource=github-releases depName=mikefarah/yq
@@ -206,7 +206,8 @@ RUN chown -R ubuntu:ubuntu "${UBUNTU_GOPATH}" "${UBUNTU_HOME}/.cache"
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
       --default-toolchain "${RUST_VERSION}" \
       --profile minimal \
-      --component rustfmt clippy \
+      --component rustfmt \
+      --component clippy \
     && chmod -R a+rwX "${RUSTUP_HOME}" "${CARGO_HOME}" \
     && chown -R ubuntu:ubuntu "${RUSTUP_HOME}" "${CARGO_HOME}" \
     && rustc --version \
