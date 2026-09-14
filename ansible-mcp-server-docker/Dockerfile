@@ -5,7 +5,7 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG} AS builder
-ARG VSCODE_ANSIBLE_GIT_REF=v26.6.0 # renovate: datasource=github-tags depName=ansible/vscode-ansible
+ARG VSCODE_ANSIBLE_GIT_REF=v26.8.2 # renovate: datasource=github-tags depName=ansible/vscode-ansible
 WORKDIR /src
 
 # universal base already includes Python, yarn/corepack, and build tooling
@@ -19,8 +19,8 @@ RUN git apply --check /tmp/ansible-navigator-working-directory.patch \
     && git apply /tmp/ansible-navigator-working-directory.patch
 
 # Install dependencies and build only the MCP server workspace
-RUN corepack prepare pnpm@latest --activate
-RUN pnpm install --frozen-lockfile
+RUN corepack prepare pnpm@11.22.0 --activate
+RUN pnpm install --frozen-lockfile && rm -f node_modules/.bin/pnpm
 RUN pnpm --filter @ansible/ansible-mcp-server run prepack
 
 # Create a production-focused install to keep the runtime slim

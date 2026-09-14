@@ -1,101 +1,24 @@
-diff --git a/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts b/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
-index d8384f9..5f83e5c 100644
---- a/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
-+++ b/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
-@@ -3,6 +3,7 @@ import { access, stat } from "node:fs/promises";
- import { resolve, isAbsolute, join } from "node:path";
- import { existsSync } from "node:fs";
- import { quote } from "shell-quote";
-+import { validatePathWithinWorkspace } from "@src/utils/pathValidation.js";
- 
- /**
-  * Check if ansible-navigator is available in PATH or virtual environments
-@@ -266,6 +267,7 @@ export async function runAnsibleNavigator(
-   workspaceRoot?: string,
-   disableExecutionEnvironment?: boolean,
-   environment?: string,
-+  workingDirectory?: string,
- ): Promise<{
-   output: string;
-   debugOutput?: string;
-@@ -284,23 +286,32 @@ export async function runAnsibleNavigator(
-     );
-   }
- 
--  // Resolve the file path to absolute path
--  const absolutePath = isAbsolute(filePath)
--    ? resolve(filePath)
-+  // Keep each Ansible invocation in its own project while preserving the
-+  // server-wide workspace boundary.
-+  const executionDirectory = workingDirectory
-+    ? workspaceRoot
-+      ? validatePathWithinWorkspace(workingDirectory, workspaceRoot)
-+      : resolve(workingDirectory)
-     : workspaceRoot
--      ? resolve(workspaceRoot, filePath)
--      : resolve(filePath);
-+      ? resolve(workspaceRoot)
-+      : process.cwd();
- 
--  // Validate path is within workspace (security check)
--  if (workspaceRoot) {
--    const workspacePath = resolve(workspaceRoot);
--    if (!absolutePath.startsWith(workspacePath)) {
--      throw new Error(
--        `File path must be within the workspace. Attempted to access: ${absolutePath}`,
--      );
--    }
-+  const executionDirectoryStats = await stat(executionDirectory);
-+  if (!executionDirectoryStats.isDirectory()) {
-+    throw new Error(
-+      `Working directory is not a directory: ${executionDirectory}`,
-+    );
-   }
- 
-+  // Resolve the file path relative to the selected Ansible project.
-+  const absolutePath = isAbsolute(filePath)
-+    ? resolve(filePath)
-+    : resolve(executionDirectory, filePath);
-+
-+  // A playbook must belong to the selected project, not merely the broader
-+  // mounted workspace.
-+  validatePathWithinWorkspace(absolutePath, executionDirectory);
-+
-   // Check if file exists and is accessible
-   try {
-     await access(absolutePath);
-@@ -334,15 +345,15 @@ export async function runAnsibleNavigator(
-   // This will check based on the environment preference
-   const environmentToUse = environment || "auto";
-   const navCheck = checkAnsibleNavigatorAvailable(
--    workspaceRoot,
-+    executionDirectory,
-     environmentToUse,
-   );
-   if (!navCheck.available) {
-     const pathEnv = process.env.PATH || "not set";
-     let errorMsg = `ansible-navigator is not available in PATH or virtual environments.\n\n`;
-     errorMsg += `PATH: ${pathEnv}\n\n`;
--    if (workspaceRoot) {
--      errorMsg += `Checked virtual environments in: ${workspaceRoot}\n`;
-+    if (executionDirectory) {
-+      errorMsg += `Checked virtual environments in: ${executionDirectory}\n`;
-       errorMsg += `Common venv names checked: ansible-dev, venv, .venv, virtualenv, .virtualenv, env, .env\n\n`;
-     }
-     errorMsg += `Please install ansible-navigator:\n`;
-@@ -376,6 +387,7 @@ export async function runAnsibleNavigator(
-     const navProcess = spawn(quote([navigatorPath, ...args]), {
-       shell: true, // keep it
-       env: process.env,
-+      cwd: executionDirectory,
-     });
- 
-     let stdoutData = "";
 diff --git a/packages/ansible-mcp-server/src/handlers.ts b/packages/ansible-mcp-server/src/handlers.ts
-index 02012fd..238d348 100644
+index 04739bf..94f4210 100644
 --- a/packages/ansible-mcp-server/src/handlers.ts
 +++ b/packages/ansible-mcp-server/src/handlers.ts
-@@ -341,6 +341,7 @@ export function createAnsibleNavigatorHandler() {
+@@ -130,6 +130,7 @@ async function retryNavigatorWithoutEE(
+   workspaceRoot: string | undefined,
+   environment: string,
+   originalErrorMessage: string,
++  workingDirectory?: string,
+ ): Promise<McpTextResult> {
+   const retryMessage = `Container engine error detected. Automatically retrying with execution environment disabled...\n\n`;
+ 
+@@ -141,6 +142,7 @@ async function retryNavigatorWithoutEE(
+         workspaceRoot,
+         true,
+         environment,
++        workingDirectory,
+       );
+ 
+     const formattedResult = formatNavigatorResult(
+@@ -482,6 +484,7 @@ export function createAnsibleNavigatorHandler() {
        mode?: string;
        environment?: string;
        disableExecutionEnvironment?: boolean;
@@ -103,7 +26,7 @@ index 02012fd..238d348 100644
      },
      workspaceRoot?: string,
    ) => {
-@@ -477,6 +478,7 @@ export function createAnsibleNavigatorHandler() {
+@@ -585,6 +588,7 @@ export function createAnsibleNavigatorHandler() {
          workspaceRoot,
          disableExecutionEnvironment,
          environment,
@@ -111,19 +34,19 @@ index 02012fd..238d348 100644
        );
  
        const formattedResult = formatNavigatorResult(
-@@ -528,6 +530,7 @@ export function createAnsibleNavigatorHandler() {
-             workspaceRoot,
-             true, // Force disable execution environment
-             environment,
-+            args.workingDirectory,
-           );
+@@ -614,6 +618,7 @@ export function createAnsibleNavigatorHandler() {
+           workspaceRoot,
+           environment,
+           errorMessage,
++          args.workingDirectory,
+         );
+       }
  
-           const formattedResult = formatNavigatorResult(
 diff --git a/packages/ansible-mcp-server/src/server.ts b/packages/ansible-mcp-server/src/server.ts
-index 59e0026..a74145c 100644
+index 319497e..e132cbc 100644
 --- a/packages/ansible-mcp-server/src/server.ts
 +++ b/packages/ansible-mcp-server/src/server.ts
-@@ -408,6 +408,14 @@ export function createAnsibleMcpServer(workspaceRoot: string) {
+@@ -449,6 +449,14 @@ export function createAnsibleMcpServer(workspaceRoot: string) {
            "If provided, this takes precedence over userMessage parsing. " +
            "Most of the time, just use userMessage instead.",
        ),
@@ -138,7 +61,7 @@ index 59e0026..a74145c 100644
      mode: z
        .enum(["stdout", "interactive"])
        .optional()
-@@ -479,6 +487,9 @@ export function createAnsibleMcpServer(workspaceRoot: string) {
+@@ -520,6 +528,9 @@ export function createAnsibleMcpServer(workspaceRoot: string) {
          "\n" +
          "User: 'run using my venv at /custom/path'\n" +
          '→ Call: {"userMessage": "run playbook", "environment": "/custom/path"}\n' +
@@ -148,3 +71,120 @@ index 59e0026..a74145c 100644
          "```\n" +
          "\n\n" +
          "**IMPORTANT:** Always pass the user's original message in userMessage. The tool extracts the playbook name and handles everything else.",
+diff --git a/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts b/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
+index 260a68f..bac5aad 100644
+--- a/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
++++ b/packages/ansible-mcp-server/src/tools/ansibleNavigator.ts
+@@ -1,8 +1,9 @@
+ import { spawn, execSync } from "node:child_process";
+ import { access, stat } from "node:fs/promises";
+-import { resolve, relative, isAbsolute, join } from "node:path";
++import { resolve, isAbsolute, join } from "node:path";
+ import { existsSync } from "node:fs";
+ import { quote } from "shell-quote";
++import { validatePathWithinWorkspace } from "@src/utils/pathValidation.js";
+ 
+ const COMMON_VENV_NAMES = [
+   "ansible-dev",
+@@ -302,29 +303,19 @@ function validateMode(mode?: string): string | undefined {
+  */
+ async function resolveAndValidateFilePath(
+   filePath: string,
+-  workspaceRoot?: string,
++  executionDirectory: string,
+ ): Promise<string> {
+   if (!filePath?.trim()) {
+     throw new Error("No file path was provided for ansible-navigator.");
+   }
+ 
+-  let absolutePath: string;
+-  if (isAbsolute(filePath)) {
+-    absolutePath = resolve(filePath);
+-  } else if (workspaceRoot) {
+-    absolutePath = resolve(workspaceRoot, filePath);
+-  } else {
+-    absolutePath = resolve(filePath);
+-  }
++  const absolutePath = isAbsolute(filePath)
++    ? resolve(filePath)
++    : resolve(executionDirectory, filePath);
+ 
+-  if (workspaceRoot) {
+-    const rel = relative(resolve(workspaceRoot), absolutePath);
+-    if (rel.startsWith("..") || isAbsolute(rel)) {
+-      throw new Error(
+-        `File path must be within the workspace. Attempted to access: ${absolutePath}`,
+-      );
+-    }
+-  }
++  // A playbook must remain in the selected Ansible project. This also
++  // resolves symlinks, so it cannot escape through a symlinked path.
++  validatePathWithinWorkspace(absolutePath, executionDirectory);
+ 
+   try {
+     await access(absolutePath);
+@@ -339,6 +330,32 @@ async function resolveAndValidateFilePath(
+   return absolutePath;
+ }
+ 
++/**
++ * Resolve the Ansible project directory used for a single invocation.
++ * A caller-selected directory is always constrained to WORKSPACE_ROOT.
++ */
++async function resolveAndValidateExecutionDirectory(
++  workingDirectory?: string,
++  workspaceRoot?: string,
++): Promise<string> {
++  const executionDirectory = workingDirectory
++    ? workspaceRoot
++      ? validatePathWithinWorkspace(workingDirectory, workspaceRoot)
++      : resolve(workingDirectory)
++    : workspaceRoot
++      ? resolve(workspaceRoot)
++      : process.cwd();
++
++  const directoryStats = await stat(executionDirectory);
++  if (!directoryStats.isDirectory()) {
++    throw new Error(
++      `Working directory is not a directory: ${executionDirectory}`,
++    );
++  }
++
++  return executionDirectory;
++}
++
+ /**
+  * Ensure the path points to a regular file (not a directory or other type).
+  */
+@@ -451,16 +468,21 @@ export async function runAnsibleNavigator(
+   workspaceRoot?: string,
+   disableExecutionEnvironment?: boolean,
+   environment?: string,
++  workingDirectory?: string,
+ ): Promise<NavigatorResult> {
+   const normalizedMode = validateMode(mode);
++  const executionDirectory = await resolveAndValidateExecutionDirectory(
++    workingDirectory,
++    workspaceRoot,
++  );
+   const absolutePath = await resolveAndValidateFilePath(
+     filePath,
+-    workspaceRoot,
++    executionDirectory,
+   );
+ 
+   const environmentToUse = environment || "auto";
+   const { navigatorPath, shouldDisableEE: venvDisableEE } =
+-    resolveNavigatorPath(workspaceRoot, environmentToUse);
++    resolveNavigatorPath(executionDirectory, environmentToUse);
+   const shouldDisableEE = disableExecutionEnvironment || venvDisableEE;
+ 
+   return new Promise((resolve, reject) => {
+@@ -477,6 +499,7 @@ export async function runAnsibleNavigator(
+     const navProcess = spawn(quote([navigatorPath, ...args]), {
+       shell: true,
+       env: process.env,
++      cwd: executionDirectory,
+     });
+ 
+     let stdoutData = "";
