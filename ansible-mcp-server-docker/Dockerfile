@@ -20,7 +20,7 @@ RUN git apply --check /tmp/ansible-navigator-working-directory.patch \
 
 # Install dependencies and build only the MCP server workspace
 RUN corepack prepare pnpm@11.22.0 --activate
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile && rm -f node_modules/.bin/pnpm
 RUN pnpm --filter @ansible/ansible-mcp-server run prepack
 
 # Create a production-focused install to keep the runtime slim
