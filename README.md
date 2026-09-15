@@ -30,6 +30,7 @@ the scheduled Renovate workflow or the shared Renovate configuration file.
 | `ansible-mcp-server-docker/` | MCP proxy base | Ansible MCP server exposed over HTTP | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/ansible-mcp-server) |
 | `aws-mcp-server-docker/` | Universal workbench | Shared, preinstalled AWS EKS and Pricing MCP servers exposed over HTTP | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/aws-mcp-server) |
 | `tavily-mcp-docker/` | Universal workbench | Tavily MCP server exposed over HTTP via mcp-proxy | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/tavily-mcp) |
+| `mcp-google-service-docker/` | Universal workbench | Unmodified upstream Google Cloud MCP aggregation service exposed over HTTP | [explore.ggcr.dev](https://explore.ggcr.dev/?repo=ghcr.io/spigell/mcp-google-service) |
 
 ## Git setup helper
 

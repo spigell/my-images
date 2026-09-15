@@ -1,0 +1,47 @@
+name: Build and Publish Google MCP Service image
+
+on:
+  repository_dispatch:
+    types: [universal-workbench-updated]
+  push:
+    branches-ignore: ['renovate/**']
+    paths:
+      - 'mcp-google-service-docker/**'
+      - '.github/workflows/mcp-google-service-publish.yaml'
+  workflow_dispatch:
+    inputs:
+      universal_tag:
+        description: Universal Workbench tag (optional; defaults to GHCR latest)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  resolve-universal-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: universal-workbench
+          payload_tag: ${{ github.event.client_payload.universal_tag }}
+          input_tag: ${{ inputs.universal_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+  build-mcp-google-service:
+    needs: [resolve-universal-tag]
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: mcp-google-service
+      context: ./mcp-google-service-docker
+      version: 0.1.0
+      build-args: |
+        UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
