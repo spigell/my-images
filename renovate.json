@@ -132,7 +132,8 @@
         "github/github-mcp-server",
         "ansible/vscode-ansible",
         "tavily-mcp",
-        "notebooklm-mcp-cli"
+        "notebooklm-mcp-cli",
+        "zchee/mcp-google-service"
       ],
       "automerge": false,
       "branchPrefix": "renovate/",
