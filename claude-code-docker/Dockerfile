@@ -18,7 +18,7 @@ WORKDIR /project
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    bubblewrap=0.9.0-1ubuntu0.1 \
+    bubblewrap=0.9.0* \
     socat=1.8.0.0-4build3 \
  && rm -rf /var/lib/apt/lists/*
 
