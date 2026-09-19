@@ -21,7 +21,7 @@ ENV HOME=/root
 ENV CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends bubblewrap=0.9.0-1ubuntu0.1 \
+ && apt-get install -y --no-install-recommends bubblewrap=0.9.0* \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=codex /usr/local/bin/codex /usr/local/bin/codex
