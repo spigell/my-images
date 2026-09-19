@@ -3,10 +3,11 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG TENV_VERSION=v4.15.1 # renovate: datasource=github-releases depName=tofuutils/tenv
-ARG TERRAFORM_VERSION=1.15.1 # renovate: datasource=github-releases depName=hashicorp/terraform
-ARG TERRAGRUNT_VERSION=1.0.2 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
-ARG AWS_PROVIDER_VERSION=6.45.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-aws
-ARG VAULT_PROVIDER_VERSION=4.6.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-vault
+ARG TERRAFORM_VERSION=1.16.3 # renovate: datasource=github-releases depName=hashicorp/terraform
+ARG TERRAGRUNT_VERSION=1.1.5 # renovate: datasource=github-releases depName=gruntwork-io/terragrunt
+ARG AWS_PROVIDER_VERSION=6.65.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-aws
+ARG VAULT_PROVIDER_VERSION=5.12.0 # renovate: datasource=github-releases depName=hashicorp/terraform-provider-vault
+ARG TENV_WORKBENCH_VERSION=v5.0.0
 ARG TARGETARCH=amd64
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
@@ -45,6 +46,7 @@ ARG TERRAGRUNT_VERSION
 ARG AWS_PROVIDER_VERSION
 ARG VAULT_PROVIDER_VERSION
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG
+ARG TENV_WORKBENCH_VERSION
 
 COPY --from=fetch /tmp/fetch/tenv /usr/local/bin/tenv
 COPY --from=fetch /tmp/fetch/terraform /usr/local/bin/terraform
@@ -86,7 +88,7 @@ RUN provider_config_dir="$(mktemp -d)" \
 
 LABEL org.opencontainers.image.title="tenv Workbench" \
       org.opencontainers.image.description="Universal workbench derivative with tenv-managed IaC CLIs" \
-      org.opencontainers.image.version="${TENV_VERSION}" \
+      org.opencontainers.image.version="${TENV_WORKBENCH_VERSION}" \
       org.opencontainers.image.source="https://github.com/spigell/my-images/tenv-docker" \
       com.spigell.workbench.base-image="universal-workbench" \
       com.spigell.workbench.base-image-tag="${UNIVERSAL_WORKBENCH_IMAGE_TAG}" \
