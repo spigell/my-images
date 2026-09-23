@@ -3,8 +3,11 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG CODEX_BINARY_IMAGE=ghcr.io/spigell/codex-binary
 ARG CODEX_BINARY_IMAGE_TAG=sha-dev
+ARG AGENT_USAGE_PROXY_IMAGE=ghcr.io/spigell/agent-usage-proxy
+ARG AGENT_USAGE_PROXY_IMAGE_TAG=sha-dev
 
 FROM ${CODEX_BINARY_IMAGE}:${CODEX_BINARY_IMAGE_TAG} AS codex
+FROM ${AGENT_USAGE_PROXY_IMAGE}:${AGENT_USAGE_PROXY_IMAGE_TAG} AS agent-usage-proxy
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 LABEL codex.binary.ref="${CODEX_BINARY_IMAGE_TAG}"
@@ -29,6 +32,11 @@ COPY --from=codex /usr/local/bin/codex-code-mode-host /usr/local/bin/codex-code-
 
 RUN install -d /etc/codex
 COPY config/config.toml /etc/codex/config.toml
+
+# Usage sidecar. With no USAGE_AGENT it exits 2, which proves it loads here.
+COPY --from=agent-usage-proxy /opt/agent-usage-proxy /opt/agent-usage-proxy
+COPY --from=agent-usage-proxy /usr/local/bin/agent-usage-proxy /usr/local/bin/agent-usage-proxy
+RUN (USAGE_AGENT= agent-usage-proxy || [ $? -eq 2 ])
 
 USER ubuntu
 ENV HOME=/home/ubuntu
