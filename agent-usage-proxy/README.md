@@ -46,17 +46,3 @@ same major as that image's `NODE_VERSION`.
    `.github/workflows/agent-usage-proxy-publish.yaml`.
 3. The publish workflow dispatches `agent-usage-proxy-updated`, which rebuilds
    the three agent workbench images.
-
-## Testing an untagged library tree
-
-The `libs` stage can be replaced by a named context of the same name, so a
-working tree builds without a tag:
-
-```bash
-buildctl build --frontend dockerfile.v0 \
-  --local context=agent-usage-proxy --local dockerfile=agent-usage-proxy \
-  --opt context:libs=local:libs --local libs=../my-nodejs-libs \
-  --output type=image,name=<registry>/agent-usage-proxy:test,push=true
-```
-
-The library's `.dockerignore` keeps that context to the build inputs.

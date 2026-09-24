@@ -4,10 +4,7 @@ ARG MY_NODEJS_LIBS_TAG=v0.5.0 # renovate: datasource=github-tags depName=spigell
 ARG NODE_IMAGE_TAG=24.20.0-bookworm-slim # renovate: datasource=docker depName=node
 
 # The library source at the pinned tag. BuildKit fetches it itself; the
-# repository is public, so no credentials are needed. A build can replace this
-# whole stage with a named context of the same name, which is how an untagged
-# tree is tested:
-#   buildctl ... --opt context:libs=local:libs --local libs=<my-nodejs-libs>
+# repository is public, so no credentials are needed.
 FROM scratch AS libs
 ARG MY_NODEJS_LIBS_TAG
 ADD https://github.com/spigell/my-nodejs-libs.git#${MY_NODEJS_LIBS_TAG} /
@@ -22,10 +19,6 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ENV YARN_CACHE_FOLDER=/yarn-cache
 ENV CI=true
 
-# Caps parallel fetching. The local buildkitd shares a disk with etcd, and
-# concurrent writers have starved that control plane before.
-ARG NETWORK_CONCURRENCY=4
-
 WORKDIR /src
 COPY --from=libs / ./
 
@@ -35,13 +28,11 @@ COPY --from=libs / ./
 # proves the module graph loads: with no USAGE_AGENT the bin parses its
 # configuration and exits 2.
 RUN --mount=type=cache,target=/yarn-cache,sharing=locked \
-    yarn install --frozen-lockfile --non-interactive \
-      --network-concurrency "${NETWORK_CONCURRENCY}"; \
+    yarn install --frozen-lockfile --non-interactive; \
     yarn build; \
     test -f dist/bin/agent-usage-proxy.js; \
     rm -rf node_modules; \
-    yarn install --frozen-lockfile --non-interactive --production=true \
-      --network-concurrency "${NETWORK_CONCURRENCY}"; \
+    yarn install --frozen-lockfile --non-interactive --production=true; \
     install -d /out/opt/agent-usage-proxy /out/usr/local/bin; \
     cp -a package.json dist node_modules /out/opt/agent-usage-proxy/; \
     printf '#!/bin/sh\nexec node /opt/agent-usage-proxy/dist/bin/agent-usage-proxy.js "$@"\n' \
