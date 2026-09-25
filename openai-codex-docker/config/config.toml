@@ -1,7 +1,5 @@
 # --- Workbench Environment Defaults ---
 model_provider = "openai"
-model = "gpt-5.1-codex-max"
-network_access = true
 
 # Reasoning settings
 model_reasoning_effort = "low"
