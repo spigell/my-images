@@ -1,0 +1,37 @@
+name: Build and Publish agent usage proxy image
+
+on:
+  push:
+    branches-ignore:
+      - 'renovate/**'
+    paths:
+      - 'agent-usage-proxy/**'
+      - '.github/workflows/agent-usage-proxy-publish.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-agent-usage-proxy:
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: agent-usage-proxy
+      context: ./agent-usage-proxy
+      version: 0.5.0 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
+
+  # The agent workbenches copy the proxy in at build time, so each one must
+  # rebuild to pick up a new release.
+  trigger-downstreams:
+    needs: build-agent-usage-proxy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch agent usage proxy update
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+          event-type: agent-usage-proxy-updated
+          client-payload: '{"agent_usage_proxy_tag":"${{ needs.build-agent-usage-proxy.outputs.sha-tag }}"}'

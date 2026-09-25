@@ -3,7 +3,7 @@ run-name: "${{ github.event.client_payload.message || (github.event_name == 'rep
 
 on:
   repository_dispatch:
-    types: [universal-workbench-updated]
+    types: [universal-workbench-updated, agent-usage-proxy-updated]
   push:
     branches-ignore:
       - 'renovate/**'
@@ -14,6 +14,10 @@ on:
     inputs:
       universal_tag:
         description: Universal Workbench tag (optional; falls back to GHCR latest)
+        required: false
+        type: string
+      agent_usage_proxy_tag:
+        description: Agent usage proxy tag (optional; falls back to GHCR latest)
         required: false
         type: string
 
@@ -46,9 +50,27 @@ jobs:
       context: ./openai-codex-docker/codex-binary
       version: v0.156.1 # renovate: datasource=github-releases depName=spigell-codex-binary packageName=openai/codex
 
+  # Absent from a universal-workbench dispatch, so it falls back to the latest
+  # published proxy; an agent-usage-proxy dispatch carries the new tag.
+  resolve-agent-usage-proxy-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.final-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/resolve-ghcr-tag
+        id: final-tag
+        with:
+          owner: ${{ github.repository_owner }}
+          image: agent-usage-proxy
+          payload_tag: ${{ github.event.client_payload.agent_usage_proxy_tag }}
+          input_tag: ${{ inputs.agent_usage_proxy_tag }}
+          ghcr_token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+
   build-codex:
     needs:
       - resolve-universal-tag
+      - resolve-agent-usage-proxy-tag
       - build-codex-binary
     uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
     secrets:
@@ -60,6 +82,7 @@ jobs:
       build-args: |
         CODEX_BINARY_IMAGE_TAG=${{ needs.build-codex-binary.outputs.sha-tag }}@${{ needs.build-codex-binary.outputs.digest }}
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
+        AGENT_USAGE_PROXY_IMAGE_TAG=${{ needs.resolve-agent-usage-proxy-tag.outputs.tag }}
 
   trigger-downstreams:
     needs: build-codex

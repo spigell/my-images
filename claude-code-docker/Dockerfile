@@ -3,6 +3,10 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG CLAUDE_CODE_VERSION=2.1.280 # renovate: datasource=npm depName=@anthropic-ai/claude-code
 ARG SANDBOX_RUNTIME_VERSION=0.0.77 # renovate: datasource=npm depName=@anthropic-ai/sandbox-runtime
+ARG AGENT_USAGE_PROXY_IMAGE=ghcr.io/spigell/agent-usage-proxy
+ARG AGENT_USAGE_PROXY_IMAGE_TAG=sha-dev
+
+FROM ${AGENT_USAGE_PROXY_IMAGE}:${AGENT_USAGE_PROXY_IMAGE_TAG} AS agent-usage-proxy
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -27,6 +31,11 @@ RUN yarn config set prefix /usr/local \
     @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} \
     @anthropic-ai/sandbox-runtime@${SANDBOX_RUNTIME_VERSION} \
  && (yarn cache clean || true)
+
+# Usage sidecar. With no USAGE_AGENT it exits 2, which proves it loads here.
+COPY --from=agent-usage-proxy /opt/agent-usage-proxy /opt/agent-usage-proxy
+COPY --from=agent-usage-proxy /usr/local/bin/agent-usage-proxy /usr/local/bin/agent-usage-proxy
+RUN (USAGE_AGENT= agent-usage-proxy || [ $? -eq 2 ])
 
 USER ubuntu
 ENV HOME=/home/ubuntu
