@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.27
 
-ARG MY_NODEJS_LIBS_TAG=v0.5.0 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
+ARG MY_NODEJS_LIBS_TAG=v0.7.0 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
 ARG NODE_IMAGE_TAG=24.20.0-bookworm-slim # renovate: datasource=docker depName=node
 
 # The library source at the pinned tag. BuildKit fetches it itself; the
