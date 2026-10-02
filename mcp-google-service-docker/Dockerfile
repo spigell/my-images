@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.27
 
-ARG RUST_IMAGE_TAG=1.98-bookworm # renovate: datasource=docker depName=rust
+ARG RUST_IMAGE_TAG=1.99-bookworm # renovate: datasource=docker depName=rust
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG MCP_GOOGLE_SERVICE_GIT_REF=main
 ARG MCP_GOOGLE_SERVICE_GIT_SHA=c822a220e13b927ae84bc37241f5229eba11341d # renovate: datasource=github-digest depName=zchee/mcp-google-service packageName=zchee/mcp-google-service
