@@ -21,7 +21,7 @@ jobs:
     with:
       image-name: agent-usage-proxy
       context: ./agent-usage-proxy
-      version: 0.7.1 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
+      version: 0.7.3 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
 
   # The agent workbenches copy the proxy in at build time, so each one must
   # rebuild to pick up a new release.
