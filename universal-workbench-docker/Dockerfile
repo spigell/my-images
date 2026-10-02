@@ -64,7 +64,7 @@ ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/
 ARG SPECIFY_VERSION=v1.0.4 # renovate: datasource=github-tags depName=github/spec-kit
 ARG YAMLLINT_VERSION=1.35.1 # renovate: datasource=pypi depName=yamllint
 ARG COMMITLINT_VERSION=19.5.0 # renovate: datasource=npm depName=@commitlint/cli
-ARG GRAPHIFY_VERSION=0.18.0 # renovate: datasource=npm depName=@sentropic/graphify
+ARG GRAPHIFY_VERSION=0.19.0 # renovate: datasource=npm depName=@sentropic/graphify
 ARG ZMX_BINARY_IMAGE_TAG
 ARG MCP_PROXY_VERSION
 ARG MCP_SHELL_SERVER_VERSION
