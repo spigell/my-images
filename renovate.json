@@ -120,7 +120,8 @@
         "hashicorp/terraform-provider-aws",
         "hashicorp/terraform-provider-vault",
         "gruntwork-io/terragrunt",
-        "tofuutils/tenv"
+        "tofuutils/tenv",
+        "aws/aws-cli"
       ],
       "groupName": "infra-workbenches",
       "branchPrefix": "renovate/",

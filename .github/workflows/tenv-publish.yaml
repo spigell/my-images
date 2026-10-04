@@ -46,10 +46,10 @@ jobs:
     with:
       image-name: tenv-workbench
       context: ./tenv-docker
-      version: v5.0.0
+      version: v5.0.1
       build-args: |
         UNIVERSAL_WORKBENCH_IMAGE_TAG=${{ needs.resolve-universal-tag.outputs.tag }}
-        TENV_WORKBENCH_VERSION=v5.0.0
+        TENV_WORKBENCH_VERSION=v5.0.1
       build-contexts: |
         shared=./shared
 
