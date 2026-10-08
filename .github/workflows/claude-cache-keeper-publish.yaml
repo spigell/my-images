@@ -1,0 +1,26 @@
+name: Build and Publish Claude cache keeper image
+
+on:
+  push:
+    branches-ignore:
+      - 'renovate/**'
+    paths:
+      - 'claude-cache-keeper/**'
+      - '.github/workflows/claude-cache-keeper-publish.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+# Deployments copy the keeper in with an init container and Renovate bumps
+# their pins, so no workbench image needs a rebuild.
+jobs:
+  build-claude-cache-keeper:
+    uses: spigell/my-shared-workflows/.github/workflows/docker-build-release.yaml@main
+    secrets:
+      gh-token: ${{ secrets.IMAGES_PUBLISH_TOKEN }}
+    with:
+      image-name: claude-cache-keeper
+      context: ./claude-cache-keeper
+      version: 0.8.0 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
