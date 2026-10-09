@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.27
+# syntax=docker/dockerfile:1.28
 
 ARG RUST_IMAGE_TAG=1.99-bookworm # renovate: datasource=docker depName=rust
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev

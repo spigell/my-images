@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.27
+# syntax=docker/dockerfile:1.28
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG AWS_EKS_MCP_VERSION=0.2.1 # renovate: datasource=pypi depName=awslabs.eks-mcp-server
