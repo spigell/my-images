@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.28
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG AGY_VERSION=1.2.16 # renovate: datasource=github-tags depName=google-antigravity/antigravity-cli
+ARG AGY_VERSION=1.3.2 # renovate: datasource=github-tags depName=google-antigravity/antigravity-cli
 ARG AGENT_USAGE_PROXY_IMAGE=ghcr.io/spigell/agent-usage-proxy
 ARG AGENT_USAGE_PROXY_IMAGE_TAG=sha-dev
 
