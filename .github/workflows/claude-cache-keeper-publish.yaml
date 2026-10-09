@@ -23,4 +23,4 @@ jobs:
     with:
       image-name: claude-cache-keeper
       context: ./claude-cache-keeper
-      version: 0.8.0 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
+      version: 0.8.1 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
