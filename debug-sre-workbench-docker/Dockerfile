@@ -13,13 +13,13 @@ ARG ETCD_VERSION=3.7.2 # renovate: datasource=github-releases depName=etcd-io/et
 ARG KREW_VERSION=v0.5.0 # renovate: datasource=github-releases depName=kubernetes-sigs/krew
 ARG LINEAGE_VERSION=0.5.0 # renovate: datasource=github-releases depName=tohjustin/kube-lineage
 ARG WERF_VERSION=2.31.1 # renovate: datasource=github-releases depName=werf/werf
-ARG HCLOUD_VERSION=1.69.0 # renovate: datasource=github-releases depName=hetznercloud/cli
+ARG HCLOUD_VERSION=1.70.1 # renovate: datasource=github-releases depName=hetznercloud/cli
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
-ARG HOLMES_GIT_REF=0.42.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
+ARG HOLMES_GIT_REF=0.43.0 # renovate: datasource=github-releases depName=HolmesGPT/holmesgpt
 ARG AWXKIT_VERSION=24.6.1 # renovate: datasource=pypi depName=awxkit
 ARG AWXKIT_PYTHON_VERSION=3.11
-ARG ARGOCD_VERSION=3.5.3 # renovate: datasource=github-releases depName=argoproj/argo-cd
+ARG ARGOCD_VERSION=3.5.4 # renovate: datasource=github-releases depName=argoproj/argo-cd
 
 FROM debian:${DEBIAN_IMAGE_TAG} AS fetch
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
