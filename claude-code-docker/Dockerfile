@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.28
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG CLAUDE_CODE_VERSION=2.1.289 # renovate: datasource=npm depName=@anthropic-ai/claude-code
-ARG SANDBOX_RUNTIME_VERSION=0.0.78 # renovate: datasource=npm depName=@anthropic-ai/sandbox-runtime
+ARG CLAUDE_CODE_VERSION=2.1.296 # renovate: datasource=npm depName=@anthropic-ai/claude-code
+ARG SANDBOX_RUNTIME_VERSION=0.0.79 # renovate: datasource=npm depName=@anthropic-ai/sandbox-runtime
 ARG AGENT_USAGE_PROXY_IMAGE=ghcr.io/spigell/agent-usage-proxy
 ARG AGENT_USAGE_PROXY_IMAGE_TAG=sha-dev
 
