@@ -14,6 +14,11 @@
       "description": "Images built in this repository already propagate new tags through dispatch workflows; Renovate updates to those same images here would duplicate rebuild churn; source: https://github.com/spigell/my-images/commit/58e2a5fd1bbe3f26264566a36092752848cdbdc5; review after: 2026-11-26"
     },
     {
+      "enabled": false,
+      "matchDepNames": ["sparfenyuk/mcp-proxy", "ghcr.io/sparfenyuk/mcp-proxy"],
+      "description": "mcp-proxy releases can change its runtime behavior, so upgrades are applied manually after review; review after: 2027-02-01"
+    },
+    {
       "enabled": true,
       "matchDepNames": ["werf/werf"],
       "allowedVersions": "/^2\\.31\\.1$/"
@@ -68,7 +73,6 @@
         "go-delve/delve",
         "yarnpkg/yarn",
         "mikefarah/yq",
-        "sparfenyuk/mcp-proxy",
         "sonirico/mcp-shell"
       ],
       "groupName": "platform foundation",
