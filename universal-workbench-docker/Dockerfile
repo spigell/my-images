@@ -237,7 +237,8 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     rm -rf "${HOME}/.cache/pip"
 
 # Node.js via fnm with Yarn
-ENV FNM_COREPACK_ENABLED="true"
+# Corepack comes from npm below. Node 25+ no longer bundles it, and fnm's
+# corepack hook (FNM_COREPACK_ENABLED) fails the install without it.
 ENV FNM_VERSION_FILE_STRATEGY="recursive"
 ENV FNM_DIR=/usr/local/share/fnm
 ENV PATH="/usr/local/share/fnm/aliases/default/bin:${PATH}"
