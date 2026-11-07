@@ -5,7 +5,7 @@ ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG GOLANG_IMAGE_TAG=1.26.5-bookworm # renovate: datasource=docker depName=golang
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
-ARG GOLANG_VERSION=1.27.1 # renovate: datasource=golang-version depName=go
+ARG GOLANG_VERSION=1.27.3 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.7.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
 ARG YQ_VERSION=v4.53.6 # renovate: datasource=github-releases depName=mikefarah/yq
@@ -52,16 +52,16 @@ RUN install -d /tmp/fetch && \
 FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-ARG UNIVERSAL_WORKBENCH_VERSION=1.5.0
+ARG UNIVERSAL_WORKBENCH_VERSION=1.6.0
 ARG PYTHON_VERSION=3.13.15 # renovate: datasource=python-version depName=python
-ARG NODE_VERSION=24.20.0 # renovate: datasource=node-version depName=node
+ARG NODE_VERSION=26.13.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
 ARG RUST_VERSION=1.98.1 # renovate: datasource=github-releases depName=rust-lang/rust
 ARG GOLANGCI_LINT_VERSION=2.13.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG DELVE_VERSION=1.27.1 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
-ARG SPECIFY_VERSION=v1.1.0 # renovate: datasource=github-tags depName=github/spec-kit
+ARG SPECIFY_VERSION=v1.3.2 # renovate: datasource=github-tags depName=github/spec-kit
 ARG YAMLLINT_VERSION=1.35.1 # renovate: datasource=pypi depName=yamllint
 ARG COMMITLINT_VERSION=19.5.0 # renovate: datasource=npm depName=@commitlint/cli
 ARG GRAPHIFY_VERSION=0.19.1 # renovate: datasource=npm depName=@sentropic/graphify
@@ -237,7 +237,8 @@ RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT"; \
     rm -rf "${HOME}/.cache/pip"
 
 # Node.js via fnm with Yarn
-ENV FNM_COREPACK_ENABLED="true"
+# Corepack comes from npm below. Node 25+ no longer bundles it, and fnm's
+# corepack hook (FNM_COREPACK_ENABLED) fails the install without it.
 ENV FNM_VERSION_FILE_STRATEGY="recursive"
 ENV FNM_DIR=/usr/local/share/fnm
 ENV PATH="/usr/local/share/fnm/aliases/default/bin:${PATH}"
