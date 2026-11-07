@@ -54,7 +54,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.5.0
 ARG PYTHON_VERSION=3.13.15 # renovate: datasource=python-version depName=python
-ARG NODE_VERSION=24.20.0 # renovate: datasource=node-version depName=node
+ARG NODE_VERSION=26.13.0 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
 ARG RUST_VERSION=1.98.1 # renovate: datasource=github-releases depName=rust-lang/rust
 ARG GOLANGCI_LINT_VERSION=2.13.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
