@@ -47,13 +47,27 @@ For CI you can drop `-v` and `-e`: the image still starts with an empty `/config
 On every start, AnkiConnect's `config.json` in `/config/Anki2/addons21/2055492159/` is rewritten from the image default:
 
 - `apiKey` is set to `ANKICONNECT_API_KEY` when it is set and non-empty, and to `null` (no authentication) otherwise. The key is never logged.
-- `webBindAddress` stays `0.0.0.0` and `webBindPort` stays `8765`. Overrides of these keys saved via Anki's add-on config dialog are dropped on start.
+- `webBindAddress` is set to `ANKICONNECT_BIND_ADDRESS` when it is set and non-empty, and stays `0.0.0.0` otherwise (see below). `webBindPort` stays `8765`. Overrides of these keys saved via Anki's add-on config dialog are dropped on start.
 
 Clients must then send the key as `"key"` in every request, e.g.:
 
 ```bash
 curl -s localhost:8765 -d '{"action":"version","version":6,"key":"change-me"}'
 ```
+
+## `ANKICONNECT_BIND_ADDRESS`
+
+Sets the address AnkiConnect listens on. Leave it unset or empty to keep the default `0.0.0.0` (all interfaces), as CI does.
+
+When the only client runs next to Anki, for example an MCP sidecar in the same Kubernetes pod, bind to loopback so AnkiConnect is unreachable from outside the pod even without an API key:
+
+```yaml
+env:
+  - name: ANKICONNECT_BIND_ADDRESS
+    value: "127.0.0.1"
+```
+
+With `127.0.0.1`, publishing port `8765` (`-p 8765:8765`) no longer reaches AnkiConnect from the host.
 
 ## One-time AnkiWeb login
 

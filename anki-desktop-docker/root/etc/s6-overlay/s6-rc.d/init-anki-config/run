@@ -27,10 +27,16 @@ if [[ -n "${ANKICONNECT_API_KEY:-}" ]]; then
 else
   echo "**** ANKICONNECT_API_KEY is empty, AnkiConnect apiKey disabled ****"
 fi
-# read the key from env, not argv, so it never shows up in ps or logs
+if [[ -n "${ANKICONNECT_BIND_ADDRESS:-}" ]]; then
+  echo "**** AnkiConnect webBindAddress set to ${ANKICONNECT_BIND_ADDRESS} ****"
+fi
+# read the key from env, not argv, so it never shows up in ps or logs;
+# an empty ANKICONNECT_BIND_ADDRESS keeps the image default webBindAddress
 (
   umask 077
-  jq '.apiKey = ((env.ANKICONNECT_API_KEY // "") | if . == "" then null else . end)' \
+  jq '.apiKey = ((env.ANKICONNECT_API_KEY // "") | if . == "" then null else . end)
+    | (env.ANKICONNECT_BIND_ADDRESS // "") as $addr
+    | if $addr == "" then . else .webBindAddress = $addr end' \
     "${ANKICONNECT_DEFAULT_DIR}/config.json" > "${ANKICONNECT_DIR}/config.json.tmp"
 )
 mv "${ANKICONNECT_DIR}/config.json.tmp" "${ANKICONNECT_DIR}/config.json"
