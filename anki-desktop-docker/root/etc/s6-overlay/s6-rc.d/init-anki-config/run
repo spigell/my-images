@@ -46,3 +46,13 @@ if [[ -f "${ANKICONNECT_DIR}/meta.json" ]]; then
 fi
 
 chown -R abc:abc "${ANKI_HOME}"
+
+# init-kasmvnc-config copies the openbox defaults only when missing, so a volume
+# from an older image keeps launching Anki on /tmp/Anki2; replace those files
+for file in autostart menu.xml; do
+  if grep -qs '/tmp/Anki2' "/config/.config/openbox/${file}"; then
+    echo "**** migrating /config/.config/openbox/${file} to ${ANKI_HOME} ****"
+    cp "/defaults/${file}" "/config/.config/openbox/${file}"
+    chown abc:abc "/config/.config/openbox/${file}"
+  fi
+done

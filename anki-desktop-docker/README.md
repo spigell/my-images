@@ -37,6 +37,7 @@ For CI you can drop `-v` and `-e`: the image still starts with an empty `/config
 
 - On the first start, `/config/Anki2` is seeded from the image defaults in `/defaults/Anki2`. An existing profile is never overwritten. Ownership is reset to `abc` on every start.
 - On every start, the bundled AnkiConnect add-on is copied into `/config/Anki2/addons21/2055492159/`, so an existing profile always runs the image's AnkiConnect. The rest of the profile is untouched.
+- A volume from an older image whose `/config/.config/openbox/autostart` or `menu.xml` still launches Anki on `/tmp/Anki2` gets those files replaced with the image defaults on start, so Anki uses `/config/Anki2`. Customised files without `/tmp/Anki2` are left alone.
 - If any of these steps fails (for example the config cannot be written), the container does not start Anki.
 - After you sign in to AnkiWeb, `prefs21.db` holds your AnkiWeb login. **Treat the volume as a secret**: do not share it, bake it into an image or commit it.
 - Only **one container may use a profile at a time**. Run a single replica and stop the old container before starting a new one on the same volume (on Kubernetes, use the `Recreate` strategy).
