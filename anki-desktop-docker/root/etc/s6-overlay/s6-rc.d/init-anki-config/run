@@ -1,10 +1,14 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
+# any failure stops startup, so Anki never runs with a stale AnkiConnect config
+set -euo pipefail
+
 ANKI_HOME=/config/Anki2
 ANKI_DEFAULT_HOME=/defaults/Anki2
 ANKICONNECT_ID=2055492159
 ANKICONNECT_DIR="${ANKI_HOME}/addons21/${ANKICONNECT_ID}"
+ANKICONNECT_DEFAULT_DIR="${ANKI_DEFAULT_HOME}/addons21/${ANKICONNECT_ID}"
 
 # seed the profile on first run only, never overwrite an existing one
 if [[ ! -e "${ANKI_HOME}" ]]; then
@@ -12,28 +16,33 @@ if [[ ! -e "${ANKI_HOME}" ]]; then
   cp -a "${ANKI_DEFAULT_HOME}" "${ANKI_HOME}"
 fi
 
+# install the bundled AnkiConnect add-on on every start, so an existing profile
+# always runs the image's version; meta.json and user files are left alone
+mkdir -p "${ANKICONNECT_DIR}"
+cp -a "${ANKICONNECT_DEFAULT_DIR}/." "${ANKICONNECT_DIR}/"
+
 # rewrite AnkiConnect config from the image default on every start
-if [[ -d "${ANKICONNECT_DIR}" ]]; then
-  if [[ -n "${ANKICONNECT_API_KEY}" ]]; then
-    echo "**** AnkiConnect apiKey set from ANKICONNECT_API_KEY ****"
-  else
-    echo "**** ANKICONNECT_API_KEY is empty, AnkiConnect apiKey disabled ****"
-  fi
-  # read the key from env, not argv, so it never shows up in ps or logs
-  (umask 077 && jq \
-    '.apiKey = ((env.ANKICONNECT_API_KEY // "") | if . == "" then null else . end)' \
-    "${ANKI_DEFAULT_HOME}/addons21/${ANKICONNECT_ID}/config.json" \
-    > "${ANKICONNECT_DIR}/config.json.tmp") &&
-    mv "${ANKICONNECT_DIR}/config.json.tmp" "${ANKICONNECT_DIR}/config.json"
-  # Anki merges meta.json "config" over config.json; drop the keys we own
-  if [[ -f "${ANKICONNECT_DIR}/meta.json" ]]; then
-    (umask 077 && jq \
-      'if .config then .config |= del(.apiKey, .webBindAddress, .webBindPort) else . end' \
-      "${ANKICONNECT_DIR}/meta.json" > "${ANKICONNECT_DIR}/meta.json.tmp") &&
-      mv "${ANKICONNECT_DIR}/meta.json.tmp" "${ANKICONNECT_DIR}/meta.json"
-  fi
+if [[ -n "${ANKICONNECT_API_KEY:-}" ]]; then
+  echo "**** AnkiConnect apiKey set from ANKICONNECT_API_KEY ****"
 else
-  echo "**** ${ANKICONNECT_DIR} not found, AnkiConnect config not written ****"
+  echo "**** ANKICONNECT_API_KEY is empty, AnkiConnect apiKey disabled ****"
+fi
+# read the key from env, not argv, so it never shows up in ps or logs
+(
+  umask 077
+  jq '.apiKey = ((env.ANKICONNECT_API_KEY // "") | if . == "" then null else . end)' \
+    "${ANKICONNECT_DEFAULT_DIR}/config.json" > "${ANKICONNECT_DIR}/config.json.tmp"
+)
+mv "${ANKICONNECT_DIR}/config.json.tmp" "${ANKICONNECT_DIR}/config.json"
+
+# Anki merges meta.json "config" over config.json; drop the keys we own
+if [[ -f "${ANKICONNECT_DIR}/meta.json" ]]; then
+  (
+    umask 077
+    jq 'if .config then .config |= del(.apiKey, .webBindAddress, .webBindPort) else . end' \
+      "${ANKICONNECT_DIR}/meta.json" > "${ANKICONNECT_DIR}/meta.json.tmp"
+  )
+  mv "${ANKICONNECT_DIR}/meta.json.tmp" "${ANKICONNECT_DIR}/meta.json"
 fi
 
 chown -R abc:abc "${ANKI_HOME}"

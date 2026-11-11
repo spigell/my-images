@@ -8,7 +8,9 @@ ARG ANKI_CONNECT_VERSION=25.2.25.0 # renovate: datasource=git-tags depName=https
 
 COPY anki-home ${ANKI_DEFAULT_HOME}
 
+# The base image's NodeSource node_18.x repo is gone (404) and breaks apt-get update; Anki does not need it
 RUN \
+  rm -f /etc/apt/sources.list.d/nodesource.list && \
   apt-get update && \
   apt-get install -y anki jq wget zstd xdg-utils libxcb-xinerama0 libxcb-cursor0 && \
   dpkg --remove anki && \
