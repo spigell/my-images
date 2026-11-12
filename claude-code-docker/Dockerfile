@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.28
+# syntax=docker/dockerfile:1.29
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 ARG CLAUDE_CODE_VERSION=2.1.319 # renovate: datasource=npm depName=@anthropic-ai/claude-code
