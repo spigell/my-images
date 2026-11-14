@@ -6,7 +6,7 @@ ARG KUBECTL_VERSION=1.37.2 # renovate: datasource=github-releases depName=kubern
 ARG HELM_VERSION=3.19.5 # renovate: datasource=github-releases depName=helm/helm
 ARG HELM_UNITTEST_VERSION=1.2.1 # renovate: datasource=github-releases depName=helm-unittest/helm-unittest
 ARG K9S_VERSION=0.51.0 # renovate: datasource=github-releases depName=derailed/k9s
-ARG TALOSCTL_VERSION=1.14.5 # renovate: datasource=github-releases depName=siderolabs/talos
+ARG TALOSCTL_VERSION=1.14.6 # renovate: datasource=github-releases depName=siderolabs/talos
 ARG GKE_AUTH_PLUGIN_VERSION=581.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG GCLOUD_VERSION=581.0.0 # renovate: datasource=docker depName=google-cloud-sdk packageName=google/cloud-sdk
 ARG ETCD_VERSION=3.7.3 # renovate: datasource=github-releases depName=etcd-io/etcd
