@@ -17,6 +17,12 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ENV YARN_CACHE_FOLDER=/yarn-cache
 ENV CI=true
 
+# Node 25+ images no longer bundle yarn or corepack. Corepack reads the
+# library's `packageManager` (yarn@1.22.22) and runs exactly that yarn.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN npm install -g corepack; \
+    corepack enable
+
 WORKDIR /src
 COPY --from=libs / ./
 
