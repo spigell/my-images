@@ -1,11 +1,12 @@
-# syntax=docker/dockerfile:1.28
+# syntax=docker/dockerfile:1.29
 
 # Build the Ansible MCP server from source (vscode-ansible) and expose it over HTTP via mcp-proxy,
 # reusing the universal workbench base so pyenv/python tooling matches the rest of the images.
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG} AS builder
-ARG VSCODE_ANSIBLE_GIT_REF=v26.8.2 # renovate: datasource=github-tags depName=ansible/vscode-ansible
+ARG VSCODE_ANSIBLE_GIT_REF=v26.11.0 # renovate: datasource=github-tags depName=ansible/vscode-ansible
+ARG PNPM_VERSION=12.16.1 # renovate: datasource=npm depName=pnpm
 WORKDIR /src
 
 # universal base already includes Python, yarn/corepack, and build tooling
@@ -19,7 +20,7 @@ RUN git apply --check /tmp/ansible-navigator-working-directory.patch \
     && git apply /tmp/ansible-navigator-working-directory.patch
 
 # Install dependencies and build only the MCP server workspace
-RUN corepack prepare pnpm@11.22.0 --activate
+RUN corepack prepare "pnpm@${PNPM_VERSION}" --activate
 RUN pnpm install --frozen-lockfile && rm -f node_modules/.bin/pnpm
 RUN pnpm --filter @ansible/ansible-mcp-server run prepack
 
