@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.29
 
 ARG MY_NODEJS_LIBS_TAG=v0.9.4 # renovate: datasource=github-tags depName=spigell/my-nodejs-libs
-ARG NODE_IMAGE_TAG=24.20.0-bookworm-slim # renovate: datasource=docker depName=node
+ARG NODE_IMAGE_TAG=26.13.0-bookworm-slim # renovate: datasource=docker depName=node
 
 # The library source at the pinned tag. BuildKit fetches it itself; the
 # repository is public, so no credentials are needed.
@@ -18,6 +18,12 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 # Pinned so the cache mount lands where yarn actually looks.
 ENV YARN_CACHE_FOLDER=/yarn-cache
 ENV CI=true
+
+# Node 25+ images no longer bundle yarn or corepack. Corepack reads the
+# library's `packageManager` (yarn@1.22.22) and runs exactly that yarn.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN npm install -g corepack; \
+    corepack enable
 
 WORKDIR /src
 COPY --from=libs / ./
