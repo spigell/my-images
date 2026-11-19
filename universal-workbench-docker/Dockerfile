@@ -5,10 +5,10 @@ ARG ZMX_BINARY_IMAGE=ghcr.io/spigell/zmx-binary
 ARG DEBIAN_IMAGE_TAG=bookworm-slim # renovate: datasource=docker depName=debian
 ARG GOLANG_IMAGE_TAG=1.26.5-bookworm # renovate: datasource=docker depName=golang
 ARG UBUNTU_IMAGE_TAG=24.04 # renovate: datasource=docker depName=ubuntu
-ARG GOLANG_VERSION=1.27.3 # renovate: datasource=golang-version depName=go
+ARG GOLANG_VERSION=1.27.4 # renovate: datasource=golang-version depName=go
 ARG MCP_PROXY_VERSION=v0.12.0 # renovate: datasource=github-tags depName=sparfenyuk/mcp-proxy
 ARG MCP_SHELL_SERVER_VERSION=v0.7.0 # renovate: datasource=github-tags depName=sonirico/mcp-shell
-ARG YQ_VERSION=v4.53.6 # renovate: datasource=github-releases depName=mikefarah/yq
+ARG YQ_VERSION=v4.54.3 # renovate: datasource=github-releases depName=mikefarah/yq
 
 FROM ${ZMX_BINARY_IMAGE}:${ZMX_BINARY_IMAGE_TAG} AS zmx-binary
 
@@ -53,12 +53,12 @@ FROM ubuntu:${UBUNTU_IMAGE_TAG} AS universal-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ARG UNIVERSAL_WORKBENCH_VERSION=1.6.0
-ARG PYTHON_VERSION=3.13.15 # renovate: datasource=python-version depName=python
-ARG NODE_VERSION=26.13.0 # renovate: datasource=node-version depName=node
+ARG PYTHON_VERSION=3.13.18 # renovate: datasource=python-version depName=python
+ARG NODE_VERSION=26.13.1 # renovate: datasource=node-version depName=node
 ARG GOLANG_VERSION
-ARG RUST_VERSION=1.98.1 # renovate: datasource=github-releases depName=rust-lang/rust
-ARG GOLANGCI_LINT_VERSION=2.13.2 # renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG DELVE_VERSION=1.27.1 # renovate: datasource=github-tags depName=go-delve/delve
+ARG RUST_VERSION=1.100.0 # renovate: datasource=github-releases depName=rust-lang/rust
+ARG GOLANGCI_LINT_VERSION=2.15.0 # renovate: datasource=github-releases depName=golangci/golangci-lint
+ARG DELVE_VERSION=1.27.2 # renovate: datasource=github-tags depName=go-delve/delve
 ARG TARGETARCH=amd64
 ARG YARN_VERSION=1.22.22 # renovate: datasource=github-releases depName=yarnpkg/yarn
 ARG SPECIFY_VERSION=v1.3.2 # renovate: datasource=github-tags depName=github/spec-kit
