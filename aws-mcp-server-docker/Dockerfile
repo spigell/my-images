@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.29
 
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
-ARG AWS_EKS_MCP_VERSION=0.2.1 # renovate: datasource=pypi depName=awslabs.eks-mcp-server
+ARG AWS_EKS_MCP_VERSION=0.2.2 # renovate: datasource=pypi depName=awslabs.eks-mcp-server
 ARG AWS_PRICING_MCP_VERSION=1.1.1 # renovate: datasource=pypi depName=awslabs.aws-pricing-mcp-server
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG}
