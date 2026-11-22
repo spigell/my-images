@@ -11,7 +11,7 @@
     {
       "enabled": false,
       "matchPackageNames": ["/ghcr.io/spigell/*/"],
-      "description": "Images built in this repository already propagate new tags through dispatch workflows; Renovate updates to those same images here would duplicate rebuild churn; source: https://github.com/spigell/my-images/commit/58e2a5fd1bbe3f26264566a36092752848cdbdc5; review after: 2026-11-26"
+      "description": "Images built in this repository already propagate new tags through dispatch workflows; Renovate updates to those same images here would duplicate rebuild churn; source: https://github.com/spigell/my-images/commit/58e2a5fd1bbe3f26264566a36092752848cdbdc5; review after: 2027-02-26"
     },
     {
       "enabled": false,
