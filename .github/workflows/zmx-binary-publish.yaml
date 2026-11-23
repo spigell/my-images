@@ -22,7 +22,7 @@ jobs:
     with:
       image-name: zmx-binary
       context: ./zmx-binary
-      version: 0.6.0 # renovate: datasource=github-tags depName=neurosnap/zmx
+      version: 1.0.1 # renovate: datasource=github-tags depName=neurosnap/zmx
 
   trigger-downstreams:
     needs: build-zmx-binary
