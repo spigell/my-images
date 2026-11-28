@@ -5,7 +5,7 @@
 ARG UNIVERSAL_WORKBENCH_IMAGE_TAG=sha-dev
 
 FROM ghcr.io/spigell/universal-workbench:${UNIVERSAL_WORKBENCH_IMAGE_TAG} AS builder
-ARG VSCODE_ANSIBLE_GIT_REF=v26.11.0 # renovate: datasource=github-tags depName=ansible/vscode-ansible
+ARG VSCODE_ANSIBLE_GIT_REF=v26.11.1 # renovate: datasource=github-tags depName=ansible/vscode-ansible
 ARG PNPM_VERSION=12.21.0 # renovate: datasource=npm depName=pnpm
 WORKDIR /src
 
